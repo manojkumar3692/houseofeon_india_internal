@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
-
+import ProductCarousel from "@/components/ProductCarousel";
+import HeroProductShowcase from "@/components/HeroProductShowcase";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
 
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
-const bestSellers = products.slice(0, 3);
+const bestSellers = products;
 
 const productSchema = {
   "@context": "https://schema.org",
@@ -157,19 +158,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="home-hero-visual" aria-label="House of Eon perfume bottle">
-            <div className="glow-orb glow-one" />
-            <div className="glow-orb glow-two" />
-            <div className="hero-bottle-modern">
-              <div className="bottle-cap" />
-              <div className="bottle-shine" />
-              <div className="bottle-label-modern">
-                <span>HOUSE OF EON</span>
-                <strong>RANK</strong>
-                <small>EAU DE PARFUM</small>
-              </div>
-            </div>
-          </div>
+          <section className="home-hero">
+  <div className="container home-hero-grid">
+    <div className="home-hero-copy">
+      {/* left side content same */}
+    </div>
+
+    <HeroProductShowcase products={products} />
+  </div>
+</section>
         </div>
       </section>
 
@@ -185,30 +182,26 @@ export default function HomePage() {
       </section>
 
       <section className="section home-products-section">
-        <div className="container">
-          <div className="section-head">
-            <div>
-              <div className="eyebrow">Best Sellers</div>
-              <h2 className="section-title">
-                Perfumes that match your main character energy.
-              </h2>
-            </div>
-            <Link href="/products" className="text-link">
-              View all perfumes →
-            </Link>
-          </div>
+      <div className="container">
+    <div className="section-head">
+      <div>
+        <div className="eyebrow">Signature Collection</div>
+        <h2 className="section-title">
+          Six perfumes. Six moods. One royal presence.
+        </h2>
+      </div>
+      <Link href="/products" className="text-link">
+        View all perfumes →
+      </Link>
+    </div>
 
-          <p className="muted home-section-subtitle">
-            Discover premium perfumes for office, college, parties, gifting and
-            everyday confidence.
-          </p>
+    <p className="muted home-section-subtitle">
+      Swipe through Desert Tonka, Arctic Wave, Zyrox, RANK, SYRA and Silent Gold —
+      crafted for warmth, freshness, power, elegance and quiet luxury.
+    </p>
 
-          <div className="grid">
-            {bestSellers.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
+    <ProductCarousel products={bestSellers} />
+  </div>
       </section>
 
       <section className="section home-why">

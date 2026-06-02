@@ -1,17 +1,22 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
 
 export default function ProductDetailClient({ product }: { product: Product }) {
+  const router = useRouter();
   const { addItem } = useCart();
+  const [imageFailed, setImageFailed] = useState(false);
 
-  function handleAddToCart() {
-    addItem(product.id);
+  const hasProductImage = Boolean(product.image) && !imageFailed;
 
+  function trackProductAdd() {
     trackAddToCart({
       id: product.id,
       name: product.name,
@@ -20,26 +25,66 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     });
   }
 
+  function handleAddToCart() {
+    addItem(product.id);
+    trackProductAdd();
+  }
+
+  function handleBuyNow() {
+    addItem(product.id);
+    trackProductAdd();
+    router.push("/checkout");
+  }
+
   return (
     <>
       <section className="product-detail-hero">
         <div className="container product-detail-grid">
-          <div className="product-detail-visual">
+          <div className="product-detail-visual product-detail-visual-image">
             <div className="detail-glow detail-glow-one" />
             <div className="detail-glow detail-glow-two" />
 
-            <div className="detail-bottle">
-              <div className="detail-bottle-cap" />
-              <div className="detail-bottle-shine" />
-              <div className="detail-bottle-label">
-                <span>HOUSE OF EON</span>
-                <strong>{product.shortName}</strong>
-                <small>{product.size} · EDP</small>
-              </div>
-            </div>
+            {hasProductImage ? (
+              <div className="product-main-image-card">
+                <Image
+                  src={product.image}
+                  alt={`${product.name} perfume by House of Eon`}
+                  width={1100}
+                  height={1100}
+                  priority
+                  className="product-main-image"
+                  sizes="(max-width: 860px) 92vw, 520px"
+                  onError={() => setImageFailed(true)}
+                />
 
-            <div className="floating-note note-one">Long lasting</div>
-            <div className="floating-note note-two">Modern minimal</div>
+                <div className="product-main-image-shade" />
+
+                <div className="floating-note note-one">
+                  {product.tagline}
+                </div>
+
+                <div className="floating-note note-two">
+                  {product.concentration}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="detail-bottle">
+                  <div className="detail-bottle-cap" />
+                  <div className="detail-bottle-shine" />
+                  <div className="detail-bottle-label">
+                    <span>HOUSE OF EON</span>
+                    <strong>{product.shortName}</strong>
+                    <small>
+                      {product.size} · {product.concentration}
+                    </small>
+                  </div>
+                </div>
+
+                <div className="floating-note note-one">Long lasting</div>
+                <div className="floating-note note-two">Modern minimal</div>
+              </>
+            )}
           </div>
 
           <div className="product-detail-copy">
@@ -54,6 +99,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             </span>
 
             <h1>{product.name}</h1>
+
+            {product.tagline ? (
+              <p className="product-detail-tagline">{product.tagline}</p>
+            ) : null}
 
             <p className="lead">{product.description}</p>
 
@@ -84,8 +133,12 @@ export default function ProductDetailClient({ product }: { product: Product }) {
                 Add to cart
               </button>
 
-              <Link href="/cart" className="btn secondary">
-                Go to cart
+              <button className="btn secondary" onClick={handleBuyNow}>
+                Buy now
+              </button>
+
+              <Link href="/cart" className="btn ghost">
+                View cart
               </Link>
             </div>
 
@@ -115,10 +168,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           </div>
 
           <p>
-            {product.name} is crafted for people who want a fragrance that feels
-            premium, clean and memorable. Wear it for office, college, evening
-            plans, dates, celebrations or whenever you want your presence to
-            feel sharper.
+            {product.longDescription ||
+              `${product.name} is crafted for people who want a fragrance that feels premium, clean and memorable. Wear it for office, college, evening plans, dates, celebrations or whenever you want your presence to feel sharper.`}
           </p>
         </div>
       </section>
@@ -128,15 +179,19 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           <article>
             <span>01</span>
             <h3>When to wear</h3>
-            <p>Daily wear, office, college, parties, gifting and evening plans.</p>
+            <p>
+              {product.occasion?.length
+                ? product.occasion.join(", ")
+                : "Daily wear, office, college, parties, gifting and evening plans."}
+            </p>
           </article>
 
           <article>
             <span>02</span>
             <h3>Who it is for</h3>
             <p>
-              Modern fragrance lovers who prefer minimal luxury and a confident
-              scent profile.
+              Modern fragrance lovers who prefer minimal luxury, strong identity
+              and a confident scent profile.
             </p>
           </article>
 
@@ -151,13 +206,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
         </div>
       </section>
 
-      <div className="mobile-sticky-buy">
+      <div className="mobile-sticky-buy product-mobile-buy">
         <div>
           <b>{product.shortName}</b>
           <span>{formatINR(product.price)}</span>
         </div>
+
         <button onClick={handleAddToCart}>Add</button>
-        <Link href="/cart">Cart</Link>
+        <button onClick={handleBuyNow}>Buy now</button>
       </div>
     </>
   );

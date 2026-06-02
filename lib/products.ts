@@ -71,7 +71,7 @@ export const products: Product[] = [
     notes: ["Aquatic Notes", "Citrus", "Fresh Air", "Marine Accord", "Clean Woods"],
     mood: ["Fresh", "Cool", "Clean", "Confident", "Modern"],
     occasion: ["Office", "College", "Daily Wear", "Summer", "Daytime"],
-    image: "/products/arctic-wave.jpg",
+    image: "/products/arctic-wave.png",
     seoTitle:
       "Arctic Wave Perfume for Men | Fresh Long Lasting Perfume India",
     seoDescription:
@@ -103,7 +103,7 @@ export const products: Product[] = [
     notes: ["Icy Freshness", "Citrus Spark", "Minty Cool", "Clean Musk", "Modern Woods"],
     mood: ["Icy", "Bold", "Youthful", "Energetic", "Trendy"],
     occasion: ["College", "Parties", "Daily Wear", "Hangouts", "Summer"],
-    image: "/products/zyrox.jpg",
+    image: "/products/zyrox.png",
     seoTitle:
       "Zyrox Perfume for Men | Cool Gen Z Long Lasting Perfume India",
     seoDescription:
@@ -135,7 +135,7 @@ export const products: Product[] = [
     notes: ["Spice", "Leather Touch", "Amber", "Woods", "Musk"],
     mood: ["Powerful", "Masculine", "Refined", "Bold", "Premium"],
     occasion: ["Office", "Business", "Evening", "Date Night", "Gifting"],
-    image: "/products/rank.jpg",
+    image: "/products/rank.png",
     seoTitle:
       "RANK Perfume for Men | Raw Power Long Lasting Perfume India",
     seoDescription:
@@ -167,7 +167,7 @@ export const products: Product[] = [
     notes: ["Floral Accord", "Soft Musk", "Vanilla", "Fruity Spark", "Elegant Woods"],
     mood: ["Elegant", "Feminine", "Confident", "Soft", "Powerful"],
     occasion: ["Office", "Brunch", "Evening", "Gifting", "Daily Wear"],
-    image: "/products/syra.jpg",
+    image: "/products/syra.png",
     seoTitle:
       "SYRA Perfume for Women | Elegant Long Lasting Perfume India",
     seoDescription:
@@ -199,7 +199,7 @@ export const products: Product[] = [
     notes: ["Golden Amber", "Saffron Touch", "Smooth Woods", "Musk", "Resin"],
     mood: ["Timeless", "Rich", "Unisex", "Elegant", "Premium"],
     occasion: ["Gifting", "Festive Wear", "Evening", "Luxury Daily Wear", "Special Moments"],
-    image: "/products/silent-gold.jpg",
+    image: "/products/silent-gold.png",
     seoTitle:
       "Silent Gold Unisex Perfume | Premium Long Lasting Perfume India",
     seoDescription:
