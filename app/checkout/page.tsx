@@ -22,11 +22,7 @@ type CustomerForm = {
   notes: string;
 };
 
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
+
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -82,7 +78,9 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!window.Razorpay) {
+    const RazorpayConstructor = window.Razorpay;
+
+    if (!RazorpayConstructor) {
       setError("Payment system is still loading. Please try again.");
       return;
     }
@@ -103,7 +101,7 @@ export default function CheckoutPage() {
         throw new Error(createData.error || "Could not create order");
       }
 
-      const razorpay = new window.Razorpay({
+      const razorpay = new RazorpayConstructor({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
         amount: createData.amount,
         currency: "INR",
