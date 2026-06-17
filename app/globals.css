@@ -4044,3 +4044,72 @@
       text-overflow: ellipsis;
     }
   }
+
+  .coupon-box {
+    margin: 18px 0;
+    padding: 16px;
+    border-radius: 20px;
+    background: #fffaf4;
+    border: 1px solid rgba(31, 23, 17, 0.08);
+  }
+  
+  .coupon-box label span {
+    display: block;
+    margin-bottom: 8px;
+    color: #4d3a2c;
+    font-size: 13px;
+    font-weight: 900;
+  }
+  
+  .coupon-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+  
+  .coupon-row .input {
+    text-transform: uppercase;
+  }
+  
+  .coupon-applied {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    background: #e8f6e8;
+    color: #1b6b2a;
+    font-size: 13px;
+    font-weight: 900;
+  }
+  
+  .coupon-applied button {
+    border: 0;
+    background: transparent;
+    color: #1b6b2a;
+    font-weight: 900;
+    cursor: pointer;
+  }
+  
+  .coupon-box p {
+    margin: 10px 0 0;
+    color: #6f6257;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .coupon-hint {
+    margin-top:10px;
+  }
+  
+  @media (max-width: 520px) {
+    .coupon-row {
+      grid-template-columns: 1fr;
+    }
+  
+    .coupon-row .btn {
+      width: 100%;
+    }
+  }

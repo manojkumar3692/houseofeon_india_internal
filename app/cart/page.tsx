@@ -1,14 +1,42 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 
 export default function CartPage() {
-  const { lines, updateQuantity, removeItem, total } = useCart();
+  const {
+    lines,
+    updateQuantity,
+    removeItem,
+    total,
+    couponCode,
+    couponDiscount,
+    finalTotal,
+    applyCoupon,
+    removeCoupon,
+  } = useCart();
+
+  const [couponInput, setCouponInput] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
 
   const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0);
+
+  async function handleApplyCoupon() {
+    const result = await applyCoupon(couponInput);
+    setCouponMessage(result.message);
+
+    if (result.ok) {
+      setCouponInput("");
+    }
+  }
+
+  function handleRemoveCoupon() {
+    removeCoupon();
+    setCouponMessage("Coupon removed.");
+  }
 
   return (
     <>
@@ -18,8 +46,8 @@ export default function CartPage() {
             <div className="eyebrow">Your Cart</div>
             <h1>Almost yours.</h1>
             <p>
-              Review your House of Eon perfumes, confirm quantity and continue
-              to secure Razorpay checkout.
+              Review your House of Eon perfumes, apply your launch offer and
+              continue to secure Razorpay checkout.
             </p>
           </div>
 
@@ -68,6 +96,7 @@ export default function CartPage() {
                     <div className="eyebrow">Selected Perfumes</div>
                     <h2>Your fragrance lineup</h2>
                   </div>
+
                   <Link href="/products" className="text-link">
                     Add more →
                   </Link>
@@ -93,6 +122,7 @@ export default function CartPage() {
                           <span className="pill">
                             {product.gender} · {product.size}
                           </span>
+
                           <h3>{product.name}</h3>
                           <p className="muted">{product.description}</p>
 
@@ -160,6 +190,52 @@ export default function CartPage() {
                   </div>
                 </div>
 
+                <div className="coupon-box">
+                  <label>
+                    <span>Launch coupon</span>
+
+                    <div className="coupon-row">
+                      <input
+                        className="input"
+                        placeholder="Try EON20"
+                        value={couponInput}
+                        onChange={(event) =>
+                          setCouponInput(event.target.value.toUpperCase())
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            handleApplyCoupon();
+                          }
+                        }}
+                      />
+
+                      <button
+                        className="btn secondary"
+                        type="button"
+                        onClick={handleApplyCoupon}
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </label>
+
+                  {couponCode ? (
+                    <div className="coupon-applied">
+                      <span>{couponCode} applied</span>
+                      <button type="button" onClick={handleRemoveCoupon}>
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="coupon-hint">
+                      Use <b>EON20</b> for 20% OFF launch offer.
+                    </div>
+                  )}
+
+                  {couponMessage ? <p>{couponMessage}</p> : null}
+                </div>
+
                 <div className="summary-lines">
                   <div>
                     <span>Items</span>
@@ -171,6 +247,13 @@ export default function CartPage() {
                     <b>{formatINR(total)}</b>
                   </div>
 
+                  {couponDiscount > 0 ? (
+                    <div>
+                      <span>Coupon discount</span>
+                      <b>-{formatINR(couponDiscount)}</b>
+                    </div>
+                  ) : null}
+
                   <div>
                     <span>Shipping</span>
                     <b>Calculated after order</b>
@@ -179,8 +262,14 @@ export default function CartPage() {
 
                 <div className="summary-total">
                   <span>Total</span>
-                  <strong>{formatINR(total)}</strong>
+                  <strong>{formatINR(finalTotal)}</strong>
                 </div>
+
+                {couponDiscount > 0 ? (
+                  <div className="cart-savings-note">
+                    You saved {formatINR(couponDiscount)} with {couponCode}.
+                  </div>
+                ) : null}
 
                 <Link className="btn cart-checkout-btn" href="/checkout">
                   Checkout securely
@@ -209,9 +298,13 @@ export default function CartPage() {
       {lines.length > 0 ? (
         <div className="cart-mobile-checkout">
           <div>
-            <b>{formatINR(total)}</b>
-            <span>{totalItems} item{totalItems > 1 ? "s" : ""}</span>
+            <b>{formatINR(finalTotal)}</b>
+            <span>
+              {totalItems} item{totalItems > 1 ? "s" : ""}
+              {couponDiscount > 0 ? ` · Saved ${formatINR(couponDiscount)}` : ""}
+            </span>
           </div>
+
           <Link href="/checkout">Checkout</Link>
         </div>
       ) : null}
