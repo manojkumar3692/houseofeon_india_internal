@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useCart } from "@/components/CartContext";
+import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import {
   trackBeginCheckout,
@@ -22,11 +23,17 @@ type CustomerForm = {
   notes: string;
 };
 
-
-
 export default function CheckoutPage() {
   const router = useRouter();
-  const { lines, total, clearCart } = useCart();
+
+  const {
+    lines,
+    total,
+    couponCode,
+    couponDiscount,
+    finalTotal,
+    clearCart,
+  } = useCart();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,13 +55,28 @@ export default function CheckoutPage() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0);
+
   const analyticsItems = useMemo(() => {
-    return lines.map((item: any) => ({
-      item_id: String(item.id),
-      item_name: String(item.name || item.product_name || item.id),
-      price: Number(item.price || 0),
-      quantity: Number(item.quantity || item.qty || 1),
-    }));
+    return lines
+      .map((line) => {
+        const product = getProductById(line.productId);
+
+        if (!product) return null;
+
+        return {
+          item_id: product.id,
+          item_name: product.name,
+          price: product.price,
+          quantity: line.quantity,
+        };
+      })
+      .filter(Boolean) as {
+      item_id: string;
+      item_name: string;
+      price: number;
+      quantity: number;
+    }[];
   }, [lines]);
 
   useEffect(() => {
@@ -64,10 +86,10 @@ export default function CheckoutPage() {
     beginCheckoutTrackedRef.current = true;
 
     trackBeginCheckout({
-      value: total,
+      value: finalTotal,
       items: analyticsItems,
     });
-  }, [lines.length, total, analyticsItems]);
+  }, [lines.length, finalTotal, analyticsItems]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -75,6 +97,11 @@ export default function CheckoutPage() {
 
     if (!lines.length) {
       setError("Cart is empty.");
+      return;
+    }
+
+    if (finalTotal <= 0) {
+      setError("Invalid order total.");
       return;
     }
 
@@ -91,7 +118,11 @@ export default function CheckoutPage() {
       const createResponse = await fetch("/api/orders/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer: form, items: lines }),
+        body: JSON.stringify({
+          customer: form,
+          items: lines,
+          couponCode: couponCode || "",
+        }),
       });
 
       const createData = await createResponse.json();
@@ -115,6 +146,7 @@ export default function CheckoutPage() {
         },
         notes: {
           orderNumber: createData.orderNumber,
+          couponCode: couponCode || "",
         },
         theme: {
           color: "#1f1711",
@@ -140,7 +172,7 @@ export default function CheckoutPage() {
 
             trackPurchase({
               orderId: verifyData.orderNumber,
-              value: total,
+              value: Number(createData.finalTotal || finalTotal),
               items: analyticsItems,
             });
 
@@ -258,17 +290,52 @@ export default function CheckoutPage() {
             {error ? <div className="notice">{error}</div> : null}
 
             <button className="btn" disabled={loading} type="submit">
-              {loading ? "Opening payment..." : `Pay ${formatINR(total)}`}
+              {loading
+                ? "Opening payment..."
+                : `Pay ${formatINR(finalTotal)}`}
             </button>
           </form>
 
-          <div className="card">
-            <h2>Payment summary</h2>
+          <div className="card checkout-summary-card">
+            <div className="eyebrow">Payment Summary</div>
+            <h2>Secure checkout</h2>
 
-            <p className="cart-row">
-              <span>Total</span>
-              <b>{formatINR(total)}</b>
-            </p>
+            <div className="summary-lines">
+              <div>
+                <span>Items</span>
+                <b>{totalItems}</b>
+              </div>
+
+              <div>
+                <span>Subtotal</span>
+                <b>{formatINR(total)}</b>
+              </div>
+
+              {couponDiscount > 0 ? (
+                <div>
+                  <span>Coupon discount</span>
+                  <b>-{formatINR(couponDiscount)}</b>
+                </div>
+              ) : null}
+
+              {couponCode ? (
+                <div>
+                  <span>Coupon code</span>
+                  <b>{couponCode}</b>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="summary-total">
+              <span>Total payable</span>
+              <strong>{formatINR(finalTotal)}</strong>
+            </div>
+
+            {couponDiscount > 0 ? (
+              <div className="cart-savings-note">
+                You saved {formatINR(couponDiscount)} with {couponCode}.
+              </div>
+            ) : null}
 
             <p className="muted">
               After successful Razorpay payment, your order will be saved and
