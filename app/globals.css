@@ -3978,6 +3978,12 @@
     grid-template-columns: 1fr auto auto;
   }
   
+  .product-mobile-buy button:first-of-type {
+    background: rgba(255, 250, 244, 0.12);
+    color: #fffaf4;
+    border: 1px solid rgba(255, 250, 244, 0.18);
+  }
+  
   .product-mobile-buy button:last-child {
     background: #d7b98f;
     color: #1f1711;

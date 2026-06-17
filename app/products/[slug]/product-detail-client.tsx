@@ -36,6 +36,80 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     router.push("/checkout");
   }
 
+  async function handleShareProduct() {
+    const productUrl = `${window.location.origin}/products/${product.slug}`;
+  
+    const notesText =
+      product.notes && product.notes.length > 0
+        ? product.notes.join(" · ")
+        : "Premium modern fragrance";
+  
+    const occasionText =
+      product.occasion && product.occasion.length > 0
+        ? product.occasion.slice(0, 4).join(", ")
+        : "office, dates, parties and daily wear";
+  
+    const shareText = `✨ ${product.name} by House of Eon
+  
+  ${product.tagline}
+  
+  Fragrance Notes:
+  ${notesText}
+  
+  Best for:
+  ${occasionText}
+  
+  ${product.description}
+  
+  Price: ${formatINR(product.price)}
+  
+  🔥 Limited launch offer. Order now before stock closes.
+  
+  Buy here:
+  ${productUrl}`;
+  
+    try {
+      if (navigator.share) {
+        if (product.image && navigator.canShare) {
+          try {
+            const imageResponse = await fetch(product.image);
+            const imageBlob = await imageResponse.blob();
+  
+            const imageFile = new File([imageBlob], `${product.slug}.png`, {
+              type: imageBlob.type || "image/png",
+            });
+  
+            if (navigator.canShare({ files: [imageFile] })) {
+              await navigator.share({
+                title: `${product.name} | House of Eon`,
+                text: shareText,
+                url: productUrl,
+                files: [imageFile],
+              });
+              return;
+            }
+          } catch {
+            // Image share failed, continue with text share.
+          }
+        }
+  
+        await navigator.share({
+          title: `${product.name} | House of Eon`,
+          text: shareText,
+          url: productUrl,
+        });
+  
+        return;
+      }
+  
+      await navigator.clipboard.writeText(shareText);
+      alert("Product details copied. You can now paste it on WhatsApp.");
+    } catch {
+      await navigator.clipboard.writeText(shareText);
+      alert("Product details copied. You can now paste it on WhatsApp.");
+    }
+  }
+
   return (
     <>
       <section className="product-detail-hero">
@@ -59,9 +133,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
                 <div className="product-main-image-shade" />
 
-                <div className="floating-note note-one">
-                  {product.tagline}
-                </div>
+                <div className="floating-note note-one">{product.tagline}</div>
 
                 <div className="floating-note note-two">
                   {product.concentration}
@@ -135,6 +207,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
               <button className="btn secondary" onClick={handleBuyNow}>
                 Buy now
+              </button>
+
+              <button className="btn ghost" onClick={handleShareProduct}>
+                Share
               </button>
 
               <Link href="/cart" className="btn ghost">
@@ -212,7 +288,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           <span>{formatINR(product.price)}</span>
         </div>
 
-        <button onClick={handleAddToCart}>Add</button>
+        <button onClick={handleShareProduct}>Share</button>
         <button onClick={handleBuyNow}>Buy now</button>
       </div>
     </>
