@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import MicrosoftClarity from "@/components/MicrosoftClarity";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+      <MicrosoftClarity />
         {gaId ? (
           <>
             <Script
