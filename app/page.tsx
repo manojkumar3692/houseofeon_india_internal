@@ -4,8 +4,10 @@ import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
 import ProductCarousel from "@/components/ProductCarousel";
 import HeroProductShowcase from "@/components/HeroProductShowcase";
+import SocialProofSection from "@/components/SocialProofSection";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
+
 
 export const metadata: Metadata = {
   title:
@@ -327,6 +329,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <SocialProofSection />
 
       <section className="section home-faq">
         <div className="container">

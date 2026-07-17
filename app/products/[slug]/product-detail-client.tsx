@@ -8,6 +8,7 @@ import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
+import SocialProofSection from "@/components/SocialProofSection";
 import {
   trackProductViewed,
   trackAddToCartClarity,
@@ -291,6 +292,8 @@ export default function ProductDetailClient({ product }: { product: Product }) {
           </article>
         </div>
       </section>
+
+      <SocialProofSection />
 
       <div className="mobile-sticky-buy product-mobile-buy">
         <div>
