@@ -11,6 +11,10 @@ import {
   trackPaymentFailed,
   trackPurchase,
 } from "@/lib/analytics";
+import {
+  trackCheckoutStartedClarity,
+  trackPaymentSuccessClarity,
+} from "@/lib/clarity";
 
 type CustomerForm = {
   name: string;
@@ -89,6 +93,7 @@ export default function CheckoutPage() {
       value: finalTotal,
       items: analyticsItems,
     });
+    trackCheckoutStartedClarity();
   }, [lines.length, finalTotal, analyticsItems]);
 
   async function submit(event: FormEvent) {
@@ -175,7 +180,7 @@ export default function CheckoutPage() {
               value: Number(createData.finalTotal || finalTotal),
               items: analyticsItems,
             });
-
+            trackPaymentSuccessClarity();
             clearCart();
             router.push(`/success?order=${verifyData.orderNumber}`);
           } catch (err) {

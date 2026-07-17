@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,10 @@ import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
+import {
+  trackProductViewed,
+  trackAddToCartClarity,
+} from "@/lib/clarity";
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const router = useRouter();
@@ -15,6 +19,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [imageFailed, setImageFailed] = useState(false);
 
   const hasProductImage = Boolean(product.image) && !imageFailed;
+
+  useEffect(() => {
+    trackProductViewed(product.name);
+  }, [product.name]);
 
   function trackProductAdd() {
     trackAddToCart({
@@ -28,11 +36,13 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   function handleAddToCart() {
     addItem(product.id);
     trackProductAdd();
+    trackAddToCartClarity(product.name);
   }
 
   function handleBuyNow() {
     addItem(product.id);
     trackProductAdd();
+    trackAddToCartClarity(product.name);
     router.push("/checkout");
   }
 

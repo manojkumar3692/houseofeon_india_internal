@@ -6,6 +6,7 @@ import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { useCart } from "./CartContext";
 import { trackAddToCart } from "@/lib/analytics";
+import { trackAddToCartClarity } from "@/lib/clarity";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -19,6 +20,7 @@ export default function ProductCard({ product }: { product: Product }) {
       price: product.price,
       quantity: 1,
     });
+    trackAddToCartClarity(product.name);
   }
 
   return (
