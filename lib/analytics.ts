@@ -120,22 +120,40 @@ export function trackPurchase({
   value: number;
   items: AnalyticsItem[];
 }) {
+  const safeValue = Number(value);
+
+  if (!Number.isFinite(safeValue) || safeValue <= 0) {
+    console.warn("Purchase event skipped because value is invalid:", value);
+    return;
+  }
+
   trackGAEvent("purchase", {
     transaction_id: orderId,
     currency: "INR",
-    value,
+    value: safeValue,
     items,
   });
 
   trackMetaEvent("Purchase", {
     currency: "INR",
-    value,
+    value: safeValue,
     content_type: "product",
+
+    content_ids: items.map((item) => item.item_id),
+    content_name: items.map((item) => item.item_name).join(", "),
+
     contents: items.map((item) => ({
       id: item.item_id,
       quantity: item.quantity || 1,
       item_price: item.price,
     })),
+
+    num_items: items.reduce(
+      (sum, item) => sum + (item.quantity || 1),
+      0
+    ),
+
+    order_id: orderId,
   });
 }
 

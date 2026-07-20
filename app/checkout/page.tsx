@@ -177,7 +177,7 @@ export default function CheckoutPage() {
 
             trackPurchase({
               orderId: verifyData.orderNumber,
-              value: Number(createData.finalTotal || finalTotal),
+              value: Number(createData.finalTotal ?? finalTotal),
               items: analyticsItems,
             });
             trackPaymentSuccessClarity();
