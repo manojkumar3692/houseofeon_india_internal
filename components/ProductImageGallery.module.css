@@ -1,0 +1,683 @@
+.gallery {
+    position: relative;
+    width: min(100%, 540px);
+    margin: 0 auto;
+    z-index: 2;
+  }
+  
+  .main {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 38px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.88), transparent 35%),
+      linear-gradient(135deg, #fffaf4, #ead8c1);
+    box-shadow:
+      0 32px 80px rgba(31, 23, 17, 0.18),
+      0 0 0 1px rgba(31, 23, 17, 0.08);
+  }
+  
+  .imageButton {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: zoom-in;
+  }
+  
+  .mainImage {
+    object-fit: cover;
+    z-index: 0;
+    transition: transform 0.35s ease;
+  }
+  
+  .imageButton:hover .mainImage {
+    transform: scale(1.035);
+  }
+  
+  .shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(to bottom, transparent 58%, rgba(31, 23, 17, 0.26)),
+      radial-gradient(circle at 50% 8%, transparent 60%, rgba(31, 23, 17, 0.08));
+    pointer-events: none;
+  }
+  
+  .badge {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2;
+    padding: 11px 14px;
+    border-radius: 999px;
+    background: rgba(31, 23, 17, 0.72);
+    border: 1px solid rgba(255, 250, 244, 0.18);
+    color: #fffaf4;
+    backdrop-filter: blur(16px);
+    text-align: center;
+  }
+  
+  .badge span {
+    display: block;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  
+  .zoomHint {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: rgba(255, 250, 244, 0.82);
+    color: #1f1711;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(14px);
+  }
+  
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 14px;
+  }
+  
+  .dots button {
+    width: 24px;
+    height: 6px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(31, 23, 17, 0.18);
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  
+  .dots button.active {
+    width: 42px;
+    background: #1f1711;
+  }
+  
+  .thumbs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .thumbs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .thumbs button {
+    position: relative;
+    width: 64px;
+    min-width: 64px;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    overflow: hidden;
+    background: #fffaf4;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(31, 23, 17, 0.08);
+  }
+  
+  .thumbs button.active {
+    border-color: #1f1711;
+  }
+  
+  .thumbImage {
+    object-fit: cover;
+  }
+  
+  .fallback {
+    display: grid;
+    place-items: center;
+    min-height: 480px;
+  }
+  
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(31, 23, 17, 0.94);
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  
+  .modalClose {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 250, 244, 0.18);
+    background: rgba(255, 250, 244, 0.1);
+    color: #fffaf4;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  
+  .modalImageWrap {
+    position: relative;
+    width: min(92vw, 760px);
+    height: min(78vh, 760px);
+    border-radius: 28px;
+    overflow: hidden;
+    background: #fffaf4;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.35);
+  }
+  
+  .modalImage {
+    object-fit: contain;
+  }
+  
+  .modalThumbs {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    max-width: 92vw;
+    overflow-x: auto;
+    padding: 8px;
+    border-radius: 999px;
+    background: rgba(255, 250, 244, 0.12);
+    border: 1px solid rgba(255, 250, 244, 0.14);
+    backdrop-filter: blur(16px);
+  }
+  
+  .modalThumbs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .modalThumbs button {
+    position: relative;
+    width: 54px;
+    min-width: 54px;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    overflow: hidden;
+    background: #fffaf4;
+    cursor: pointer;
+  }
+  
+  .modalThumbs button.active {
+    border-color: #d7b98f;
+  }
+  
+  /* Mobile-only fixes */
+  @media (max-width: 860px) {
+    .gallery {
+      width: 100%;
+    }
+  
+    .main {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 30px;
+    }
+  
+    .mainImage {
+      object-fit: contain;
+      object-position: center;
+    }
+  
+    .badge {
+      left: 50%;
+      right: auto;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: auto;
+      max-width: calc(100% - 32px);
+      padding: 10px 18px;
+      text-align: center;
+      white-space: nowrap;
+    }
+  
+    .badge span {
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.07em;
+    }
+  
+    .zoomHint {
+      top: 12px;
+      right: 12px;
+      font-size: 10px;
+    }
+  
+    .dots {
+      justify-content: center;
+      margin-top: 14px;
+    }
+  
+    .thumbs {
+      justify-content: flex-start;
+      width: max-content;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 2px 6px 8px;
+    }
+  
+    .thumbs button {
+      width: 58px;
+      min-width: 58px;
+      border-radius: 14px;
+    }
+  
+    .modal {
+      padding: 14px;
+    }
+  
+    .modalImageWrap {
+      width: 94vw;
+      height: 74vh;
+      border-radius: 24px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .main {
+      aspect-ratio: 4 / 5;
+      border-radius: 26px;
+    }
+  
+    .badge {
+      left: 50%;
+      right: auto;
+      bottom: 12px;
+      transform: translateX(-50%);
+      max-width: calc(100% - 28px);
+      padding: 9px 16px;
+    }
+  
+    .badge span {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+  
+    .zoomHint {
+      display: none;
+    }
+  
+    .dots {
+      justify-content: center;
+      margin-top: 12px;
+    }
+  
+    .thumbs {
+      justify-content: flex-start;
+      width: max-content;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      gap: 8px;
+      padding: 2px 6px 8px;
+    }
+  
+    .thumbs button {
+      width: 54px;
+      min-width: 54px;
+    }
+  }
+
+  .offerStrip {
+    margin: 18px 0 0;
+    padding: 13px 15px;
+    border-radius: 18px;
+    background: #1f1711;
+    color: #fffaf4;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .offerStrip span {
+    color: #d7b98f;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .offerStrip b {
+    font-size: 14px;
+  }
+  
+  .ratingRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 12px;
+    color: #5f4a3a;
+    font-size: 14px;
+    font-weight: 800;
+  }
+  
+  .stars {
+    color: #b9822f;
+    letter-spacing: 0.04em;
+    font-size: 15px;
+    line-height: 1;
+  }
+  
+  .valueLine {
+    margin: 0 0 14px;
+    color: #1f1711;
+    font-size: 17px;
+    line-height: 1.55;
+    font-weight: 850;
+  }
+  
+  .buyTrustStrip {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .buyTrustStrip div {
+    padding: 13px;
+    border-radius: 18px;
+    background: rgba(255, 250, 244, 0.78);
+    border: 1px solid rgba(31, 23, 17, 0.08);
+  }
+  
+  .buyTrustStrip b {
+    display: block;
+    color: #1f1711;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  
+  .buyTrustStrip span {
+    display: block;
+    color: #6f6257;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  
+  .syraLoveSection {
+    background:
+      radial-gradient(circle at 90% 0%, rgba(215, 185, 143, 0.28), transparent 34%),
+      #fffaf4;
+  }
+  
+  .syraLoveGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  
+  .syraLoveGrid article {
+    padding: 22px;
+    border-radius: 28px;
+    background: #fff;
+    border: 1px solid rgba(31, 23, 17, 0.08);
+    box-shadow: 0 22px 60px rgba(31, 23, 17, 0.06);
+  }
+  
+  .syraLoveGrid span {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: #1f1711;
+    color: #d7b98f;
+    font-weight: 950;
+    font-size: 13px;
+  }
+  
+  .syraLoveGrid h3 {
+    margin: 16px 0 8px;
+    color: #1f1711;
+    font-size: 24px;
+    letter-spacing: -0.04em;
+  }
+  
+  .syraLoveGrid p {
+    margin: 0;
+    color: #6f6257;
+    line-height: 1.65;
+  }
+  
+  .scentSection {
+    background:
+      radial-gradient(circle at 10% 0%, rgba(215, 185, 143, 0.22), transparent 32%),
+      #ffffff;
+  }
+  
+  .scentGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  
+  .scentGrid article {
+    padding: 20px;
+    border-radius: 26px;
+    background: #fffaf4;
+    border: 1px solid rgba(31, 23, 17, 0.08);
+    box-shadow: 0 18px 50px rgba(31, 23, 17, 0.05);
+  }
+  
+  .scentGrid span {
+    display: block;
+    margin-bottom: 10px;
+    color: #8b6236;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  
+  .scentGrid p {
+    margin: 0;
+    color: #4d3a2c;
+    line-height: 1.65;
+    font-size: 14px;
+  }
+  
+  .reviewSection {
+    background:
+      radial-gradient(circle at 88% 8%, rgba(215, 185, 143, 0.26), transparent 34%),
+      #fffaf4;
+  }
+  
+  .reviewGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  
+  .reviewGrid article {
+    padding: 22px;
+    border-radius: 28px;
+    background: #fff;
+    border: 1px solid rgba(31, 23, 17, 0.08);
+    box-shadow: 0 22px 60px rgba(31, 23, 17, 0.06);
+  }
+  
+  .reviewStars {
+    color: #b9822f;
+    letter-spacing: 0.04em;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  
+  .reviewGrid p {
+    margin: 0 0 18px;
+    color: #4d3a2c;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  
+  .reviewGrid b {
+    display: block;
+    color: #1f1711;
+    font-size: 15px;
+  }
+  
+  .reviewGrid div span {
+    display: block;
+    margin-top: 3px;
+    color: #8b7a6b;
+    font-size: 13px;
+  }
+  
+  /* Mobile */
+  @media (max-width: 860px) {
+    .offerStrip {
+      display: block;
+    }
+  
+    .offerStrip b {
+      display: block;
+      margin-top: 5px;
+    }
+  
+    .ratingRow {
+      font-size: 13px;
+      margin: 8px 0 12px;
+    }
+  
+    .valueLine {
+      font-size: 16px;
+      line-height: 1.55;
+    }
+  
+    .buyTrustStrip {
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+  
+    .buyTrustStrip div {
+      padding: 12px;
+      border-radius: 16px;
+    }
+  
+    .buyTrustStrip b {
+      font-size: 12px;
+    }
+  
+    .buyTrustStrip span {
+      font-size: 11px;
+    }
+  
+    .syraLoveGrid {
+      grid-template-columns: 1fr;
+    }
+  
+    .scentGrid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  
+    .scentGrid article {
+      padding: 18px;
+      border-radius: 22px;
+    }
+  
+    .reviewGrid {
+      display: flex;
+      overflow-x: auto;
+      gap: 14px;
+      margin-left: -20px;
+      margin-right: -20px;
+      padding: 4px 20px 18px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+  
+    .reviewGrid::-webkit-scrollbar {
+      display: none;
+    }
+  
+    .reviewGrid article {
+      min-width: 84%;
+      max-width: 84%;
+      scroll-snap-align: start;
+      padding: 20px;
+      border-radius: 24px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .offerStrip {
+      padding: 12px 14px;
+      border-radius: 16px;
+    }
+  
+    .offerStrip span {
+      font-size: 11px;
+    }
+  
+    .offerStrip b {
+      font-size: 13px;
+    }
+  
+    .ratingRow {
+      gap: 6px;
+    }
+  
+    .stars {
+      font-size: 14px;
+    }
+  
+    .valueLine {
+      font-size: 15px;
+    }
+  
+    .buyTrustStrip {
+      grid-template-columns: 1fr;
+    }
+  
+    .syraLoveGrid article {
+      padding: 20px;
+      border-radius: 24px;
+    }
+  
+    .syraLoveGrid h3 {
+      font-size: 22px;
+    }
+  
+    .scentGrid article {
+      padding: 17px;
+    }
+  
+    .reviewGrid article {
+      min-width: 86%;
+      max-width: 86%;
+    }
+  
+    .reviewGrid p {
+      font-size: 14px;
+    }
+  }

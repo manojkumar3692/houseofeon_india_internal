@@ -4611,3 +4611,136 @@
 .has-reel-image .social-reel-bottom {
   z-index: 2;
 }
+
+/* PRODUCT DETAIL MOBILE COMPRESSION FIX */
+
+@media (max-width: 480px) {
+  .product-detail-hero {
+    padding: 26px 0 78px;
+  }
+
+  .product-detail-grid {
+    gap: 22px;
+  }
+
+  .product-detail-copy h1 {
+    font-size: 54px;
+    line-height: 0.92;
+    letter-spacing: -0.075em;
+    margin: 10px 0 10px;
+  }
+
+  .product-detail-tagline {
+    font-size: 28px;
+    line-height: 1.12;
+    margin: 8px 0 12px;
+  }
+
+  .product-detail-copy .lead {
+    font-size: 21px;
+    line-height: 1.5;
+  }
+
+  .notes-wrap {
+    gap: 8px;
+    margin: 18px 0;
+  }
+
+  .notes-wrap .pill {
+    font-size: 14px;
+    padding: 8px 13px;
+  }
+
+  .detail-price-row {
+    margin: 22px 0;
+  }
+
+  .price {
+    font-size: 34px;
+  }
+
+  .mrp-box {
+    padding: 10px 14px;
+    border-radius: 16px;
+  }
+
+  .section {
+    padding: 42px 0;
+  }
+
+  .section-title {
+    font-size: 38px;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+  }
+
+  .section-head {
+    margin-bottom: 24px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+  }
+
+  .mobile-sticky-buy {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    padding: 9px 10px;
+    border-radius: 22px;
+    gap: 8px;
+  }
+
+  .mobile-sticky-buy div b {
+    font-size: 13px;
+  }
+
+  .mobile-sticky-buy div span {
+    font-size: 11px;
+  }
+
+  .mobile-sticky-buy button,
+  .mobile-sticky-buy a {
+    padding: 10px 13px;
+    font-size: 13px;
+  }
+
+  body {
+    padding-bottom: 84px;
+  }
+}
+
+@media (max-width: 860px) {
+  .mobile-sticky-buy {
+    grid-template-columns: 1fr auto;
+  }
+
+  .mobile-sticky-buy button {
+    background: #d7b98f;
+    color: #1f1711;
+    font-weight: 950;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-sticky-buy {
+    padding: 10px 12px;
+    border-radius: 24px;
+  }
+
+  .mobile-sticky-buy div b {
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .mobile-sticky-buy div span {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .mobile-sticky-buy button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
