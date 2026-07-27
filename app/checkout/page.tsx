@@ -43,6 +43,7 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [razorpayReady, setRazorpayReady] = useState(false);
 
   const beginCheckoutTrackedRef = useRef(false);
   const defaultCouponAppliedRef = useRef(false);
@@ -107,6 +108,25 @@ export default function CheckoutPage() {
     void applyCoupon("EON20");
   }, [loaded, lines.length, couponCode, applyCoupon]);
 
+  // Fallback in case the Razorpay script tag was already injected by a
+  // previous mount (Next.js Script dedupes tags, so onLoad may not refire).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.Razorpay) {
+      setRazorpayReady(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (window.Razorpay) {
+        setRazorpayReady(true);
+        clearInterval(interval);
+      }
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, []);
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
@@ -123,8 +143,10 @@ export default function CheckoutPage() {
 
     const RazorpayConstructor = window.Razorpay;
 
-    if (!RazorpayConstructor) {
-      setError("Payment system is still loading. Please try again.");
+    if (!RazorpayConstructor || !razorpayReady) {
+      setError(
+        "Payment system is still loading — give it a moment and tap Pay again."
+      );
       return;
     }
 
@@ -208,9 +230,23 @@ export default function CheckoutPage() {
         modal: {
           ondismiss: () => {
             trackPaymentFailed("customer_closed_razorpay_modal");
+            setError(
+              "Payment window closed before completing. Your order has been saved — tap Pay to try again."
+            );
             setLoading(false);
           },
         },
+      });
+
+      razorpay.on("payment.failed", (response) => {
+        const description =
+          response?.error?.description ||
+          response?.error?.reason ||
+          "Payment failed. Please try again or use a different payment method.";
+
+        trackPaymentFailed(description);
+        setError(description);
+        setLoading(false);
       });
 
       razorpay.open();
@@ -240,6 +276,7 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                autoComplete="name"
                 placeholder="Full name"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
@@ -248,6 +285,9 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
                 placeholder="Phone"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
@@ -257,6 +297,8 @@ export default function CheckoutPage() {
             <input
               className="input"
               type="email"
+              inputMode="email"
+              autoComplete="email"
               placeholder="Email optional"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
@@ -265,6 +307,7 @@ export default function CheckoutPage() {
             <textarea
               className="textarea"
               required
+              autoComplete="street-address"
               placeholder="Full address"
               value={form.address}
               onChange={(e) => update("address", e.target.value)}
@@ -274,6 +317,7 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                autoComplete="address-level2"
                 placeholder="City"
                 value={form.city}
                 onChange={(e) => update("city", e.target.value)}
@@ -282,6 +326,7 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                autoComplete="address-level1"
                 placeholder="State"
                 value={form.state}
                 onChange={(e) => update("state", e.target.value)}
@@ -291,9 +336,16 @@ export default function CheckoutPage() {
             <input
               className="input"
               required
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              autoComplete="postal-code"
+              maxLength={6}
               placeholder="Pincode"
               value={form.pincode}
-              onChange={(e) => update("pincode", e.target.value)}
+              onChange={(e) =>
+                update("pincode", e.target.value.replace(/[^0-9]/g, ""))
+              }
             />
 
             <textarea
@@ -305,9 +357,15 @@ export default function CheckoutPage() {
 
             {error ? <div className="notice">{error}</div> : null}
 
-            <button className="btn" disabled={loading} type="submit">
+            <button
+              className="btn"
+              disabled={loading || !razorpayReady}
+              type="submit"
+            >
               {loading
                 ? "Opening payment..."
+                : !razorpayReady
+                ? "Loading payment..."
                 : `Pay ${formatINR(finalTotal)}`}
             </button>
           </form>
