@@ -22,6 +22,7 @@ type ApplyCouponResult = {
 
 type CartContextValue = {
   lines: CartLine[];
+  loaded: boolean;
   addItem: (productId: string, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -192,6 +193,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<CartContextValue>(() => {
     return {
       lines,
+      loaded,
       total,
       count,
 
@@ -329,7 +331,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem(COUPON_STORAGE_KEY);
       },
     };
-  }, [lines, total, count, couponCode, couponDiscount, finalTotal]);
+  }, [lines, loaded, total, count, couponCode, couponDiscount, finalTotal]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

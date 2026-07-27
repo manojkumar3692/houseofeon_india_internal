@@ -32,10 +32,12 @@ export default function CheckoutPage() {
 
   const {
     lines,
+    loaded,
     total,
     couponCode,
     couponDiscount,
     finalTotal,
+    applyCoupon,
     clearCart,
   } = useCart();
 
@@ -43,6 +45,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
 
   const beginCheckoutTrackedRef = useRef(false);
+  const defaultCouponAppliedRef = useRef(false);
 
   const [form, setForm] = useState<CustomerForm>({
     name: "",
@@ -95,6 +98,14 @@ export default function CheckoutPage() {
     });
     trackCheckoutStartedClarity();
   }, [lines.length, finalTotal, analyticsItems]);
+
+  useEffect(() => {
+    if (!loaded || !lines.length || couponCode) return;
+    if (defaultCouponAppliedRef.current) return;
+
+    defaultCouponAppliedRef.current = true;
+    void applyCoupon("EON20");
+  }, [loaded, lines.length, couponCode, applyCoupon]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -329,6 +340,11 @@ export default function CheckoutPage() {
                   <b>{couponCode}</b>
                 </div>
               ) : null}
+
+              <div>
+                <span>Estimated delivery</span>
+                <b>2–3 working days</b>
+              </div>
             </div>
 
             <div className="summary-total">
