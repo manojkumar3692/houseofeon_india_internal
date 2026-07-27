@@ -79,6 +79,22 @@ const faqSchema = {
         text: "Yes. You can choose your perfume, add it to cart, enter your delivery address and pay securely online through Razorpay.",
       },
     },
+    {
+      "@type": "Question",
+      name: "What is the difference between Extrait de Parfum and Eau de Parfum?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Extrait de Parfum has a higher fragrance oil concentration, giving it richer projection and longer-lasting wear compared to Eau de Parfum. RANK is an Eau de Parfum, while Desert Tonka, Arctic Wave and Zyrox are Extrait de Parfum for stronger, longer-lasting performance.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How many sprays of perfume should men use for all-day wear?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "For daily wear, 2 to 3 sprays on pulse points (wrists, neck) is usually enough for a long-lasting Extrait de Parfum. Performance can vary based on skin type, weather and layering with other scented products.",
+      },
+    },
   ],
 };
 
@@ -108,6 +124,25 @@ const itemListSchema = {
   })),
 };
 
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: siteUrl,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Perfume Guide for Men",
+      item: `${siteUrl}/long-lasting-perfume-for-men-india`,
+    },
+  ],
+};
+
 export default function SeoLandingPage() {
   return (
     <>
@@ -118,6 +153,10 @@ export default function SeoLandingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       <section className="seo-hero">
@@ -403,6 +442,31 @@ export default function SeoLandingPage() {
               <p>
                 Choose a perfume, add it to cart, enter your delivery details
                 and pay securely online through Razorpay.
+              </p>
+            </details>
+
+            <details>
+              <summary>
+                What is the difference between Extrait de Parfum and Eau de
+                Parfum?
+              </summary>
+              <p>
+                Extrait de Parfum has a higher fragrance oil concentration,
+                giving richer projection and longer-lasting wear. RANK is an
+                Eau de Parfum, while Desert Tonka, Arctic Wave and Zyrox are
+                Extrait de Parfum for stronger, longer-lasting performance.
+              </p>
+            </details>
+
+            <details>
+              <summary>
+                How many sprays should I use for all-day wear?
+              </summary>
+              <p>
+                For daily wear, 2 to 3 sprays on pulse points like wrists and
+                neck is usually enough for a long-lasting Extrait de Parfum.
+                Performance can vary based on skin type, weather and layering
+                with other scented products.
               </p>
             </details>
           </div>

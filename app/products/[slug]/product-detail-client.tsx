@@ -17,22 +17,16 @@ import {
 
 const productTrustItems = [
   {
-    title: "Secure Payment",
-    text: "Razorpay protected checkout",
-  },
-  {
     title: "Fast Delivery",
-    text: "Estimated delivery in 2–3 working days",
+    text: "2–3 working days, tracked",
   },
   {
     title: "WhatsApp Support",
-    text: "Help available for order issues",
-  },
-  {
-    title: "Original Product",
-    text: "Authentic House of Eon perfume",
+    text: "Real help for any order issue",
   },
 ];
+
+const paymentMethods = ["UPI", "Visa", "Mastercard", "RuPay"];
 
 function Stars({ rating = 5 }: { rating?: number }) {
   const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
@@ -256,6 +250,10 @@ ${productUrl}`;
               <b>Use EON20 for 20% OFF</b>
             </div>
 
+            <div className={styles.shippingLine}>
+              🚚 Free shipping across India · Delivered in 2–3 days
+            </div>
+
             <div className={`${styles.productCtaBlock} detail-actions`}>
   <button className={styles.buyNowButton} onClick={handleBuyNow}>
     Buy now
@@ -271,6 +269,17 @@ ${productUrl}`;
     <button onClick={handleShareProduct}>Share</button>
   </div>
 </div>
+
+            <div className={styles.paymentMethodsRow}>
+              <span className={styles.secureBadge}>🔒 100% Secure Checkout</span>
+              <div className={styles.paymentChips}>
+                {paymentMethods.map((method) => (
+                  <span key={method} className={styles.paymentChip}>
+                    {method}
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <div className={styles.buyTrustStrip}>
               {productTrustItems.map((item) => (

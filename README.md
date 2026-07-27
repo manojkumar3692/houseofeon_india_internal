@@ -80,6 +80,8 @@ This project uses the Supabase service role key only in server route handlers. D
 
 If you already have an `orders` table from before the partial-COD feature was added, run `supabase/migration-partial-cod.sql` in the Supabase SQL editor instead of the create-table statement above.
 
+For the Scent Finder quiz's lead capture, run `supabase/migration-quiz-leads.sql` in the Supabase SQL editor to create the `quiz_leads` table.
+
 ## Razorpay setup
 
 1. Create Razorpay account.

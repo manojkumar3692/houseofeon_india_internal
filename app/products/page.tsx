@@ -51,6 +51,19 @@ export default function ProductsPage() {
         </div>
       </section>
 
+      <section className="quiz-cta-banner">
+        <div className="quiz-cta-banner-inner">
+          <div className="quiz-cta-copy">
+            <span>30-Second Scent Finder</span>
+            <b>Can&apos;t decide? Take the quiz — unlock 20% off.</b>
+          </div>
+
+          <Link href="/scent-finder" className="btn">
+            Find my scent →
+          </Link>
+        </div>
+      </section>
+
       <section className="section products-list-section">
         <div className="container">
           <div className="section-head">

@@ -184,3 +184,26 @@ export function trackPaymentFailed(reason?: string) {
     reason: reason || "unknown",
   });
 }
+
+export function trackQuizStarted() {
+  trackGAEvent("quiz_started");
+  trackMetaEvent("CustomEvent", { event_name: "ScentQuizStarted" });
+}
+
+export function trackQuizCompleted(productId: string, productName: string) {
+  trackGAEvent("quiz_completed", {
+    item_id: productId,
+    item_name: productName,
+  });
+
+  trackMetaEvent("CustomEvent", {
+    event_name: "ScentQuizCompleted",
+    content_ids: [productId],
+    content_name: productName,
+  });
+}
+
+export function trackQuizLeadCaptured() {
+  trackGAEvent("generate_lead");
+  trackMetaEvent("Lead");
+}
