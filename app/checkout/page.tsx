@@ -15,6 +15,7 @@ import {
   trackCheckoutStartedClarity,
   trackPaymentSuccessClarity,
 } from "@/lib/clarity";
+import { COD_TOKEN_AMOUNT_INR, isPartialCodEligible } from "@/lib/codToken";
 
 type CustomerForm = {
   name: string;
@@ -44,6 +45,19 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [razorpayReady, setRazorpayReady] = useState(false);
+  const [paymentType, setPaymentType] = useState<"full" | "partial_cod">(
+    "full"
+  );
+
+  const codEligible = isPartialCodEligible(Math.round(finalTotal * 100));
+  const effectivePaymentType =
+    paymentType === "partial_cod" && codEligible ? "partial_cod" : "full";
+  const amountDueNow =
+    effectivePaymentType === "partial_cod" ? COD_TOKEN_AMOUNT_INR : finalTotal;
+  const balanceDueNow =
+    effectivePaymentType === "partial_cod"
+      ? Math.max(0, finalTotal - COD_TOKEN_AMOUNT_INR)
+      : 0;
 
   const beginCheckoutTrackedRef = useRef(false);
   const defaultCouponAppliedRef = useRef(false);
@@ -160,6 +174,7 @@ export default function CheckoutPage() {
           customer: form,
           items: lines,
           couponCode: couponCode || "",
+          paymentType: effectivePaymentType,
         }),
       });
 
@@ -215,7 +230,16 @@ export default function CheckoutPage() {
             });
             trackPaymentSuccessClarity();
             clearCart();
-            router.push(`/success?order=${verifyData.orderNumber}`);
+
+            const balanceQuery =
+              verifyData.paymentType === "partial_cod" &&
+              verifyData.balanceDueInPaise > 0
+                ? `&balanceDue=${verifyData.balanceDueInPaise}`
+                : "";
+
+            router.push(
+              `/success?order=${verifyData.orderNumber}${balanceQuery}`
+            );
           } catch (err) {
             const message =
               err instanceof Error
@@ -299,7 +323,8 @@ export default function CheckoutPage() {
               type="email"
               inputMode="email"
               autoComplete="email"
-              placeholder="Email optional"
+              required
+              placeholder="Email (for order confirmation)"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
             />
@@ -355,6 +380,41 @@ export default function CheckoutPage() {
               onChange={(e) => update("notes", e.target.value)}
             />
 
+            {codEligible ? (
+              <div className="payment-method-picker">
+                <span className="payment-method-label">
+                  How would you like to pay?
+                </span>
+
+                <div className="payment-method-options">
+                  <button
+                    type="button"
+                    className={`payment-method-option${
+                      effectivePaymentType === "full" ? " active" : ""
+                    }`}
+                    onClick={() => setPaymentType("full")}
+                  >
+                    <b>Pay full amount online</b>
+                    <span>{formatINR(finalTotal)} via UPI, card or netbanking</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`payment-method-option${
+                      effectivePaymentType === "partial_cod" ? " active" : ""
+                    }`}
+                    onClick={() => setPaymentType("partial_cod")}
+                  >
+                    <b>Pay {formatINR(COD_TOKEN_AMOUNT_INR)} now, rest on delivery</b>
+                    <span>
+                      Balance {formatINR(finalTotal - COD_TOKEN_AMOUNT_INR)} in
+                      cash when your order arrives
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             {error ? <div className="notice">{error}</div> : null}
 
             <button
@@ -366,6 +426,8 @@ export default function CheckoutPage() {
                 ? "Opening payment..."
                 : !razorpayReady
                 ? "Loading payment..."
+                : effectivePaymentType === "partial_cod"
+                ? `Pay ${formatINR(amountDueNow)} now`
                 : `Pay ${formatINR(finalTotal)}`}
             </button>
           </form>
@@ -405,10 +467,30 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="summary-total">
-              <span>Total payable</span>
-              <strong>{formatINR(finalTotal)}</strong>
-            </div>
+            {effectivePaymentType === "partial_cod" ? (
+              <>
+                <div className="summary-lines">
+                  <div>
+                    <span>Order total</span>
+                    <b>{formatINR(finalTotal)}</b>
+                  </div>
+                  <div>
+                    <span>Balance on delivery (cash)</span>
+                    <b>{formatINR(balanceDueNow)}</b>
+                  </div>
+                </div>
+
+                <div className="summary-total">
+                  <span>Pay now online</span>
+                  <strong>{formatINR(amountDueNow)}</strong>
+                </div>
+              </>
+            ) : (
+              <div className="summary-total">
+                <span>Total payable</span>
+                <strong>{formatINR(finalTotal)}</strong>
+              </div>
+            )}
 
             {couponDiscount > 0 ? (
               <div className="cart-savings-note">
@@ -417,8 +499,13 @@ export default function CheckoutPage() {
             ) : null}
 
             <p className="muted">
-              After successful Razorpay payment, your order will be saved and
-              emailed to office.
+              {effectivePaymentType === "partial_cod"
+                ? `After your ${formatINR(
+                    amountDueNow
+                  )} token payment, your order will be saved and emailed to office. Pay the remaining ${formatINR(
+                    balanceDueNow
+                  )} in cash to the delivery agent.`
+                : "After successful Razorpay payment, your order will be saved and emailed to office."}
             </p>
           </div>
         </div>

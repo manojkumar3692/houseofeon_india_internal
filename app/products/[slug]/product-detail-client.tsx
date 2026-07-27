@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Product } from "@/lib/products";
@@ -47,7 +47,22 @@ function Stars({ rating = 5 }: { rating?: number }) {
 
 export default function ProductDetailClient({ product }: { product: Product }) {
   const router = useRouter();
-  const { addItem } = useCart();
+  const { addItem, updateQuantity, lines } = useCart();
+
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    };
+  }, []);
+
+  function showToast(message: string) {
+    setToast(message);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 3000);
+  }
 
   const rating = product.rating || 5;
   const ratingText =
@@ -81,10 +96,21 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     addItem(product.id);
     trackProductAdd();
     trackAddToCartClarity(product.name);
+    showToast(`${product.name} added to cart`);
   }
 
   function handleBuyNow() {
-    addItem(product.id);
+    // Ensure this product is in the cart at quantity 1+ without stacking on
+    // top of a quantity that's already there (e.g. from a prior Add to
+    // Cart click, or a repeat Buy Now after using back navigation).
+    const existingLine = lines.find((line) => line.productId === product.id);
+
+    if (!existingLine) {
+      addItem(product.id, 1);
+    } else if (existingLine.quantity < 1) {
+      updateQuantity(product.id, 1);
+    }
+
     trackProductAdd();
     trackAddToCartClarity(product.name);
     router.push("/checkout");
@@ -406,6 +432,15 @@ ${productUrl}`;
 
   <button onClick={handleBuyNow}>Buy now</button>
 </div>
+
+      {toast ? (
+        <div className={styles.toast} role="status">
+          <span>{toast}</span>
+          <Link href="/cart" onClick={() => setToast(null)}>
+            View cart
+          </Link>
+        </div>
+      ) : null}
     </>
   );
 }

@@ -470,18 +470,65 @@
     .productCtaBlock {
       gap: 10px;
     }
-  
+
     .buyNowButton {
       min-height: 56px;
       font-size: 16px;
     }
-  
+
     .addCartButton {
       min-height: 50px;
       font-size: 14px;
     }
-  
+
     .secondaryActions {
       font-size: 13px;
+    }
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 20px;
+    border-radius: 999px;
+    background: rgba(31, 23, 17, 0.96);
+    color: #fffaf4;
+    font-size: 14px;
+    font-weight: 800;
+    box-shadow: 0 18px 50px rgba(31, 23, 17, 0.3);
+    backdrop-filter: blur(18px);
+    max-width: calc(100vw - 32px);
+  }
+
+  .toast span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .toast a {
+    color: #d7b98f;
+    text-decoration: underline;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 860px) {
+    .toast {
+      bottom: 96px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .toast {
+      font-size: 13px;
+      padding: 12px 16px;
+      gap: 10px;
     }
   }

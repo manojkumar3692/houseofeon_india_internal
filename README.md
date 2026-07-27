@@ -45,6 +45,10 @@ create table if not exists public.orders (
   items jsonb not null,
   amount_in_paise integer not null,
   payment_status text not null default 'pending',
+  payment_type text not null default 'full',
+  token_amount_in_paise integer not null default 0,
+  balance_due_in_paise integer not null default 0,
+  cod_balance_status text not null default 'not_applicable',
   razorpay_order_id text unique,
   razorpay_payment_id text,
   shipping_status text not null default 'pending',
@@ -73,6 +77,8 @@ for each row execute function public.set_updated_at();
 ```
 
 This project uses the Supabase service role key only in server route handlers. Do not expose `SUPABASE_SERVICE_ROLE_KEY` in client code.
+
+If you already have an `orders` table from before the partial-COD feature was added, run `supabase/migration-partial-cod.sql` in the Supabase SQL editor instead of the create-table statement above.
 
 ## Razorpay setup
 

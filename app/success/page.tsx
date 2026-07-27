@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { formatINR } from "@/lib/money";
 
 export const metadata: Metadata = {
   title: "Order Confirmed | House of Eon",
@@ -13,9 +14,12 @@ export const metadata: Metadata = {
 export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ order?: string }>;
+  searchParams: Promise<{ order?: string; balanceDue?: string }>;
 }) {
-  const { order } = await searchParams;
+  const { order, balanceDue } = await searchParams;
+
+  const balanceDueInPaise = Number(balanceDue || 0);
+  const hasBalanceDue = Number.isFinite(balanceDueInPaise) && balanceDueInPaise > 0;
 
   return (
     <>
@@ -36,6 +40,14 @@ export default async function SuccessPage({
               <div className="success-order-box">
                 <span>Order number</span>
                 <b>{order}</b>
+              </div>
+            ) : null}
+
+            {hasBalanceDue ? (
+              <div className="notice">
+                Token payment received. Please keep{" "}
+                <b>{formatINR(balanceDueInPaise / 100)}</b> in cash ready — pay
+                it to the delivery agent when your order arrives.
               </div>
             ) : null}
 

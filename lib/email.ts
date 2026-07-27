@@ -42,6 +42,15 @@ type OrderEmailInput = {
   razorpay_payment_id?: string | null;
 
   items?: OrderEmailItem[];
+
+  paymentType?: string | null;
+  payment_type?: string | null;
+
+  tokenAmountInPaise?: number | null;
+  token_amount_in_paise?: number | null;
+
+  balanceDueInPaise?: number | null;
+  balance_due_in_paise?: number | null;
 };
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -115,6 +124,14 @@ function normalizeOrder(order: OrderEmailInput) {
 
   const items = Array.isArray(order.items) ? order.items : [];
 
+  const paymentType = order.paymentType || order.payment_type || "full";
+
+  const tokenAmountInPaise =
+    order.tokenAmountInPaise ?? order.token_amount_in_paise ?? 0;
+
+  const balanceDueInPaise =
+    order.balanceDueInPaise ?? order.balance_due_in_paise ?? 0;
+
   return {
     orderId,
     customerName,
@@ -125,6 +142,9 @@ function normalizeOrder(order: OrderEmailInput) {
     razorpayOrderId,
     razorpayPaymentId,
     items,
+    paymentType,
+    tokenAmountInPaise,
+    balanceDueInPaise,
   };
 }
 
@@ -164,6 +184,27 @@ function itemsHtml(items: OrderEmailItem[]) {
     .join("");
 }
 
+function paymentBanner(order: ReturnType<typeof normalizeOrder>) {
+  if (order.paymentType === "partial_cod") {
+    return `
+      <div style="background:#fff3cd;border:1px solid #e6b800;border-radius:8px;padding:12px 16px;margin:16px 0;">
+        <p style="margin:0;font-weight:bold;color:#7a5c00;">PARTIAL COD — Balance due on delivery</p>
+        <p style="margin:4px 0 0;color:#7a5c00;">Token paid online: ${formatINR(
+          order.tokenAmountInPaise / 100
+        )} &nbsp;|&nbsp; Cash to collect on delivery: ${formatINR(
+      order.balanceDueInPaise / 100
+    )}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div style="background:#e6f7e9;border:1px solid #34a853;border-radius:8px;padding:12px 16px;margin:16px 0;">
+      <p style="margin:0;font-weight:bold;color:#1e7e34;">FULLY PAID ONLINE — No balance due</p>
+    </div>
+  `;
+}
+
 function customerEmailHtml(rawOrder: OrderEmailInput) {
   const order = normalizeOrder(rawOrder);
 
@@ -173,10 +214,11 @@ function customerEmailHtml(rawOrder: OrderEmailInput) {
       <p>Hi ${escapeHtml(order.customerName)},</p>
       <p>Your House of Eon order has been confirmed.</p>
 
+      ${paymentBanner(order)}
+
       <h3>Order Details</h3>
       <p><b>Order ID:</b> ${escapeHtml(order.orderId)}</p>
-      <p><b>Payment Status:</b> Paid</p>
-      <p><b>Amount:</b> ${formatINR(order.amountInPaise / 100)}</p>
+      <p><b>Order Total:</b> ${formatINR(order.amountInPaise / 100)}</p>
 
       <table style="border-collapse:collapse;width:100%;max-width:600px;">
         <thead>
@@ -194,6 +236,14 @@ function customerEmailHtml(rawOrder: OrderEmailInput) {
       <h3>Delivery Address</h3>
       <p>${formatAddressForEmail(order.address)}</p>
 
+      ${
+        order.paymentType === "partial_cod"
+          ? `<p><b>Reminder:</b> please keep ${formatINR(
+              order.balanceDueInPaise / 100
+            )} in cash ready for the delivery agent.</p>`
+          : ""
+      }
+
       <p>We will share shipping/tracking details once your order is dispatched.</p>
       <p>For support, you can contact us on WhatsApp.</p>
 
@@ -207,7 +257,11 @@ function officeEmailHtml(rawOrder: OrderEmailInput) {
 
   return `
     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#222;">
-      <h2>New Paid Order Received</h2>
+      <h2>New Order Received — ${
+        order.paymentType === "partial_cod" ? "Partial COD" : "Fully Paid"
+      }</h2>
+
+      ${paymentBanner(order)}
 
       <p><b>Order ID:</b> ${escapeHtml(order.orderId)}</p>
       <p><b>Name:</b> ${escapeHtml(order.customerName)}</p>
@@ -216,7 +270,7 @@ function officeEmailHtml(rawOrder: OrderEmailInput) {
         order.customerEmail ? escapeHtml(order.customerEmail) : "Not provided"
       }</p>
       <p><b>Address:</b><br/>${formatAddressForEmail(order.address)}</p>
-      <p><b>Amount:</b> ${formatINR(order.amountInPaise / 100)}</p>
+      <p><b>Order Total:</b> ${formatINR(order.amountInPaise / 100)}</p>
       <p><b>Razorpay Order ID:</b> ${escapeHtml(order.razorpayOrderId)}</p>
       <p><b>Razorpay Payment ID:</b> ${escapeHtml(order.razorpayPaymentId)}</p>
 
@@ -281,11 +335,14 @@ export async function sendOrderEmails(rawOrder: OrderEmailInput) {
 
     const tasks: Promise<unknown>[] = [];
 
+    const paymentTag =
+      order.paymentType === "partial_cod" ? "Partial COD" : "Paid";
+
     if (order.customerEmail) {
       tasks.push(
         sendEmail({
           to: order.customerEmail,
-          subject: `Order confirmed - ${order.orderId}`,
+          subject: `Order confirmed (${paymentTag}) - ${order.orderId}`,
           html: customerEmailHtml(rawOrder),
         })
       );
@@ -295,7 +352,7 @@ export async function sendOrderEmails(rawOrder: OrderEmailInput) {
       tasks.push(
         sendEmail({
           to: OFFICE_EMAIL,
-          subject: `New paid order - ${order.orderId}`,
+          subject: `New order (${paymentTag}) - ${order.orderId}`,
           html: officeEmailHtml(rawOrder),
         })
       );

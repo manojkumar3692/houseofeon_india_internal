@@ -85,6 +85,10 @@ export async function POST(request: Request) {
 
         razorpayOrderId: updated.razorpay_order_id,
         razorpayPaymentId: updated.razorpay_payment_id,
+
+        paymentType: updated.payment_type,
+        tokenAmountInPaise: updated.token_amount_in_paise,
+        balanceDueInPaise: updated.balance_due_in_paise,
       });
     } catch (emailError) {
       console.error("Email failed after payment success:", emailError);
@@ -93,6 +97,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       orderNumber: updated.order_number,
+      paymentType: updated.payment_type,
+      balanceDueInPaise: updated.balance_due_in_paise,
     });
   } catch (error) {
     console.error("Payment verification failed:", error);
