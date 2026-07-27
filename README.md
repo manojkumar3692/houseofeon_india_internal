@@ -82,6 +82,8 @@ If you already have an `orders` table from before the partial-COD feature was ad
 
 For the Scent Finder quiz's lead capture, run `supabase/migration-quiz-leads.sql` in the Supabase SQL editor to create the `quiz_leads` table.
 
+The Scent Swipe game (`/scent-swipe`) reuses the same `quiz_leads` table. Run `supabase/migration-quiz-leads-source.sql` afterwards to add a `source` column (`quiz` vs `swipe`) so leads from each funnel can be told apart in the admin dashboard.
+
 ## Razorpay setup
 
 1. Create Razorpay account.

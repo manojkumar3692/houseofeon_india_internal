@@ -207,3 +207,31 @@ export function trackQuizLeadCaptured() {
   trackGAEvent("generate_lead");
   trackMetaEvent("Lead");
 }
+
+export function trackSwipeGameStarted() {
+  trackGAEvent("swipe_game_started");
+  trackMetaEvent("CustomEvent", { event_name: "SwipeGameStarted" });
+}
+
+export function trackSwipeGameCompleted(productId: string, productName: string) {
+  trackGAEvent("swipe_game_completed", {
+    item_id: productId,
+    item_name: productName,
+  });
+
+  trackMetaEvent("CustomEvent", {
+    event_name: "SwipeGameCompleted",
+    content_ids: [productId],
+    content_name: productName,
+  });
+}
+
+export function trackSwipeLeadCaptured() {
+  trackGAEvent("generate_lead", { source: "swipe_game" });
+  trackMetaEvent("Lead");
+}
+
+export function trackSwipeShared() {
+  trackGAEvent("swipe_game_shared");
+  trackMetaEvent("CustomEvent", { event_name: "SwipeGameShared" });
+}

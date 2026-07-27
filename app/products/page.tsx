@@ -64,6 +64,19 @@ export default function ProductsPage() {
         </div>
       </section>
 
+      <section className="quiz-cta-banner">
+        <div className="quiz-cta-banner-inner">
+          <div className="quiz-cta-copy">
+            <span>New: Scent Swipe Game</span>
+            <b>Swipe right on your vibe, unlock 20% off — share your match on Insta.</b>
+          </div>
+
+          <Link href="/scent-swipe" className="btn">
+            Play now →
+          </Link>
+        </div>
+      </section>
+
       <section className="section products-list-section">
         <div className="container">
           <div className="section-head">

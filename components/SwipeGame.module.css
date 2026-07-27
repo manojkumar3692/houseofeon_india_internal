@@ -1,0 +1,689 @@
+.gameShell {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 28px 18px 60px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- Intro ---------- */
+
+.introCard {
+  width: 100%;
+  text-align: center;
+  background: linear-gradient(165deg, #fffaf4 0%, #fff2d8 55%, #f7e2b8 100%);
+  border: 1px solid rgba(31, 23, 17, 0.08);
+  border-radius: 32px;
+  padding: 44px 26px;
+  box-shadow: 0 30px 80px rgba(31, 23, 17, 0.12);
+}
+
+.introBadge {
+  display: inline-block;
+  background: #1f1711;
+  color: #d7b98f;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 8px 16px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+
+.introTitle {
+  font-size: 32px;
+  line-height: 1.15;
+  margin: 0 0 14px;
+  color: #1f1711;
+  letter-spacing: -0.02em;
+}
+
+.introText {
+  color: #5d5045;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 26px;
+}
+
+.genderRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.genderOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #eadfce;
+  background: #fffaf4;
+  border-radius: 20px;
+  padding: 16px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1f1711;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.genderOption span {
+  font-size: 26px;
+}
+
+.genderOption:active {
+  transform: scale(0.95);
+  background: #fff1d9;
+  border-color: #d7b98f;
+}
+
+.introTrust {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6f6257;
+}
+
+/* ---------- Shared buttons ---------- */
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: #1f1711;
+  color: #fffaf4;
+  font-size: 16px;
+  font-weight: 900;
+  padding: 17px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 18px 42px rgba(31, 23, 17, 0.22);
+  transition: transform 0.15s ease;
+}
+
+.primaryButton:active {
+  transform: scale(0.97);
+}
+
+.secondaryButton {
+  width: 100%;
+  border: 1px solid rgba(31, 23, 17, 0.18);
+  background: #fff;
+  color: #1f1711;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 14px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.secondaryButton:active {
+  transform: scale(0.97);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- Swipe area ---------- */
+
+.swipeArea {
+  width: 100%;
+}
+
+.progressRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.progressLabel {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b7a6b;
+}
+
+.progressBar {
+  height: 6px;
+  border-radius: 999px;
+  background: #f1e6d3;
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #b9822f, #1f1711);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.cardStack {
+  position: relative;
+  height: 420px;
+  margin-bottom: 22px;
+}
+
+.stackCard {
+  position: absolute;
+  inset: 12px;
+  border-radius: 32px;
+  transform: scale(0.94) translateY(10px);
+  opacity: 0.6;
+}
+
+.swipeCard {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  padding: 34px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  touch-action: pan-y;
+  cursor: grab;
+  box-shadow: 0 30px 70px rgba(31, 23, 17, 0.25);
+  user-select: none;
+}
+
+.swipeCard:active {
+  cursor: grabbing;
+}
+
+.cardEmoji {
+  font-size: 52px;
+  margin-bottom: 18px;
+}
+
+.cardScenario {
+  color: #fffaf4;
+  font-size: 25px;
+  line-height: 1.3;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.cardSub {
+  color: rgba(255, 250, 244, 0.75);
+  font-size: 14px;
+  margin: 0;
+}
+
+.stamp {
+  position: absolute;
+  top: 26px;
+  font-size: 22px;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  border-radius: 10px;
+  padding: 6px 14px;
+  border: 3px solid;
+}
+
+.stampLike {
+  left: 22px;
+  color: #6bd08a;
+  border-color: #6bd08a;
+  transform: rotate(-14deg);
+}
+
+.stampSkip {
+  right: 22px;
+  color: #e8776a;
+  border-color: #e8776a;
+  transform: rotate(14deg);
+}
+
+.swipeButtons {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  margin-bottom: 14px;
+}
+
+.skipButton,
+.likeButton {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 1px solid #eadfce;
+  background: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 14px 30px rgba(31, 23, 17, 0.12);
+  transition: transform 0.12s ease;
+}
+
+.skipButton:active,
+.likeButton:active {
+  transform: scale(0.92);
+}
+
+.swipeHint {
+  text-align: center;
+  color: #8b7a6b;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ---------- Loading ---------- */
+
+.loadingCard {
+  width: 100%;
+  text-align: center;
+  padding: 70px 20px;
+}
+
+.loadingBottle {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 22px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #f7ecd7, #c18c45, #fff2d4);
+  animation: swipePulse 1.1s ease-in-out infinite;
+}
+
+@keyframes swipePulse {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12) rotate(8deg);
+    opacity: 0.75;
+  }
+}
+
+.loadingText {
+  color: #6f6257;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ---------- Result ---------- */
+
+.resultCard {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #eadfce;
+  border-radius: 32px;
+  padding: 30px 22px 26px;
+  box-shadow: 0 26px 70px rgba(31, 23, 17, 0.1);
+}
+
+.confettiLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confettiPiece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  border-radius: 3px;
+  animation-name: swipeConfettiFall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes swipeConfettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(340px) rotate(340deg);
+    opacity: 0;
+  }
+}
+
+.matchPercentBadge {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  background: #1f1711;
+  color: #d7b98f;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 8px 16px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.couponReveal {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  background: linear-gradient(165deg, #1f1711, #3a2a1a);
+  border-radius: 26px;
+  padding: 24px 18px;
+  margin-bottom: 22px;
+}
+
+.couponEyebrow {
+  display: block;
+  color: #d7b98f;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin-bottom: 6px;
+}
+
+.couponHeadline {
+  display: block;
+  color: #fffaf4;
+  font-size: 34px;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.couponCodeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px dashed #d7b98f;
+  background: rgba(255, 250, 244, 0.08);
+  color: #fffaf4;
+  border-radius: 14px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.couponCodeButton span {
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.couponCodeButton em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  color: #d7b98f;
+}
+
+.matchLabel {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #8b6236;
+  margin-bottom: 12px;
+}
+
+.matchCard {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: #fffaf4;
+  border: 1px solid #eadfce;
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.matchImage {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: #f3eadc;
+  flex-shrink: 0;
+}
+
+.matchInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.matchTagline {
+  display: block;
+  color: #8b6236;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.matchInfo h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #1f1711;
+}
+
+.matchPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.matchPriceRow b {
+  font-size: 17px;
+  color: #1f1711;
+}
+
+.matchMrp {
+  font-size: 13px;
+  color: #9c8d7d;
+  text-decoration: line-through;
+}
+
+.secondaryMatchCard {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  border: 1px solid #eadfce;
+  border-radius: 18px;
+  padding: 10px 14px;
+  margin-bottom: 22px;
+}
+
+.secondaryMatchImage {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #f3eadc;
+}
+
+.secondaryMatchCard div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.secondaryMatchCard span {
+  font-size: 11px;
+  color: #8b7a6b;
+  font-weight: 700;
+}
+
+.secondaryMatchCard b {
+  font-size: 14px;
+  color: #1f1711;
+}
+
+.secondaryMatchArrow {
+  color: #8b6236;
+  font-weight: 900;
+}
+
+.leadForm {
+  position: relative;
+  z-index: 1;
+  background: #fff7e8;
+  border: 1px solid #e6cfa9;
+  border-radius: 22px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.leadFormTitle {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f1711;
+}
+
+.leadFormRow {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.leadInput {
+  width: 100%;
+  border: 1px solid #d8c8b2;
+  background: #fff;
+  border-radius: 14px;
+  padding: 13px 14px;
+  font: inherit;
+}
+
+.leadError {
+  color: #b3451f;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.leadFormNote {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #8b7a6b;
+  text-align: center;
+}
+
+.leadSuccess {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  background: #e6f7e9;
+  border: 1px solid #34a853;
+  color: #1e7e34;
+  border-radius: 18px;
+  padding: 14px;
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.resultActions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+}
+
+.shareButton {
+  flex: 1;
+  border: 1px solid rgba(31, 23, 17, 0.18);
+  background: #fff;
+  color: #1f1711;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.shareButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.retakeButton {
+  border: 0;
+  background: transparent;
+  color: #8b7a6b;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 13px 6px;
+  text-decoration: underline;
+}
+
+/* ---------- Mobile tightening ---------- */
+
+@media (max-width: 480px) {
+  .gameShell {
+    padding: 18px 14px 48px;
+  }
+
+  .introCard {
+    padding: 34px 20px;
+    border-radius: 26px;
+  }
+
+  .introTitle {
+    font-size: 26px;
+  }
+
+  .cardStack {
+    height: 380px;
+  }
+
+  .cardScenario {
+    font-size: 22px;
+  }
+
+  .resultCard {
+    padding: 20px 16px 26px;
+    border-radius: 26px;
+  }
+
+  .couponHeadline {
+    font-size: 28px;
+  }
+
+  .matchCard {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .matchImage {
+    width: 100%;
+    height: 180px;
+    margin: 0 auto;
+  }
+
+  .matchPriceRow {
+    justify-content: center;
+  }
+}
