@@ -183,6 +183,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="quiz-cta-banner">
+        <div className="quiz-cta-banner-inner">
+          <div className="quiz-cta-copy">
+            <span>30-Second Scent Finder</span>
+            <b>Not sure which one is you? Take the quiz — unlock 20% off.</b>
+          </div>
+
+          <Link href="/scent-finder" className="btn">
+            Find my scent →
+          </Link>
+        </div>
+      </section>
+
       <section className="section home-products-section">
       <div className="container">
     <div className="section-head">
@@ -325,6 +338,12 @@ export default function HomePage() {
           <div className="product-actions">
             <Link href="/products" className="btn">
               Explore perfumes
+            </Link>
+            <Link href="/long-lasting-perfume-for-men-india" className="btn secondary">
+              Best perfume for men guide
+            </Link>
+            <Link href="/best-perfume-for-women-in-india" className="btn secondary">
+              Best perfume for women guide
             </Link>
           </div>
         </div>

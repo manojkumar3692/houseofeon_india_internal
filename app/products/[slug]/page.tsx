@@ -45,8 +45,76 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: `${siteUrl}${product.image}`,
+    brand: {
+      "@type": "Brand",
+      name: "House of Eon",
+    },
+    ...(product.reviews && product.reviews.length > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: (
+              product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+              product.reviews.length
+            ).toFixed(1),
+            reviewCount: product.reviews.length,
+          },
+          review: product.reviews.map((review) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: review.name },
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: review.rating,
+            },
+            reviewBody: review.text,
+          })),
+        }
+      : {}),
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "INR",
+      price: product.price,
+      availability: "https://schema.org/InStock",
+      url: `${siteUrl}/products/${product.slug}`,
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Perfumes",
+        item: `${siteUrl}/products`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.name,
+        item: `${siteUrl}/products/${product.slug}`,
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <ProductViewTracker product={product} />
       <ProductDetailClient product={product} />
     </>

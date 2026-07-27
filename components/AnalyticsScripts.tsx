@@ -3,24 +3,23 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
-function getProductionHostname() {
-  try {
-    return new URL(siteUrl).hostname;
-  } catch {
-    return "";
-  }
-}
+// Deliberately NOT read from NEXT_PUBLIC_SITE_URL or any other env var.
+// That variable is meant to differ per environment (it's correctly
+// "http://localhost:3000" in .env.local for local dev), so using it here
+// would make this check trivially pass locally too — exactly the bug that
+// caused test checkouts to report to the real Meta Pixel in the first
+// place. This hostname is hardcoded on purpose so no environment's config
+// can ever accidentally satisfy it.
+const PRODUCTION_HOSTNAME = "www.houseofeon.in";
 
 /**
  * Loads GA + Meta Pixel only when the page is actually being viewed on the
- * real production domain (NEXT_PUBLIC_SITE_URL). This stops local dev
- * (localhost), preview/staging deployments, and any other non-production
- * host from ever reporting PageView/AddToCart/Purchase/etc. to the live
- * analytics accounts.
+ * real production domain. This stops local dev (localhost), preview/staging
+ * deployments, and any other non-production host from ever reporting
+ * PageView/AddToCart/Purchase/etc. to the live analytics accounts.
  *
  * The hostname check runs client-side only (after mount) so the server-
  * rendered HTML and the first client render both output nothing, avoiding
@@ -31,12 +30,7 @@ export default function AnalyticsScripts() {
   const [isProductionHost, setIsProductionHost] = useState(false);
 
   useEffect(() => {
-    const productionHostname = getProductionHostname();
-
-    setIsProductionHost(
-      Boolean(productionHostname) &&
-        window.location.hostname === productionHostname
-    );
+    setIsProductionHost(window.location.hostname === PRODUCTION_HOSTNAME);
   }, []);
 
   if (!isProductionHost) return null;

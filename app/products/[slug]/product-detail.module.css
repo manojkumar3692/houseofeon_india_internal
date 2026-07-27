@@ -21,7 +21,52 @@
   .offerStrip b {
     font-size: 14px;
   }
-  
+
+  .shippingLine {
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 800;
+    color: #5d5045;
+    text-align: center;
+  }
+
+  .paymentMethodsRow {
+    margin: 16px 0 0;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255, 250, 244, 0.78);
+    border: 1px solid rgba(31, 23, 17, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .secureBadge {
+    font-size: 12px;
+    font-weight: 800;
+    color: #1f1711;
+    white-space: nowrap;
+  }
+
+  .paymentChips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .paymentChip {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    color: #4d3a2c;
+    background: #fff;
+    border: 1px solid rgba(31, 23, 17, 0.12);
+    border-radius: 999px;
+    padding: 5px 10px;
+  }
+
   .ratingRow {
     display: flex;
     align-items: center;
@@ -298,7 +343,21 @@
     .offerStrip b {
       font-size: 13px;
     }
-  
+
+    .shippingLine {
+      font-size: 12px;
+    }
+
+    .paymentMethodsRow {
+      padding: 10px 12px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .paymentChips {
+      justify-content: center;
+    }
+
     .ratingRow {
       gap: 6px;
     }

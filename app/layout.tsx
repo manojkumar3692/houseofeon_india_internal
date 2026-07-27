@@ -8,12 +8,36 @@ import AnalyticsScripts from "@/components/AnalyticsScripts";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
+const supportWhatsapp = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "";
 
 export const metadata: Metadata = {
   title: `${brandName} - Premium Perfumes`,
   description:
     "Shop premium long-lasting perfumes from House of Eon. Luxury fragrance crafted for daily confidence.",
   metadataBase: new URL(siteUrl),
+};
+
+// Sitewide brand entity signal for Google (helps establish House of Eon as
+// a real, recognizable business rather than an anonymous storefront).
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: brandName,
+  url: siteUrl,
+  sameAs: [
+    "https://www.instagram.com/houseofeon_india/",
+    "https://www.facebook.com/profile.php?id=61569101812630",
+  ],
+  ...(supportWhatsapp
+    ? {
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer service",
+          telephone: `+${supportWhatsapp}`,
+          areaServed: "IN",
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({
@@ -24,6 +48,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
       <MicrosoftClarity />
         <AnalyticsScripts />
 

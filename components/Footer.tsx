@@ -41,8 +41,12 @@ export default function Footer() {
 
           <Link href="/products">All perfumes</Link>
           <Link href="/long-lasting-perfume-for-men-india">
-            Perfume guide
+            Best perfume for men
           </Link>
+          <Link href="/best-perfume-for-women-in-india">
+            Best perfume for women
+          </Link>
+          <Link href="/scent-finder">Find your scent</Link>
           <Link href="/cart">Cart</Link>
           <Link href="/track-order">Track order</Link>
         </div>
