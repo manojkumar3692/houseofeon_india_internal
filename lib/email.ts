@@ -156,8 +156,13 @@ function itemQuantity(item: OrderEmailItem) {
   return item.quantity || item.qty || 1;
 }
 
-function itemPriceInPaise(item: OrderEmailItem) {
-  return item.priceInPaise ?? item.price_in_paise ?? item.price ?? 0;
+// Order items (from lib/order.ts's calculateOrder) store price/lineTotal in
+// plain rupees, not paise. Only priceInPaise/price_in_paise (if ever
+// populated by a future caller) are paise and need dividing by 100.
+function itemPriceInRupees(item: OrderEmailItem) {
+  if (item.priceInPaise != null) return item.priceInPaise / 100;
+  if (item.price_in_paise != null) return item.price_in_paise / 100;
+  return item.price ?? 0;
 }
 
 function itemsHtml(items: OrderEmailItem[]) {
@@ -176,7 +181,7 @@ function itemsHtml(items: OrderEmailItem[]) {
           <td style="padding:8px;border:1px solid #eee;">${escapeHtml(itemName(item))}</td>
           <td style="padding:8px;border:1px solid #eee;text-align:center;">${itemQuantity(item)}</td>
           <td style="padding:8px;border:1px solid #eee;text-align:right;">${formatINR(
-            itemPriceInPaise(item) / 100
+            itemPriceInRupees(item)
           )}</td>
         </tr>
       `;
