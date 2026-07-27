@@ -451,7 +451,14 @@ export const products: Product[] = [
       "Special Moments",
     ],
     image: "/products/silent-gold.png",
-    gallery: ["/products/silent-gold.png"],
+    gallery: [
+      "/products/sgold-lifestyle-3.png",
+      "/products/sgold-lifestyle-1.png",
+      "/products/sgold-lifestyle-2.png",
+      "/products/silent-gold.png",
+      "/products/sgold-lifestyle-4.png",
+      "/products/sgold-lifestyle-5.png"
+     ],
 
     rating: 5,
     reviewCount: 0,

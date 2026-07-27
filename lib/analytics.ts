@@ -1,6 +1,15 @@
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
+// Extra safety net specifically for the Purchase event: even if this page
+// somehow loads on the production hostname (e.g. a staging deploy that
+// shares the real domain), don't report a Purchase unless Razorpay is
+// actually configured in live mode. Test-mode payments never move real
+// money and shouldn't count as conversions.
+const IS_RAZORPAY_LIVE_MODE = (
+  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ""
+).startsWith("rzp_live_");
+
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -124,6 +133,14 @@ export function trackPurchase({
 
   if (!Number.isFinite(safeValue) || safeValue <= 0) {
     console.warn("Purchase event skipped because value is invalid:", value);
+    return;
+  }
+
+  if (!IS_RAZORPAY_LIVE_MODE) {
+    console.warn(
+      "Purchase event skipped because Razorpay is not in live mode:",
+      orderId
+    );
     return;
   }
 
