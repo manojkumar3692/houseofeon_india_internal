@@ -12,6 +12,7 @@ const schema = z
     recommendedProductId: z.string().optional().or(z.literal("")),
     recommendedProductName: z.string().optional().or(z.literal("")),
     couponCode: z.string().optional().or(z.literal("")),
+    source: z.string().optional().or(z.literal("")),
   })
   .refine((data) => Boolean(data.phone) || Boolean(data.email), {
     message: "Phone or email is required",
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
       recommended_product_id: payload.recommendedProductId || null,
       recommended_product_name: payload.recommendedProductName || null,
       coupon_code: payload.couponCode || "EON20",
+      source: payload.source || "quiz",
     });
 
     if (error) throw error;

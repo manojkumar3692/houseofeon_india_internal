@@ -20,6 +20,7 @@ type QuizLead = {
   mood_answer?: string | null;
   recommended_product_name?: string | null;
   coupon_code?: string | null;
+  source?: string | null;
   created_at: string;
 };
 
@@ -80,7 +81,7 @@ export default function AdminPage() {
     <>
     <section className="section"><div className="container"><h1 className="section-title">Admin Orders</h1><button className="btn secondary" onClick={()=>loadOrders()}>Refresh</button>{error ? <p className="notice">{error}</p> : null}<div style={{overflowX:"auto", marginTop:20}}><table className="table"><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Shipping</th><th>Tracking</th><th>Action</th></tr></thead><tbody>{orders.map((order)=><AdminRow key={order.id} order={order} updateOrder={updateOrder} markCodCollected={markCodCollected} />)}</tbody></table></div></div></section>
 
-    <section className="section" style={{paddingTop:0}}><div className="container"><h2 className="section-title">Scent Finder Leads</h2><button className="btn secondary" onClick={()=>loadLeads()}>Refresh</button>{leadsError ? <p className="notice">{leadsError}</p> : null}<div style={{overflowX:"auto", marginTop:20}}><table className="table"><thead><tr><th>Date</th><th>Phone</th><th>Email</th><th>Answers</th><th>Matched Product</th><th>Coupon</th></tr></thead><tbody>{leads.map((lead)=><tr key={lead.id}><td>{new Date(lead.created_at).toLocaleString()}</td><td>{lead.phone || "—"}</td><td>{lead.email || "—"}</td><td><span className="muted">{[lead.gender_answer, lead.occasion_answer, lead.mood_answer].filter(Boolean).join(" · ")}</span></td><td>{lead.recommended_product_name || "—"}</td><td>{lead.coupon_code || "—"}</td></tr>)}</tbody></table>{leads.length === 0 ? <p className="muted" style={{marginTop:12}}>No quiz leads yet.</p> : null}</div></div></section>
+    <section className="section" style={{paddingTop:0}}><div className="container"><h2 className="section-title">Scent Finder &amp; Swipe Leads</h2><button className="btn secondary" onClick={()=>loadLeads()}>Refresh</button>{leadsError ? <p className="notice">{leadsError}</p> : null}<div style={{overflowX:"auto", marginTop:20}}><table className="table"><thead><tr><th>Date</th><th>Source</th><th>Phone</th><th>Email</th><th>Answers</th><th>Matched Product</th><th>Coupon</th></tr></thead><tbody>{leads.map((lead)=><tr key={lead.id}><td>{new Date(lead.created_at).toLocaleString()}</td><td><span className="pill">{lead.source || "quiz"}</span></td><td>{lead.phone || "—"}</td><td>{lead.email || "—"}</td><td><span className="muted">{[lead.gender_answer, lead.occasion_answer, lead.mood_answer].filter(Boolean).join(" · ")}</span></td><td>{lead.recommended_product_name || "—"}</td><td>{lead.coupon_code || "—"}</td></tr>)}</tbody></table>{leads.length === 0 ? <p className="muted" style={{marginTop:12}}>No leads yet.</p> : null}</div></div></section>
     </>
   );
 }
