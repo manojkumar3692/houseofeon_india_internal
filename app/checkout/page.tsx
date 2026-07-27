@@ -15,6 +15,7 @@ import {
   trackCheckoutStartedClarity,
   trackPaymentSuccessClarity,
 } from "@/lib/clarity";
+import { COD_TOKEN_AMOUNT_INR, isPartialCodEligible } from "@/lib/codToken";
 
 type CustomerForm = {
   name: string;
@@ -43,6 +44,20 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [razorpayReady, setRazorpayReady] = useState(false);
+  const [paymentType, setPaymentType] = useState<"full" | "partial_cod">(
+    "full"
+  );
+
+  const codEligible = isPartialCodEligible(Math.round(finalTotal * 100));
+  const effectivePaymentType =
+    paymentType === "partial_cod" && codEligible ? "partial_cod" : "full";
+  const amountDueNow =
+    effectivePaymentType === "partial_cod" ? COD_TOKEN_AMOUNT_INR : finalTotal;
+  const balanceDueNow =
+    effectivePaymentType === "partial_cod"
+      ? Math.max(0, finalTotal - COD_TOKEN_AMOUNT_INR)
+      : 0;
 
   const beginCheckoutTrackedRef = useRef(false);
   const defaultCouponAppliedRef = useRef(false);
@@ -107,6 +122,25 @@ export default function CheckoutPage() {
     void applyCoupon("EON20");
   }, [loaded, lines.length, couponCode, applyCoupon]);
 
+  // Fallback in case the Razorpay script tag was already injected by a
+  // previous mount (Next.js Script dedupes tags, so onLoad may not refire).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.Razorpay) {
+      setRazorpayReady(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (window.Razorpay) {
+        setRazorpayReady(true);
+        clearInterval(interval);
+      }
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, []);
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
@@ -123,8 +157,10 @@ export default function CheckoutPage() {
 
     const RazorpayConstructor = window.Razorpay;
 
-    if (!RazorpayConstructor) {
-      setError("Payment system is still loading. Please try again.");
+    if (!RazorpayConstructor || !razorpayReady) {
+      setError(
+        "Payment system is still loading — give it a moment and tap Pay again."
+      );
       return;
     }
 
@@ -138,6 +174,7 @@ export default function CheckoutPage() {
           customer: form,
           items: lines,
           couponCode: couponCode || "",
+          paymentType: effectivePaymentType,
         }),
       });
 
@@ -193,7 +230,16 @@ export default function CheckoutPage() {
             });
             trackPaymentSuccessClarity();
             clearCart();
-            router.push(`/success?order=${verifyData.orderNumber}`);
+
+            const balanceQuery =
+              verifyData.paymentType === "partial_cod" &&
+              verifyData.balanceDueInPaise > 0
+                ? `&balanceDue=${verifyData.balanceDueInPaise}`
+                : "";
+
+            router.push(
+              `/success?order=${verifyData.orderNumber}${balanceQuery}`
+            );
           } catch (err) {
             const message =
               err instanceof Error
@@ -208,9 +254,23 @@ export default function CheckoutPage() {
         modal: {
           ondismiss: () => {
             trackPaymentFailed("customer_closed_razorpay_modal");
+            setError(
+              "Payment window closed before completing. Your order has been saved — tap Pay to try again."
+            );
             setLoading(false);
           },
         },
+      });
+
+      razorpay.on("payment.failed", (response) => {
+        const description =
+          response?.error?.description ||
+          response?.error?.reason ||
+          "Payment failed. Please try again or use a different payment method.";
+
+        trackPaymentFailed(description);
+        setError(description);
+        setLoading(false);
       });
 
       razorpay.open();
@@ -240,6 +300,7 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                autoComplete="name"
                 placeholder="Full name"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
@@ -248,6 +309,9 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
                 placeholder="Phone"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
@@ -257,7 +321,10 @@ export default function CheckoutPage() {
             <input
               className="input"
               type="email"
-              placeholder="Email optional"
+              inputMode="email"
+              autoComplete="email"
+              required
+              placeholder="Email (for order confirmation)"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
             />
@@ -265,6 +332,7 @@ export default function CheckoutPage() {
             <textarea
               className="textarea"
               required
+              autoComplete="street-address"
               placeholder="Full address"
               value={form.address}
               onChange={(e) => update("address", e.target.value)}
@@ -274,6 +342,7 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                autoComplete="address-level2"
                 placeholder="City"
                 value={form.city}
                 onChange={(e) => update("city", e.target.value)}
@@ -282,6 +351,7 @@ export default function CheckoutPage() {
               <input
                 className="input"
                 required
+                autoComplete="address-level1"
                 placeholder="State"
                 value={form.state}
                 onChange={(e) => update("state", e.target.value)}
@@ -291,9 +361,16 @@ export default function CheckoutPage() {
             <input
               className="input"
               required
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              autoComplete="postal-code"
+              maxLength={6}
               placeholder="Pincode"
               value={form.pincode}
-              onChange={(e) => update("pincode", e.target.value)}
+              onChange={(e) =>
+                update("pincode", e.target.value.replace(/[^0-9]/g, ""))
+              }
             />
 
             <textarea
@@ -303,11 +380,54 @@ export default function CheckoutPage() {
               onChange={(e) => update("notes", e.target.value)}
             />
 
+            {codEligible ? (
+              <div className="payment-method-picker">
+                <span className="payment-method-label">
+                  How would you like to pay?
+                </span>
+
+                <div className="payment-method-options">
+                  <button
+                    type="button"
+                    className={`payment-method-option${
+                      effectivePaymentType === "full" ? " active" : ""
+                    }`}
+                    onClick={() => setPaymentType("full")}
+                  >
+                    <b>Pay full amount online</b>
+                    <span>{formatINR(finalTotal)} via UPI, card or netbanking</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`payment-method-option${
+                      effectivePaymentType === "partial_cod" ? " active" : ""
+                    }`}
+                    onClick={() => setPaymentType("partial_cod")}
+                  >
+                    <b>Pay {formatINR(COD_TOKEN_AMOUNT_INR)} now, rest on delivery</b>
+                    <span>
+                      Balance {formatINR(finalTotal - COD_TOKEN_AMOUNT_INR)} in
+                      cash when your order arrives
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             {error ? <div className="notice">{error}</div> : null}
 
-            <button className="btn" disabled={loading} type="submit">
+            <button
+              className="btn"
+              disabled={loading || !razorpayReady}
+              type="submit"
+            >
               {loading
                 ? "Opening payment..."
+                : !razorpayReady
+                ? "Loading payment..."
+                : effectivePaymentType === "partial_cod"
+                ? `Pay ${formatINR(amountDueNow)} now`
                 : `Pay ${formatINR(finalTotal)}`}
             </button>
           </form>
@@ -347,10 +467,30 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="summary-total">
-              <span>Total payable</span>
-              <strong>{formatINR(finalTotal)}</strong>
-            </div>
+            {effectivePaymentType === "partial_cod" ? (
+              <>
+                <div className="summary-lines">
+                  <div>
+                    <span>Order total</span>
+                    <b>{formatINR(finalTotal)}</b>
+                  </div>
+                  <div>
+                    <span>Balance on delivery (cash)</span>
+                    <b>{formatINR(balanceDueNow)}</b>
+                  </div>
+                </div>
+
+                <div className="summary-total">
+                  <span>Pay now online</span>
+                  <strong>{formatINR(amountDueNow)}</strong>
+                </div>
+              </>
+            ) : (
+              <div className="summary-total">
+                <span>Total payable</span>
+                <strong>{formatINR(finalTotal)}</strong>
+              </div>
+            )}
 
             {couponDiscount > 0 ? (
               <div className="cart-savings-note">
@@ -359,8 +499,13 @@ export default function CheckoutPage() {
             ) : null}
 
             <p className="muted">
-              After successful Razorpay payment, your order will be saved and
-              emailed to office.
+              {effectivePaymentType === "partial_cod"
+                ? `After your ${formatINR(
+                    amountDueNow
+                  )} token payment, your order will be saved and emailed to office. Pay the remaining ${formatINR(
+                    balanceDueNow
+                  )} in cash to the delivery agent.`
+                : "After successful Razorpay payment, your order will be saved and emailed to office."}
             </p>
           </div>
         </div>

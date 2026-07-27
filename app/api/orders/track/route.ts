@@ -13,7 +13,9 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("orders")
-    .select("order_number,payment_status,shipping_status,tracking_url,created_at")
+    .select(
+      "order_number,payment_status,shipping_status,tracking_url,created_at,payment_type,balance_due_in_paise,cod_balance_status"
+    )
     .eq("order_number", orderNumber)
     .eq("customer_phone", phone)
     .single();

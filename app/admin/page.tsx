@@ -8,6 +8,7 @@ type Order = {
   customer_address:string; customer_city?:string; customer_state?:string; customer_pincode?:string;
   items:Array<{name:string;quantity:number;lineTotal:number}>; amount_in_paise:number; payment_status:string;
   shipping_status:string; tracking_url?:string|null; created_at:string;
+  payment_type?:string; token_amount_in_paise?:number; balance_due_in_paise?:number; cod_balance_status?:string;
 };
 
 export default function AdminPage() {
@@ -43,17 +44,25 @@ export default function AdminPage() {
     await loadOrders();
   }
 
+  async function markCodCollected(id:string) {
+    const res = await fetch(`/api/admin/orders/${id}`, { method:"PATCH", headers:{"Content-Type":"application/json", Authorization:`Bearer ${token}`}, body:JSON.stringify({cod_balance_status:"collected"}) });
+    const data = await res.json();
+    if (!res.ok) return alert(data.error || "Update failed");
+    await loadOrders();
+  }
+
   if (!token) {
     return <section className="section"><div className="container"><form className="card form" onSubmit={login} style={{maxWidth:420}}><h1>Admin login</h1><input className="input" type="password" placeholder="Admin password" value={password} onChange={(e)=>setPassword(e.target.value)} /><button className="btn">Login</button>{error ? <p className="notice">{error}</p> : null}</form></div></section>;
   }
 
   return (
-    <section className="section"><div className="container"><h1 className="section-title">Admin Orders</h1><button className="btn secondary" onClick={()=>loadOrders()}>Refresh</button>{error ? <p className="notice">{error}</p> : null}<div style={{overflowX:"auto", marginTop:20}}><table className="table"><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Shipping</th><th>Tracking</th><th>Action</th></tr></thead><tbody>{orders.map((order)=><AdminRow key={order.id} order={order} updateOrder={updateOrder} />)}</tbody></table></div></div></section>
+    <section className="section"><div className="container"><h1 className="section-title">Admin Orders</h1><button className="btn secondary" onClick={()=>loadOrders()}>Refresh</button>{error ? <p className="notice">{error}</p> : null}<div style={{overflowX:"auto", marginTop:20}}><table className="table"><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Payment</th><th>Shipping</th><th>Tracking</th><th>Action</th></tr></thead><tbody>{orders.map((order)=><AdminRow key={order.id} order={order} updateOrder={updateOrder} markCodCollected={markCodCollected} />)}</tbody></table></div></div></section>
   );
 }
 
-function AdminRow({ order, updateOrder }: { order: Order; updateOrder:(id:string,status:string,tracking:string)=>void }) {
+function AdminRow({ order, updateOrder, markCodCollected }: { order: Order; updateOrder:(id:string,status:string,tracking:string)=>void; markCodCollected:(id:string)=>void }) {
   const [status, setStatus] = useState(order.shipping_status);
   const [tracking, setTracking] = useState(order.tracking_url || "");
-  return <tr><td><b>{order.order_number}</b><br/><span className="muted">{new Date(order.created_at).toLocaleString()}</span></td><td>{order.customer_name}<br/>{order.customer_phone}<br/><span className="muted">{order.customer_address}, {order.customer_city}</span></td><td>{order.items.map((item)=><div key={item.name}>{item.name} x {item.quantity}</div>)}</td><td>{formatINR(paiseToINR(order.amount_in_paise))}</td><td className="status">{order.payment_status}</td><td><select className="select" value={status} onChange={(e)=>setStatus(e.target.value)}><option value="pending">pending</option><option value="packed">packed</option><option value="shipped">shipped</option><option value="delivered">delivered</option><option value="cancelled">cancelled</option></select></td><td><input className="input" placeholder="Tracking URL" value={tracking} onChange={(e)=>setTracking(e.target.value)} /></td><td><button className="btn" onClick={()=>updateOrder(order.id,status,tracking)}>Save</button></td></tr>;
+  const isPartialCod = order.payment_type === "partial_cod";
+  return <tr><td><b>{order.order_number}</b><br/><span className="muted">{new Date(order.created_at).toLocaleString()}</span></td><td>{order.customer_name}<br/>{order.customer_phone}<br/><span className="muted">{order.customer_address}, {order.customer_city}</span></td><td>{order.items.map((item)=><div key={item.name}>{item.name} x {item.quantity}</div>)}</td><td>{formatINR(paiseToINR(order.amount_in_paise))}</td><td className="status">{order.payment_status}{isPartialCod ? <><br/><span className="pill">Partial COD</span><br/><span className="muted">Token {formatINR(paiseToINR(order.token_amount_in_paise||0))} paid</span><br/><span className="muted">Balance {formatINR(paiseToINR(order.balance_due_in_paise||0))} — {order.cod_balance_status}</span>{order.cod_balance_status==="pending" ? <><br/><button className="btn secondary" onClick={()=>markCodCollected(order.id)}>Mark balance collected</button></> : null}</> : null}</td><td><select className="select" value={status} onChange={(e)=>setStatus(e.target.value)}><option value="pending">pending</option><option value="packed">packed</option><option value="shipped">shipped</option><option value="delivered">delivered</option><option value="cancelled">cancelled</option></select></td><td><input className="input" placeholder="Tracking URL" value={tracking} onChange={(e)=>setTracking(e.target.value)} /></td><td><button className="btn" onClick={()=>updateOrder(order.id,status,tracking)}>Save</button></td></tr>;
 }

@@ -18,6 +18,20 @@ declare global {
         razorpay_signature: string;
       }) => void;
       modal?: { ondismiss?: () => void };
-    }) => { open: () => void };
+    }) => {
+      open: () => void;
+      on: (
+        event: "payment.failed",
+        handler: (response: {
+          error: {
+            code?: string;
+            description?: string;
+            reason?: string;
+            source?: string;
+            step?: string;
+          };
+        }) => void
+      ) => void;
+    };
   }
 }

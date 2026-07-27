@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { formatINR } from "@/lib/money";
 
 type Order = {
   order_number: string;
@@ -9,6 +10,9 @@ type Order = {
   shipping_status: string;
   tracking_url?: string | null;
   created_at: string;
+  payment_type?: string;
+  balance_due_in_paise?: number;
+  cod_balance_status?: string;
 };
 
 function formatDate(value: string) {
@@ -178,6 +182,23 @@ export default function TrackOrderPage() {
                     <b>{order.shipping_status}</b>
                   </div>
                 </div>
+
+                {order.payment_type === "partial_cod" &&
+                order.cod_balance_status === "pending" &&
+                (order.balance_due_in_paise || 0) > 0 ? (
+                  <div className="track-note">
+                    Balance due on delivery:{" "}
+                    <b>{formatINR((order.balance_due_in_paise || 0) / 100)}</b>{" "}
+                    (pay in cash to the delivery agent).
+                  </div>
+                ) : null}
+
+                {order.payment_type === "partial_cod" &&
+                order.cod_balance_status === "collected" ? (
+                  <div className="track-note">
+                    Balance payment collected. Your order is fully paid.
+                  </div>
+                ) : null}
 
                 <div className="track-timeline">
                   <div className={getStepStatus(order, "paid") ? "active" : ""}>
