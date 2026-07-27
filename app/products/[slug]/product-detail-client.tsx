@@ -21,8 +21,8 @@ const productTrustItems = [
     text: "Razorpay protected checkout",
   },
   {
-    title: "Fast Dispatch",
-    text: "Tracking shared after dispatch",
+    title: "Fast Delivery",
+    text: "Estimated delivery in 2–3 working days",
   },
   {
     title: "WhatsApp Support",

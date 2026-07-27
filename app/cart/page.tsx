@@ -258,6 +258,11 @@ export default function CartPage() {
                     <span>Shipping</span>
                     <b>Calculated after order</b>
                   </div>
+
+                  <div>
+                    <span>Estimated delivery</span>
+                    <b>2–3 working days</b>
+                  </div>
                 </div>
 
                 <div className="summary-total">
