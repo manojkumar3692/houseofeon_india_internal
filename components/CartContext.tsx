@@ -147,9 +147,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(COUPON_STORAGE_KEY, couponCode);
   }, [couponCode, loaded]);
 
-  // Bundle pricing (2+ of the same product) is a bigger automatic discount
-  // and is deliberately mutually exclusive with coupon codes — drop any
-  // active coupon the moment the cart becomes bundle-eligible.
+  // Bundle pricing (2+ perfumes total, any mix of products) is a bigger
+  // automatic discount and is deliberately mutually exclusive with coupon
+  // codes — drop any active coupon the moment the cart becomes
+  // bundle-eligible.
   useEffect(() => {
     if (!loaded) return;
     if (!hasBundleLine || !couponCode) return;
@@ -157,6 +158,52 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCouponCode("");
     setCouponDiscount(0);
   }, [hasBundleLine, couponCode, loaded]);
+
+  // Auto-apply the EON20 launch offer whenever the cart is eligible for it:
+  // non-empty, not already getting the (better) bundle rate, and no coupon
+  // already applied. This lives here — not just on the checkout page — so
+  // it runs everywhere useCart() is used. That matters for a real case:
+  // someone drops from a 2-item bundle down to 1 item on the /cart page
+  // itself; without this, the cart would sit at the full ₹1,249 until the
+  // shopper happened to land on /checkout, instead of correctly falling
+  // back to the ₹999 EON20 price right away.
+  useEffect(() => {
+    if (!loaded) return;
+    if (lines.length === 0 || total <= 0) return;
+    if (hasBundleLine || couponCode) return;
+
+    let cancelled = false;
+
+    async function autoApplyEon20() {
+      try {
+        const response = await fetch("/api/coupons/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: "EON20",
+            subtotal: total,
+            hasBundleLine: false,
+          }),
+        });
+
+        const data = await response.json();
+        if (cancelled) return;
+        if (!response.ok || !data.valid) return;
+
+        setCouponCode(String(data.code || "EON20"));
+        setCouponDiscount(Number(data.discount || 0));
+      } catch {
+        // Silent — this is a background convenience auto-apply, not a
+        // user-initiated action, so there's nothing to surface on failure.
+      }
+    }
+
+    autoApplyEon20();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loaded, lines.length, total, hasBundleLine, couponCode]);
 
   // Recalculate coupon discount when cart total changes.
   useEffect(() => {

@@ -139,11 +139,11 @@ export const products: Product[] = [
     occasion: ["Office", "College", "Daily Wear", "Summer", "Daytime"],
     image: "/products/arctic-wave.png",
     gallery: [
-      "/products/arctic-wave-lifestyle-2.png",
-      "/products/arctic-wave-lifestyle-3.png",
-      "/products/arctic-wave.png",
       "/products/arctic-wave-lifestyle-1.png",
       "/products/arctic-wave-lifestyle-4.png",
+      "/products/arctic-wave.png",
+      "/products/arctic-wave-lifestyle-2.png",
+      "/products/arctic-wave-lifestyle-3.png"
     ],
 
     rating: 5,

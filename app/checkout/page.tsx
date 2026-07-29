@@ -34,13 +34,11 @@ export default function CheckoutPage() {
 
   const {
     lines,
-    loaded,
     total,
     hasBundleLine,
     couponCode,
     couponDiscount,
     finalTotal,
-    applyCoupon,
     clearCart,
   } = useCart();
 
@@ -62,7 +60,6 @@ export default function CheckoutPage() {
       : 0;
 
   const beginCheckoutTrackedRef = useRef(false);
-  const defaultCouponAppliedRef = useRef(false);
 
   const [form, setForm] = useState<CustomerForm>({
     name: "",
@@ -116,14 +113,8 @@ export default function CheckoutPage() {
     trackCheckoutStartedClarity();
   }, [lines.length, finalTotal, analyticsItems]);
 
-  useEffect(() => {
-    if (!loaded || !lines.length || couponCode) return;
-    if (hasBundleLine) return; // bundle pricing already active, don't stack EON20
-    if (defaultCouponAppliedRef.current) return;
-
-    defaultCouponAppliedRef.current = true;
-    void applyCoupon("EON20");
-  }, [loaded, lines.length, couponCode, applyCoupon, hasBundleLine]);
+  // EON20 auto-apply now lives in CartContext itself (so it also works on
+  // /cart, not just here) — nothing needed on this page anymore.
 
   // Fallback in case the Razorpay script tag was already injected by a
   // previous mount (Next.js Script dedupes tags, so onLoad may not refire).
