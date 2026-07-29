@@ -360,7 +360,7 @@ export const products: Product[] = [
       "/products/syra-lifestyle-4.png",
       // "/products/syra-lifestyle-8.png",
       "/products/syra-lifestyle-5.png",
-      "/products/syra.png",
+      "/products/syra-lifestyle-6.1.png",
     ],
 
     rating: 5,
