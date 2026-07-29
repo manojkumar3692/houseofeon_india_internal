@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
+import { getUnitPrice } from "@/lib/pricing";
 
 export default function CartPage() {
   const {
@@ -12,6 +13,7 @@ export default function CartPage() {
     updateQuantity,
     removeItem,
     total,
+    hasBundleLine,
     couponCode,
     couponDiscount,
     finalTotal,
@@ -135,7 +137,15 @@ export default function CartPage() {
 
                         <div className="cart-item-control">
                           <div className="cart-item-price">
-                            {formatINR(product.price)}
+                            {formatINR(getUnitPrice(product.price, totalItems))}
+                            {hasBundleLine ? (
+                              <span
+                                className="muted"
+                                style={{ display: "block", fontSize: 12 }}
+                              >
+                                bundle rate (2+ perfumes)
+                              </span>
+                            ) : null}
                           </div>
 
                           <div className="qty modern-qty">
@@ -191,49 +201,59 @@ export default function CartPage() {
                 </div>
 
                 <div className="coupon-box">
-                  <label>
-                    <span>Launch coupon</span>
-
-                    <div className="coupon-row">
-                      <input
-                        className="input"
-                        placeholder="Try EON20"
-                        value={couponInput}
-                        onChange={(event) =>
-                          setCouponInput(event.target.value.toUpperCase())
-                        }
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            handleApplyCoupon();
-                          }
-                        }}
-                      />
-
-                      <button
-                        className="btn secondary"
-                        type="button"
-                        onClick={handleApplyCoupon}
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  </label>
-
-                  {couponCode ? (
-                    <div className="coupon-applied">
-                      <span>{couponCode} applied</span>
-                      <button type="button" onClick={handleRemoveCoupon}>
-                        Remove
-                      </button>
+                  {hasBundleLine ? (
+                    <div className="coupon-hint">
+                      🎁 2-bottle bundle pricing is already applied — it's a
+                      bigger saving than a coupon code, so codes are disabled
+                      while a bundle line is in your cart.
                     </div>
                   ) : (
-                    <div className="coupon-hint">
-                      Use <b>EON20</b> for 20% OFF launch offer.
-                    </div>
-                  )}
+                    <>
+                      <label>
+                        <span>Launch coupon</span>
 
-                  {couponMessage ? <p>{couponMessage}</p> : null}
+                        <div className="coupon-row">
+                          <input
+                            className="input"
+                            placeholder="Try EON20"
+                            value={couponInput}
+                            onChange={(event) =>
+                              setCouponInput(event.target.value.toUpperCase())
+                            }
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") {
+                                event.preventDefault();
+                                handleApplyCoupon();
+                              }
+                            }}
+                          />
+
+                          <button
+                            className="btn secondary"
+                            type="button"
+                            onClick={handleApplyCoupon}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </label>
+
+                      {couponCode ? (
+                        <div className="coupon-applied">
+                          <span>{couponCode} applied</span>
+                          <button type="button" onClick={handleRemoveCoupon}>
+                            Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="coupon-hint">
+                          Use <b>EON20</b> for 20% OFF launch offer.
+                        </div>
+                      )}
+
+                      {couponMessage ? <p>{couponMessage}</p> : null}
+                    </>
+                  )}
                 </div>
 
                 <div className="summary-lines">

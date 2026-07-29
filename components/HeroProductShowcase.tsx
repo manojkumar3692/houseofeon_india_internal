@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
+import { EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
 
 export default function HeroProductShowcase({
   products,
@@ -93,7 +94,7 @@ export default function HeroProductShowcase({
           <span>
             {activeProduct.gender} · {activeProduct.size}
           </span>
-          <b>{formatINR(activeProduct.price)}</b>
+          <b>{formatINR(EON20_DISCOUNTED_PRICE_INR)}</b>
         </div>
       </Link>
 

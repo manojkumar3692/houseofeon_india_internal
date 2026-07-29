@@ -7,6 +7,7 @@ import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { GenderAnswer } from "@/lib/scentQuiz";
 import { SWIPE_CARDS, getSwipeMatches } from "@/lib/swipeGame";
+import { BASE_PRICE_INR, EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
 import { generateSwipeShareImage, shareOrDownloadImage } from "@/lib/shareCard";
 import {
   trackSwipeGameStarted,
@@ -458,10 +459,8 @@ export default function SwipeGame() {
               <span className={styles.matchTagline}>{primaryMatch.tagline}</span>
               <h3>{primaryMatch.name}</h3>
               <div className={styles.matchPriceRow}>
-                <b>{formatINR(primaryMatch.price)}</b>
-                {primaryMatch.mrp ? (
-                  <span className={styles.matchMrp}>{formatINR(primaryMatch.mrp)}</span>
-                ) : null}
+                <b>{formatINR(EON20_DISCOUNTED_PRICE_INR)}</b>
+                <span className={styles.matchMrp}>{formatINR(BASE_PRICE_INR)}</span>
               </div>
 
               <Link href={`/products/${primaryMatch.slug}`} className={styles.primaryButton}>

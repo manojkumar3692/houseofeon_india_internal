@@ -14,19 +14,19 @@ import {
   trackProductViewed,
   trackAddToCartClarity,
 } from "@/lib/clarity";
-
-const productTrustItems = [
-  {
-    title: "Fast Delivery",
-    text: "2–3 working days, tracked",
-  },
-  {
-    title: "WhatsApp Support",
-    text: "Real help for any order issue",
-  },
-];
+import {
+  BASE_PRICE_INR,
+  EON20_DISCOUNTED_PRICE_INR,
+  BUNDLE_QUANTITY,
+  BUNDLE_UNIT_PRICE_INR,
+  BUNDLE_TOTAL_INR,
+  BUNDLE_SAVINGS_VS_DISCOUNTED_INR,
+  getUnitPrice,
+} from "@/lib/pricing";
 
 const paymentMethods = ["UPI", "Visa", "Mastercard", "RuPay"];
+
+const trustRowItems = ["COD Available", "Free Shipping", "7-Day Easy Returns"];
 
 function Stars({ rating = 5 }: { rating?: number }) {
   const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
@@ -45,6 +45,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
 
   const [toast, setToast] = useState<string | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Card B (2 bottles) is pre-selected by default — it's the higher-AOV
+  // option and the best deal, so it's what most visitors should see first.
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(BUNDLE_QUANTITY);
+
+  const isBundleSelected = selectedQuantity >= BUNDLE_QUANTITY;
+  const selectedUnitPrice = getUnitPrice(product.price, selectedQuantity);
+  const selectedTotalPrice = selectedUnitPrice * selectedQuantity;
 
   useEffect(() => {
     return () => {
@@ -77,35 +85,43 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     trackProductViewed(product.name);
   }, [product.name]);
 
-  function trackProductAdd() {
+  function trackProductAdd(quantity: number) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
-      quantity: 1,
+      price: getUnitPrice(product.price, quantity),
+      quantity,
     });
   }
 
+  // Sets this product's cart line to exactly the quantity picked via the
+  // 1-bottle / 2-bottle selector cards — never stacks on top of whatever
+  // was already in the cart, so re-clicking Add to Cart / Buy Now with a
+  // card selected always lands on the expected quantity.
+  function setCartQuantityTo(quantity: number) {
+    const existingLine = lines.find((line) => line.productId === product.id);
+
+    if (existingLine) {
+      updateQuantity(product.id, quantity);
+    } else {
+      addItem(product.id, quantity);
+    }
+  }
+
   function handleAddToCart() {
-    addItem(product.id);
-    trackProductAdd();
+    setCartQuantityTo(selectedQuantity);
+    trackProductAdd(selectedQuantity);
     trackAddToCartClarity(product.name);
-    showToast(`${product.name} added to cart`);
+    showToast(
+      `${product.name} added to cart (${selectedQuantity} bottle${
+        selectedQuantity > 1 ? "s" : ""
+      })`
+    );
   }
 
   function handleBuyNow() {
-    // Ensure this product is in the cart at quantity 1+ without stacking on
-    // top of a quantity that's already there (e.g. from a prior Add to
-    // Cart click, or a repeat Buy Now after using back navigation).
-    const existingLine = lines.find((line) => line.productId === product.id);
-
-    if (!existingLine) {
-      addItem(product.id, 1);
-    } else if (existingLine.quantity < 1) {
-      updateQuantity(product.id, 1);
-    }
-
-    trackProductAdd();
+    setCartQuantityTo(selectedQuantity);
+    trackProductAdd(selectedQuantity);
     trackAddToCartClarity(product.name);
     router.push("/checkout");
   }
@@ -231,44 +247,87 @@ ${productUrl}`;
               ))}
             </div>
 
-            <div className="detail-price-row">
-              <div>
-                <span className="price-label">Price</span>
-                <div className="price">{formatINR(product.price)}</div>
-              </div>
+            <div className={styles.priceHero}>
+              <span className={styles.priceHeroMain}>
+                {isBundleSelected
+                  ? formatINR(BUNDLE_TOTAL_INR)
+                  : formatINR(EON20_DISCOUNTED_PRICE_INR)}
+              </span>
+              <span className={styles.priceHeroStrike}>
+                {formatINR(
+                  isBundleSelected
+                    ? BASE_PRICE_INR * selectedQuantity
+                    : BASE_PRICE_INR
+                )}
+              </span>
+              <span className={styles.priceHeroBadge}>20% OFF</span>
+              <span className={styles.priceHeroSub}>
+                {isBundleSelected
+                  ? `${formatINR(BUNDLE_UNIT_PRICE_INR)} each · works with any 2 perfumes`
+                  : "with EON20 applied at checkout"}
+              </span>
+            </div>
 
-              {product.mrp ? (
-                <div className="mrp-box">
-                  <span>MRP</span>
-                  <b>{formatINR(product.mrp)}</b>
+            <div className={styles.quantityCards}>
+              <button
+                type="button"
+                className={`${styles.quantityCard} ${
+                  !isBundleSelected ? styles.quantityCardActive : ""
+                }`}
+                onClick={() => setSelectedQuantity(1)}
+              >
+                <span className={styles.quantityCardLabel}>1 Bottle</span>
+                <div className={styles.quantityCardPrice}>
+                  <b>{formatINR(EON20_DISCOUNTED_PRICE_INR)}</b>
+                  <span>{formatINR(BASE_PRICE_INR)}</span>
                 </div>
-              ) : null}
-            </div>
+                <span className={styles.quantityCardSub}>
+                  20% off with EON20
+                </span>
+              </button>
 
-            <div className={styles.offerStrip}>
-              <span>Launch offer active</span>
-              <b>Use EON20 for 20% OFF</b>
-            </div>
-
-            <div className={styles.shippingLine}>
-              🚚 Free shipping across India · Delivered in 2–3 days
+              <button
+                type="button"
+                className={`${styles.quantityCard} ${
+                  isBundleSelected ? styles.quantityCardActive : ""
+                }`}
+                onClick={() => setSelectedQuantity(BUNDLE_QUANTITY)}
+              >
+                <span className={styles.quantityBadge}>
+                  BEST VALUE — SAVE {formatINR(BUNDLE_SAVINGS_VS_DISCOUNTED_INR)}
+                </span>
+                <span className={styles.quantityCardLabel}>2 Bottles</span>
+                <div className={styles.quantityCardPrice}>
+                  <b>{formatINR(BUNDLE_TOTAL_INR)}</b>
+                </div>
+                <span className={styles.quantityCardSub}>
+                  {formatINR(BUNDLE_UNIT_PRICE_INR)} each — or mix with any
+                  other scent in your cart
+                </span>
+              </button>
             </div>
 
             <div className={`${styles.productCtaBlock} detail-actions`}>
-  <button className={styles.buyNowButton} onClick={handleBuyNow}>
-    Buy now
-  </button>
+              <button className={styles.buyNowButton} onClick={handleBuyNow}>
+                Buy now — {formatINR(selectedTotalPrice)}
+              </button>
 
-  <button className={styles.addCartButton} onClick={handleAddToCart}>
-    Add to cart
-  </button>
+              <button className={styles.addCartButton} onClick={handleAddToCart}>
+                Add to cart
+              </button>
 
-  <div className={styles.secondaryActions}>
-    <Link href="/cart">View cart</Link>
-    <span>·</span>
-    <button onClick={handleShareProduct}>Share</button>
-  </div>
-</div>
+              <div className={styles.secondaryActions}>
+                <Link href="/cart">View cart</Link>
+                <span>·</span>
+                <button onClick={handleShareProduct}>Share</button>
+              </div>
+            </div>
+
+            <div className={styles.trustRow}>
+              {trustRowItems.map((item) => (
+                <span key={item}>✓ {item}</span>
+              ))}
+            </div>
 
             <div className={styles.paymentMethodsRow}>
               <span className={styles.secureBadge}>🔒 100% Secure Checkout</span>
@@ -279,15 +338,6 @@ ${productUrl}`;
                   </span>
                 ))}
               </div>
-            </div>
-
-            <div className={styles.buyTrustStrip}>
-              {productTrustItems.map((item) => (
-                <div key={item.title}>
-                  <b>{item.title}</b>
-                  <span>{item.text}</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -435,8 +485,11 @@ ${productUrl}`;
 
       <div className="mobile-sticky-buy product-mobile-buy">
   <div>
-    <b>{formatINR(product.price)}</b>
-    <span>{product.shortName} · EON20 active</span>
+    <b>{formatINR(selectedTotalPrice)}</b>
+    <span>
+      {product.shortName} ·{" "}
+      {isBundleSelected ? "2 bottles" : "EON20 active"}
+    </span>
   </div>
 
   <button onClick={handleBuyNow}>Buy now</button>

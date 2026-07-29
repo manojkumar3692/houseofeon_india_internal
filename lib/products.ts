@@ -59,8 +59,7 @@ export const products: Product[] = [
     gender: "Men",
     size: "50ml",
     concentration: "Extrait de Parfum",
-    price: 999,
-    mrp: 1499,
+    price: 1249,
     description:
       "A warm, rich and magnetic perfume built around tonka-style depth, desert woods and premium masculine elegance.",
     longDescription:
@@ -124,8 +123,7 @@ export const products: Product[] = [
     gender: "Men",
     size: "50ml",
     concentration: "Extrait de Parfum",
-    price: 999,
-    mrp: 1499,
+    price: 1249,
     description:
       "A cool, fresh and clean perfume inspired by icy waves, crisp air and effortless confidence.",
     longDescription:
@@ -201,8 +199,7 @@ export const products: Product[] = [
     gender: "Men",
     size: "50ml",
     concentration: "Extrait de Parfum",
-    price: 999,
-    mrp: 1499,
+    price: 1249,
     description:
       "A bold icy-modern perfume with a youthful edge, built for people who want their presence to feel sharp and unforgettable.",
     longDescription:
@@ -272,8 +269,7 @@ export const products: Product[] = [
     gender: "Men",
     size: "50ml",
     concentration: "Eau de Parfum",
-    price: 999,
-    mrp: 1499,
+    price: 1249,
     description:
       "A strong masculine perfume with raw power, refined edge and a premium boss-energy character.",
     longDescription:
@@ -337,8 +333,7 @@ export const products: Product[] = [
     gender: "Women",
     size: "50ml",
     concentration: "Eau de Parfum",
-    price: 999,
-    mrp: 1499,
+    price: 1249,
     description:
       "A graceful yet powerful perfume for women, designed for elegance, confidence and modern feminine presence.",
     longDescription:
@@ -435,8 +430,7 @@ export const products: Product[] = [
     gender: "Unisex",
     size: "50ml",
     concentration: "Extrait de Parfum",
-    price: 1199,
-    mrp: 1699,
+    price: 1249,
     description:
       "A rich unisex perfume with timeless luxury, golden warmth and a legacy-style premium character.",
     longDescription:

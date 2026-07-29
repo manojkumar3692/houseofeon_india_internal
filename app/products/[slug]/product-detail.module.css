@@ -1,3 +1,130 @@
+.priceHero {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin: 22px 0 14px;
+}
+
+.priceHeroMain {
+  font-size: 36px;
+  font-weight: 950;
+  color: #1f1711;
+  letter-spacing: -0.02em;
+}
+
+.priceHeroStrike {
+  font-size: 18px;
+  color: #9c8d7d;
+  text-decoration: line-through;
+}
+
+.priceHeroBadge {
+  display: inline-block;
+  background: #1f1711;
+  color: #d7b98f;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.priceHeroSub {
+  width: 100%;
+  color: #6f6257;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.quantityCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 8px 0 6px;
+}
+
+.quantityCard {
+  position: relative;
+  text-align: left;
+  border: 1.5px solid rgba(31, 23, 17, 0.14);
+  background: #fffaf4;
+  border-radius: 20px;
+  padding: 18px 14px 14px;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease,
+    transform 0.12s ease;
+}
+
+.quantityCard:active {
+  transform: scale(0.98);
+}
+
+.quantityCardActive {
+  border-color: #1f1711;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(31, 23, 17, 0.14);
+}
+
+.quantityBadge {
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  background: #b9822f;
+  color: #fffaf4;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  padding: 5px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.quantityCardLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1f1711;
+  margin-bottom: 6px;
+}
+
+.quantityCardPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.quantityCardPrice b {
+  font-size: 20px;
+  color: #1f1711;
+}
+
+.quantityCardPrice span {
+  font-size: 13px;
+  color: #9c8d7d;
+  text-decoration: line-through;
+}
+
+.quantityCardSub {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6f6257;
+  font-weight: 700;
+}
+
+.trustRow {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #4d3a2c;
+}
+
 .offerStrip {
     margin: 18px 0 0;
     padding: 13px 15px;
@@ -331,6 +458,37 @@
   }
   
   @media (max-width: 480px) {
+    .priceHeroMain {
+      font-size: 30px;
+    }
+
+    .priceHeroStrike {
+      font-size: 16px;
+    }
+
+    .quantityCards {
+      gap: 9px;
+    }
+
+    .quantityCard {
+      padding: 15px 11px 12px;
+      border-radius: 17px;
+    }
+
+    .quantityCardPrice b {
+      font-size: 17px;
+    }
+
+    .quantityBadge {
+      font-size: 9px;
+      padding: 4px 8px;
+    }
+
+    .trustRow {
+      gap: 6px 10px;
+      font-size: 11px;
+    }
+
     .offerStrip {
       padding: 12px 14px;
       border-radius: 16px;

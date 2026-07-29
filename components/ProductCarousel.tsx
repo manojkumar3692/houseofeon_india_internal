@@ -6,6 +6,7 @@ import { Product } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
+import { BASE_PRICE_INR, EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
 
 export default function ProductCarousel({ products }: { products: Product[] }) {
   const { addItem } = useCart();
@@ -16,7 +17,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: EON20_DISCOUNTED_PRICE_INR,
       quantity: 1,
     });
   }
@@ -64,10 +65,10 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
 
               <div className="royal-product-bottom">
                 <div>
-                  <div className="price">{formatINR(product.price)}</div>
-                  {product.mrp ? (
-                    <span className="royal-mrp">{formatINR(product.mrp)}</span>
-                  ) : null}
+                  <div className="price">
+                    {formatINR(EON20_DISCOUNTED_PRICE_INR)}
+                  </div>
+                  <span className="royal-mrp">{formatINR(BASE_PRICE_INR)}</span>
                 </div>
 
                 <button

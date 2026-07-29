@@ -5,6 +5,7 @@ import { calculateCouponDiscount, normalizeCouponCode } from "@/lib/coupons";
 const schema = z.object({
   code: z.string().min(1),
   subtotal: z.number().min(0),
+  hasBundleLine: z.boolean().optional(),
 });
 
 export async function POST(request: Request) {
@@ -14,6 +15,7 @@ export async function POST(request: Request) {
     const result = calculateCouponDiscount({
       code: payload.code,
       subtotal: payload.subtotal,
+      hasBundleLine: payload.hasBundleLine,
     });
 
     if (!result.valid || !result.coupon) {

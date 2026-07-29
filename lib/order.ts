@@ -1,21 +1,41 @@
 import { getProductById } from "./products";
+import { getUnitPrice, getLineTotal, isBundleQuantity } from "./pricing";
 
 export type CheckoutItem = { productId: string; quantity: number };
 
 export function calculateOrder(items: CheckoutItem[]) {
-  const safeItems = items
+  const normalizedItems = items.map((item) => ({
+    productId: item.productId,
+    quantity: Math.max(1, Math.min(20, Number(item.quantity) || 1)),
+  }));
+
+  // Bundle pricing (2+ perfumes total, any mix of products) is decided
+  // across the whole cart, not per line — so the total has to be known
+  // before pricing any individual item.
+  const totalCartQuantity = normalizedItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
+  const safeItems = normalizedItems
     .map((item) => {
       const product = getProductById(item.productId);
-      const quantity = Math.max(1, Math.min(20, Number(item.quantity) || 1));
       if (!product) return null;
+
+      // Bundle pricing takes over the per-unit price here so every
+      // downstream consumer of an order (Razorpay amount, DB record,
+      // emails, admin) sees the price that was actually charged, not the
+      // raw catalog price.
+      const unitPrice = getUnitPrice(product.price, totalCartQuantity);
+
       return {
         productId: product.id,
         name: product.name,
         slug: product.slug,
         size: product.size,
-        price: product.price,
-        quantity,
-        lineTotal: product.price * quantity,
+        price: unitPrice,
+        quantity: item.quantity,
+        lineTotal: getLineTotal(product.price, item.quantity, totalCartQuantity),
       };
     })
     .filter(Boolean) as Array<{
@@ -29,7 +49,9 @@ export function calculateOrder(items: CheckoutItem[]) {
   }>;
 
   const total = safeItems.reduce((sum, item) => sum + item.lineTotal, 0);
-  return { items: safeItems, total, amountInPaise: total * 100 };
+  const hasBundleLine = isBundleQuantity(totalCartQuantity);
+
+  return { items: safeItems, total, amountInPaise: total * 100, hasBundleLine };
 }
 
 export function createOrderNumber() {
