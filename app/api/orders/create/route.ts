@@ -58,6 +58,7 @@ export async function POST(request: Request) {
       const couponResult = calculateCouponDiscount({
         code: normalizedCode,
         subtotal,
+        hasBundleLine: orderCalc.hasBundleLine,
       });
 
       if (!couponResult.valid || !couponResult.coupon) {

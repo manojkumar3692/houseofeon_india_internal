@@ -16,6 +16,7 @@ import {
   trackPaymentSuccessClarity,
 } from "@/lib/clarity";
 import { COD_TOKEN_AMOUNT_INR, isPartialCodEligible } from "@/lib/codToken";
+import { getUnitPrice } from "@/lib/pricing";
 
 type CustomerForm = {
   name: string;
@@ -35,6 +36,7 @@ export default function CheckoutPage() {
     lines,
     loaded,
     total,
+    hasBundleLine,
     couponCode,
     couponDiscount,
     finalTotal,
@@ -89,7 +91,7 @@ export default function CheckoutPage() {
         return {
           item_id: product.id,
           item_name: product.name,
-          price: product.price,
+          price: getUnitPrice(product.price, totalItems),
           quantity: line.quantity,
         };
       })
@@ -116,11 +118,12 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!loaded || !lines.length || couponCode) return;
+    if (hasBundleLine) return; // bundle pricing already active, don't stack EON20
     if (defaultCouponAppliedRef.current) return;
 
     defaultCouponAppliedRef.current = true;
     void applyCoupon("EON20");
-  }, [loaded, lines.length, couponCode, applyCoupon]);
+  }, [loaded, lines.length, couponCode, applyCoupon, hasBundleLine]);
 
   // Fallback in case the Razorpay script tag was already injected by a
   // previous mount (Next.js Script dedupes tags, so onLoad may not refire).
@@ -458,6 +461,13 @@ export default function CheckoutPage() {
                 <div>
                   <span>Coupon code</span>
                   <b>{couponCode}</b>
+                </div>
+              ) : null}
+
+              {hasBundleLine ? (
+                <div>
+                  <span>Pricing</span>
+                  <b>2-bottle bundle applied</b>
                 </div>
               ) : null}
 

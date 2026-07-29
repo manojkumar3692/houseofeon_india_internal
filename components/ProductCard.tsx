@@ -7,6 +7,7 @@ import { formatINR } from "@/lib/money";
 import { useCart } from "./CartContext";
 import { trackAddToCart } from "@/lib/analytics";
 import { trackAddToCartClarity } from "@/lib/clarity";
+import { BASE_PRICE_INR, EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -17,7 +18,7 @@ export default function ProductCard({ product }: { product: Product }) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: EON20_DISCOUNTED_PRICE_INR,
       quantity: 1,
     });
     trackAddToCartClarity(product.name);
@@ -60,18 +61,16 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="muted product-card-description">{product.description}</p>
 
         <div className="price">
-          {formatINR(product.price)}{" "}
-          {product.mrp ? (
-            <span
-              className="muted"
-              style={{
-                fontSize: 14,
-                textDecoration: "line-through",
-              }}
-            >
-              {formatINR(product.mrp)}
-            </span>
-          ) : null}
+          {formatINR(EON20_DISCOUNTED_PRICE_INR)}{" "}
+          <span
+            className="muted"
+            style={{
+              fontSize: 14,
+              textDecoration: "line-through",
+            }}
+          >
+            {formatINR(BASE_PRICE_INR)}
+          </span>
         </div>
 
         <div className="product-actions product-card-actions">

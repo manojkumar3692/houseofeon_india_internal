@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
+import { getLineTotal, cartHasBundleLine } from "@/lib/pricing";
 
 export type CartLine = {
   productId: string;
@@ -30,6 +31,7 @@ type CartContextValue = {
 
   total: number;
   count: number;
+  hasBundleLine: boolean;
 
   couponCode: string;
   couponDiscount: number;
@@ -75,16 +77,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
 
-  const total = useMemo(() => {
-    return lines.reduce((sum, line) => {
-      const product = getProductById(line.productId);
-      return product ? sum + product.price * line.quantity : sum;
-    }, 0);
-  }, [lines]);
-
   const count = useMemo(() => {
     return lines.reduce((sum, line) => sum + line.quantity, 0);
   }, [lines]);
+
+  // Bundle pricing (2+ perfumes total, any mix of products) is decided by
+  // the cart's total quantity, not any single line's quantity.
+  const total = useMemo(() => {
+    return lines.reduce((sum, line) => {
+      const product = getProductById(line.productId);
+      return product
+        ? sum + getLineTotal(product.price, line.quantity, count)
+        : sum;
+    }, 0);
+  }, [lines, count]);
+
+  const hasBundleLine = useMemo(() => cartHasBundleLine(lines), [lines]);
 
   const finalTotal = Math.max(0, total - couponDiscount);
 
@@ -139,10 +147,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(COUPON_STORAGE_KEY, couponCode);
   }, [couponCode, loaded]);
 
+  // Bundle pricing (2+ of the same product) is a bigger automatic discount
+  // and is deliberately mutually exclusive with coupon codes — drop any
+  // active coupon the moment the cart becomes bundle-eligible.
+  useEffect(() => {
+    if (!loaded) return;
+    if (!hasBundleLine || !couponCode) return;
+
+    setCouponCode("");
+    setCouponDiscount(0);
+  }, [hasBundleLine, couponCode, loaded]);
+
   // Recalculate coupon discount when cart total changes.
   useEffect(() => {
     if (!loaded) return;
     if (!couponCode) return;
+    if (hasBundleLine) return;
     if (total <= 0) {
       setCouponCode("");
       setCouponDiscount(0);
@@ -161,6 +181,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           body: JSON.stringify({
             code: couponCode,
             subtotal: total,
+            hasBundleLine,
           }),
         });
 
@@ -188,7 +209,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [total, couponCode, loaded]);
+  }, [total, couponCode, loaded, hasBundleLine]);
 
   const value = useMemo<CartContextValue>(() => {
     return {
@@ -196,6 +217,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       loaded,
       total,
       count,
+      hasBundleLine,
 
       couponCode,
       couponDiscount,
@@ -278,6 +300,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           };
         }
 
+        if (hasBundleLine) {
+          return {
+            ok: false,
+            message:
+              "Coupon codes can't be combined with 2-bottle bundle pricing — you're already getting the better deal.",
+          };
+        }
+
         try {
           const response = await fetch("/api/coupons/validate", {
             method: "POST",
@@ -287,6 +317,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             body: JSON.stringify({
               code: cleanCode,
               subtotal: total,
+              hasBundleLine,
             }),
           });
 
@@ -331,7 +362,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem(COUPON_STORAGE_KEY);
       },
     };
-  }, [lines, loaded, total, count, couponCode, couponDiscount, finalTotal]);
+  }, [
+    lines,
+    loaded,
+    total,
+    count,
+    hasBundleLine,
+    couponCode,
+    couponDiscount,
+    finalTotal,
+  ]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

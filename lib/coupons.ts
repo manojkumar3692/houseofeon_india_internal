@@ -46,9 +46,11 @@ export function getCouponByCode(code: string) {
 export function calculateCouponDiscount({
   code,
   subtotal,
+  hasBundleLine,
 }: {
   code: string;
   subtotal: number;
+  hasBundleLine?: boolean;
 }) {
   const coupon = getCouponByCode(code);
 
@@ -56,6 +58,17 @@ export function calculateCouponDiscount({
     return {
       valid: false,
       error: "Invalid coupon code",
+      discount: 0,
+      coupon: null,
+    };
+  }
+
+  // The 2-bottle bundle rate is already a bigger automatic discount and is
+  // deliberately kept mutually exclusive with coupon codes — no stacking.
+  if (hasBundleLine) {
+    return {
+      valid: false,
+      error: "Coupon codes can't be combined with 2-bottle bundle pricing.",
       discount: 0,
       coupon: null,
     };

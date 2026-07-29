@@ -11,6 +11,7 @@ import {
   QuizAnswers,
   getQuizMatches,
 } from "@/lib/scentQuiz";
+import { BASE_PRICE_INR, EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
 import {
   trackQuizCompleted,
   trackQuizLeadCaptured,
@@ -357,12 +358,10 @@ export default function ScentQuiz() {
               </span>
               <h3>{primaryMatch.name}</h3>
               <div className={styles.matchPriceRow}>
-                <b>{formatINR(primaryMatch.price)}</b>
-                {primaryMatch.mrp ? (
-                  <span className={styles.matchMrp}>
-                    {formatINR(primaryMatch.mrp)}
-                  </span>
-                ) : null}
+                <b>{formatINR(EON20_DISCOUNTED_PRICE_INR)}</b>
+                <span className={styles.matchMrp}>
+                  {formatINR(BASE_PRICE_INR)}
+                </span>
               </div>
 
               <Link
