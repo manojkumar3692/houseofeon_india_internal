@@ -40,6 +40,30 @@ function getDisplayUnitPrice(quantity: number): number {
     : EON20_DISCOUNTED_PRICE_INR;
 }
 
+// Small inline vector icon (no emoji) so the "Free Shipping" badges render
+// consistently across devices and match the site's line-icon-free, minimal
+// premium look rather than looking like a system emoji glyph.
+function ShippingIcon() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="1" y="6" width="13" height="11" rx="1.5" />
+      <path d="M14 10h4l3 3v4h-7z" />
+      <circle cx="6" cy="19" r="1.6" />
+      <circle cx="17.5" cy="19" r="1.6" />
+    </svg>
+  );
+}
+
 function Stars({ rating = 5 }: { rating?: number }) {
   const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
 
@@ -272,6 +296,10 @@ ${productUrl}`;
                 )}
               </span>
               <span className={styles.priceHeroBadge}>20% OFF</span>
+              <span className={styles.priceHeroShipBadge}>
+                <ShippingIcon />
+                Free Shipping
+              </span>
               <span className={styles.priceHeroSub}>
                 {isBundleSelected
                   ? `${formatINR(BUNDLE_UNIT_PRICE_INR)} each · works with any 2 perfumes`
@@ -292,6 +320,10 @@ ${productUrl}`;
                   <b>{formatINR(EON20_DISCOUNTED_PRICE_INR)}</b>
                   <span>{formatINR(BASE_PRICE_INR)}</span>
                 </div>
+                <span className={styles.shippingBadge}>
+                  <ShippingIcon />
+                  Free Shipping
+                </span>
                 <span className={styles.quantityCardSub}>
                   20% off with EON20
                 </span>
@@ -311,6 +343,10 @@ ${productUrl}`;
                 <div className={styles.quantityCardPrice}>
                   <b>{formatINR(BUNDLE_TOTAL_INR)}</b>
                 </div>
+                <span className={styles.shippingBadge}>
+                  <ShippingIcon />
+                  Free Shipping
+                </span>
                 <span className={styles.quantityCardSub}>
                   {formatINR(BUNDLE_UNIT_PRICE_INR)} each — or mix with any
                   other scent in your cart
@@ -499,7 +535,7 @@ ${productUrl}`;
     <b>{formatINR(selectedTotalPrice)}</b>
     <span>
       {product.shortName} ·{" "}
-      {isBundleSelected ? "2 bottles" : "EON20 active"}
+      {isBundleSelected ? "2 bottles" : "EON20 active"} · Free Shipping
     </span>
   </div>
 
