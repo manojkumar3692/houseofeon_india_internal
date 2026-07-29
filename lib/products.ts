@@ -214,8 +214,13 @@ export const products: Product[] = [
     mood: ["Icy", "Bold", "Youthful", "Energetic", "Trendy"],
     occasion: ["College", "Parties", "Daily Wear", "Hangouts", "Summer"],
     image: "/products/zyrox.png",
-    gallery: ["/products/zyrox.png"],
-
+    gallery: [
+      "/products/zyrox-lifestyle-1.png",
+      "/products/zyrox-lifestyle-2.png",
+      "/products/zyrox-lifestyle-3.png",
+      "/products/zyrox.png",
+      "/products/zyrox-lifestyle-4.png",
+    ],
     rating: 5,
     reviewCount: 0,
     ratingText: "Loved by early customers",
@@ -349,12 +354,12 @@ export const products: Product[] = [
     occasion: ["Office", "Brunch", "Evening", "Gifting", "Daily Wear"],
     image: "/products/syra.png",
     gallery: [
+      "/products/syra-lifestyle-7.png",
       "/products/syra-lifestyle-1.png",
       "/products/syra-lifestyle-2.png",
       "/products/syra-lifestyle-4.png",
-      "/products/syra-lifestyle-8.png",
+      // "/products/syra-lifestyle-8.png",
       "/products/syra-lifestyle-5.png",
-      // "/products/syra-lifestyle-9.png",
       "/products/syra.png",
     ],
 
