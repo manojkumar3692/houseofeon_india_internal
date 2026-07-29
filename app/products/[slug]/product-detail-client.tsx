@@ -21,12 +21,24 @@ import {
   BUNDLE_UNIT_PRICE_INR,
   BUNDLE_TOTAL_INR,
   BUNDLE_SAVINGS_VS_DISCOUNTED_INR,
-  getUnitPrice,
 } from "@/lib/pricing";
 
 const paymentMethods = ["UPI", "Visa", "Mastercard", "RuPay"];
 
 const trustRowItems = ["COD Available", "Free Shipping", "7-Day Easy Returns"];
+
+// The per-unit price actually charged for a given quantity of THIS product
+// alone, assuming EON20 (auto-applied at checkout for a single bottle) or
+// the bundle rate (2+) — whichever applies. getUnitPrice() from lib/pricing
+// only encodes the bundle rule, not EON20, so it under-reports the real
+// price for a single bottle; this keeps every price shown on this page
+// (hero, cards, sticky bar, analytics) in agreement with what checkout
+// will actually charge.
+function getDisplayUnitPrice(quantity: number): number {
+  return quantity >= BUNDLE_QUANTITY
+    ? BUNDLE_UNIT_PRICE_INR
+    : EON20_DISCOUNTED_PRICE_INR;
+}
 
 function Stars({ rating = 5 }: { rating?: number }) {
   const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
@@ -46,13 +58,12 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Card B (2 bottles) is pre-selected by default — it's the higher-AOV
-  // option and the best deal, so it's what most visitors should see first.
-  const [selectedQuantity, setSelectedQuantity] = useState<number>(BUNDLE_QUANTITY);
+  // Card A (1 bottle) is pre-selected by default — Card B (the bundle) is
+  // there for anyone who wants it, but isn't pushed on visitors up front.
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
   const isBundleSelected = selectedQuantity >= BUNDLE_QUANTITY;
-  const selectedUnitPrice = getUnitPrice(product.price, selectedQuantity);
-  const selectedTotalPrice = selectedUnitPrice * selectedQuantity;
+  const selectedTotalPrice = getDisplayUnitPrice(selectedQuantity) * selectedQuantity;
 
   useEffect(() => {
     return () => {
@@ -89,7 +100,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: getUnitPrice(product.price, quantity),
+      price: getDisplayUnitPrice(quantity),
       quantity,
     });
   }
