@@ -351,10 +351,10 @@ export const products: Product[] = [
     gallery: [
       "/products/syra-lifestyle-1.png",
       "/products/syra-lifestyle-2.png",
-      "/products/syra-lifestyle-3.png",
       "/products/syra-lifestyle-4.png",
+      "/products/syra-lifestyle-8.png",
       "/products/syra-lifestyle-5.png",
-      "/products/syra-closeup.png",
+      // "/products/syra-lifestyle-9.png",
       "/products/syra.png",
     ],
 
