@@ -33,6 +33,10 @@ const schema = z.object({
     .min(1),
   couponCode: z.string().optional().or(z.literal("")),
   paymentType: z.enum(["full", "partial_cod"]).optional().default("full"),
+  // Links this order back to its checkout_sessions funnel-tracking row
+  // (see lib/checkoutSession.ts). Optional and best-effort — a missing or
+  // stale session key should never block an order from being created.
+  sessionKey: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -164,6 +168,23 @@ export async function POST(request: Request) {
     });
 
     if (error) throw error;
+
+    // Best-effort link to the funnel-tracking row so it's no longer just
+    // an anonymous abandoned session — never let this block a real order.
+    if (payload.sessionKey) {
+      try {
+        await supabase
+          .from("checkout_sessions")
+          .update({
+            order_number: orderNumber,
+            order_created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("session_key", payload.sessionKey);
+      } catch (linkError) {
+        console.error("checkout_sessions order link failed:", linkError);
+      }
+    }
 
     return NextResponse.json({
       orderNumber,

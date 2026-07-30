@@ -69,6 +69,21 @@ export async function POST(request: Request) {
       throw updateError || new Error("Order update failed");
     }
 
+    // Best-effort: mark the linked funnel-tracking row as converted. Done
+    // server-side (rather than relying on the client after redirect) so it
+    // doesn't depend on the browser still running JS at this point.
+    try {
+      await supabase
+        .from("checkout_sessions")
+        .update({
+          paid_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("order_number", updated.order_number);
+    } catch (linkError) {
+      console.error("checkout_sessions paid-link failed:", linkError);
+    }
+
     try {
       await sendOrderEmails({
         orderNumber: updated.order_number,
