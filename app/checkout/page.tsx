@@ -10,6 +10,8 @@ import {
   trackBeginCheckout,
   trackPaymentFailed,
   trackPurchase,
+  trackCheckoutLead,
+  trackAddPaymentInfo,
 } from "@/lib/analytics";
 import {
   trackCheckoutStartedClarity,
@@ -17,6 +19,13 @@ import {
 } from "@/lib/clarity";
 import { COD_TOKEN_AMOUNT_INR, isPartialCodEligible } from "@/lib/codToken";
 import { getUnitPrice } from "@/lib/pricing";
+import {
+  captureCheckoutSession,
+  captureCheckoutSessionBeacon,
+  getCheckoutSessionKey,
+  getDeviceType,
+  getUtmParams,
+} from "@/lib/checkoutSession";
 
 type CustomerForm = {
   name: string;
@@ -61,6 +70,12 @@ export default function CheckoutPage() {
 
   const beginCheckoutTrackedRef = useRef(false);
 
+  // Funnel-capture state: fires at most once per session (Lead event), and
+  // tracks the last field the customer touched so a tab-close/app-switch
+  // beacon can report exactly where they were when they left.
+  const phoneLeadFiredRef = useRef(false);
+  const lastActiveFieldRef = useRef<string>("");
+
   const [form, setForm] = useState<CustomerForm>({
     name: "",
     phone: "",
@@ -72,8 +87,60 @@ export default function CheckoutPage() {
     notes: "",
   });
 
+  // Mirrors `form` into a ref so the unload/visibility listener (set up
+  // once on mount, see below) can always read the latest values without
+  // needing to re-subscribe on every keystroke.
+  const formRef = useRef(form);
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
+
   function update<K extends keyof CustomerForm>(key: K, value: CustomerForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  // Generic field capture — fired on blur, only when the field actually has
+  // a value (an empty blur isn't a meaningful signal). Records both the
+  // field's value and that it was the last one the customer interacted with.
+  function handleFieldBlur(field: string, value: string) {
+    lastActiveFieldRef.current = field;
+    if (!value) return;
+    captureCheckoutSession(undefined, {
+      [field]: value,
+      lastActiveField: field,
+    } as Record<string, string>);
+  }
+
+  function handleFieldFocus(field: string) {
+    lastActiveFieldRef.current = field;
+  }
+
+  // Phone gets special handling: the moment it looks like a real number,
+  // this is the single most valuable capture point in the whole page — it's
+  // the earliest moment an anonymous visitor becomes an identifiable
+  // person. The Lead event to Meta/GA fires at most once per session even
+  // if they revisit the field.
+  function handlePhoneBlur(value: string) {
+    lastActiveFieldRef.current = "phone";
+
+    const digits = value.replace(/[^0-9]/g, "");
+    if (digits.length < 10) return;
+
+    captureCheckoutSession("phone_captured", {
+      phone: value,
+      lastActiveField: "phone",
+    });
+
+    if (!phoneLeadFiredRef.current) {
+      phoneLeadFiredRef.current = true;
+      trackCheckoutLead({
+        name: formRef.current.name || undefined,
+        phone: value,
+        email: formRef.current.email || undefined,
+        items: analyticsItems,
+        value: finalTotal,
+      });
+    }
   }
 
   const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0);
@@ -111,10 +178,57 @@ export default function CheckoutPage() {
       items: analyticsItems,
     });
     trackCheckoutStartedClarity();
+
+    const utm = getUtmParams();
+    captureCheckoutSession("page_viewed", {
+      cartItems: analyticsItems.map((item) => ({
+        productId: item.item_id,
+        name: item.item_name,
+        quantity: item.quantity || 1,
+        price: item.price,
+      })),
+      cartValueInPaise: Math.round(finalTotal * 100),
+      referrer:
+        typeof document !== "undefined" ? document.referrer || undefined : undefined,
+      deviceType: getDeviceType(),
+      ...utm,
+    });
   }, [lines.length, finalTotal, analyticsItems]);
 
   // EON20 auto-apply now lives in CartContext itself (so it also works on
   // /cart, not just here) — nothing needed on this page anymore.
+
+  // Captures a last-known-state beacon the instant the tab is backgrounded
+  // or closed — sendBeacon (unlike a normal fetch) reliably survives the
+  // page going away. Set up once on mount; reads the latest form values via
+  // formRef/lastActiveFieldRef rather than re-subscribing on every keystroke.
+  useEffect(() => {
+    function sendBeacon() {
+      const f = formRef.current;
+      captureCheckoutSessionBeacon({
+        name: f.name || undefined,
+        phone: f.phone || undefined,
+        email: f.email || undefined,
+        address: f.address || undefined,
+        city: f.city || undefined,
+        state: f.state || undefined,
+        pincode: f.pincode || undefined,
+        lastActiveField: lastActiveFieldRef.current || undefined,
+      });
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "hidden") sendBeacon();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", sendBeacon);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", sendBeacon);
+    };
+  }, []);
 
   // Fallback in case the Razorpay script tag was already injected by a
   // previous mount (Next.js Script dedupes tags, so onLoad may not refire).
@@ -160,6 +274,14 @@ export default function CheckoutPage() {
 
     setLoading(true);
 
+    lastActiveFieldRef.current = "submit_button";
+    captureCheckoutSession("submitted", { lastActiveField: "submit_button" });
+    trackAddPaymentInfo({
+      items: analyticsItems,
+      value: finalTotal,
+      paymentMethod: effectivePaymentType,
+    });
+
     try {
       const createResponse = await fetch("/api/orders/create", {
         method: "POST",
@@ -169,6 +291,7 @@ export default function CheckoutPage() {
           items: lines,
           couponCode: couponCode || "",
           paymentType: effectivePaymentType,
+          sessionKey: getCheckoutSessionKey() || undefined,
         }),
       });
 
@@ -247,6 +370,9 @@ export default function CheckoutPage() {
         },
         modal: {
           ondismiss: () => {
+            captureCheckoutSession("razorpay_dismissed", {
+              lastActiveField: "razorpay_modal",
+            });
             trackPaymentFailed("customer_closed_razorpay_modal");
             setError(
               "Payment window closed before completing. Your order has been saved — tap Pay to try again."
@@ -262,11 +388,15 @@ export default function CheckoutPage() {
           response?.error?.reason ||
           "Payment failed. Please try again or use a different payment method.";
 
+        captureCheckoutSession("payment_failed", {
+          paymentFailedReason: description,
+        });
         trackPaymentFailed(description);
         setError(description);
         setLoading(false);
       });
 
+      captureCheckoutSession("razorpay_opened");
       razorpay.open();
     } catch (err) {
       const message =
@@ -298,6 +428,8 @@ export default function CheckoutPage() {
                 placeholder="Full name"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
+                onFocus={() => handleFieldFocus("name")}
+                onBlur={(e) => handleFieldBlur("name", e.target.value)}
               />
 
               <input
@@ -309,6 +441,8 @@ export default function CheckoutPage() {
                 placeholder="Phone"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
+                onFocus={() => handleFieldFocus("phone")}
+                onBlur={(e) => handlePhoneBlur(e.target.value)}
               />
             </div>
 
@@ -321,6 +455,8 @@ export default function CheckoutPage() {
               placeholder="Email (for order confirmation)"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
+              onFocus={() => handleFieldFocus("email")}
+              onBlur={(e) => handleFieldBlur("email", e.target.value)}
             />
 
             <textarea
@@ -330,6 +466,8 @@ export default function CheckoutPage() {
               placeholder="Full address"
               value={form.address}
               onChange={(e) => update("address", e.target.value)}
+              onFocus={() => handleFieldFocus("address")}
+              onBlur={(e) => handleFieldBlur("address", e.target.value)}
             />
 
             <div className="two">
@@ -340,6 +478,8 @@ export default function CheckoutPage() {
                 placeholder="City"
                 value={form.city}
                 onChange={(e) => update("city", e.target.value)}
+                onFocus={() => handleFieldFocus("city")}
+                onBlur={(e) => handleFieldBlur("city", e.target.value)}
               />
 
               <input
@@ -349,6 +489,8 @@ export default function CheckoutPage() {
                 placeholder="State"
                 value={form.state}
                 onChange={(e) => update("state", e.target.value)}
+                onFocus={() => handleFieldFocus("state")}
+                onBlur={(e) => handleFieldBlur("state", e.target.value)}
               />
             </div>
 
@@ -365,6 +507,8 @@ export default function CheckoutPage() {
               onChange={(e) =>
                 update("pincode", e.target.value.replace(/[^0-9]/g, ""))
               }
+              onFocus={() => handleFieldFocus("pincode")}
+              onBlur={(e) => handleFieldBlur("pincode", e.target.value)}
             />
 
             <textarea
@@ -386,7 +530,14 @@ export default function CheckoutPage() {
                     className={`payment-method-option${
                       effectivePaymentType === "full" ? " active" : ""
                     }`}
-                    onClick={() => setPaymentType("full")}
+                    onClick={() => {
+                      setPaymentType("full");
+                      lastActiveFieldRef.current = "payment_method";
+                      captureCheckoutSession(undefined, {
+                        paymentMethod: "full",
+                        lastActiveField: "payment_method",
+                      });
+                    }}
                   >
                     <b>Pay full amount online</b>
                     <span>{formatINR(finalTotal)} via UPI, card or netbanking</span>
@@ -397,7 +548,14 @@ export default function CheckoutPage() {
                     className={`payment-method-option${
                       effectivePaymentType === "partial_cod" ? " active" : ""
                     }`}
-                    onClick={() => setPaymentType("partial_cod")}
+                    onClick={() => {
+                      setPaymentType("partial_cod");
+                      lastActiveFieldRef.current = "payment_method";
+                      captureCheckoutSession(undefined, {
+                        paymentMethod: "partial_cod",
+                        lastActiveField: "payment_method",
+                      });
+                    }}
                   >
                     <b>Pay {formatINR(COD_TOKEN_AMOUNT_INR)} now, rest on delivery</b>
                     <span>

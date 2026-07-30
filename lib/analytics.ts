@@ -1,3 +1,5 @@
+import { hashEmailForMeta, hashPhoneForMeta } from "@/lib/checkoutSession";
+
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
@@ -112,6 +114,97 @@ export function trackBeginCheckout({
     currency: "INR",
     value,
     content_type: "product",
+    contents: items.map((item) => ({
+      id: item.item_id,
+      quantity: item.quantity || 1,
+      item_price: item.price,
+    })),
+  });
+}
+
+// Fires once per checkout session, the moment a phone number is captured —
+// well before the customer finishes the form or pays. This is the earliest
+// point an anonymous browser becomes an identifiable person, so it's the
+// most valuable single event for retargeting: it lets Meta build a "showed
+// real intent" audience (and later show a dynamic ad for the exact product
+// in their cart) even for people who never reach Purchase.
+//
+// Re-initializing the pixel with hashed contact info (Advanced Matching)
+// updates the customer-matching data Meta uses for this and all subsequent
+// events in the session — best-effort, since a hashing failure should never
+// block the rest of checkout.
+export async function trackCheckoutLead({
+  name,
+  phone,
+  email,
+  items,
+  value,
+}: {
+  name?: string;
+  phone?: string;
+  email?: string;
+  items: AnalyticsItem[];
+  value: number;
+}) {
+  if (typeof window === "undefined") return;
+
+  if (window.fbq && META_PIXEL_ID && (phone || email)) {
+    try {
+      const advancedMatching: Record<string, string> = {};
+      if (email) advancedMatching.em = await hashEmailForMeta(email);
+      if (phone) advancedMatching.ph = await hashPhoneForMeta(phone);
+      window.fbq("init", META_PIXEL_ID, advancedMatching);
+    } catch {
+      // Silent — the Lead event below still fires without Advanced Matching.
+    }
+  }
+
+  trackGAEvent("generate_lead", {
+    currency: "INR",
+    value,
+    items,
+  });
+
+  trackMetaEvent("Lead", {
+    currency: "INR",
+    value,
+    content_type: "product",
+    content_ids: items.map((item) => item.item_id),
+    contents: items.map((item) => ({
+      id: item.item_id,
+      quantity: item.quantity || 1,
+      item_price: item.price,
+    })),
+  });
+}
+
+// Standard "reached the payment step" event — fired when the customer
+// clicks Pay, before the Razorpay modal opens. Using the standard
+// AddPaymentInfo / add_payment_info event names (rather than a one-off
+// custom event) means both platforms' own funnel/optimization tooling
+// understands it, and it gives you a clean "reached payment but never
+// purchased" audience for retargeting.
+export function trackAddPaymentInfo({
+  items,
+  value,
+  paymentMethod,
+}: {
+  items: AnalyticsItem[];
+  value: number;
+  paymentMethod: string;
+}) {
+  trackGAEvent("add_payment_info", {
+    currency: "INR",
+    value,
+    payment_type: paymentMethod,
+    items,
+  });
+
+  trackMetaEvent("AddPaymentInfo", {
+    currency: "INR",
+    value,
+    content_type: "product",
+    content_ids: items.map((item) => item.item_id),
     contents: items.map((item) => ({
       id: item.item_id,
       quantity: item.quantity || 1,
