@@ -1,4 +1,5 @@
 import { products } from "@/lib/products";
+import { EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
@@ -13,6 +14,12 @@ const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
 //
 // This is what makes products eligible to appear in Google Shopping
 // results and in AI Overviews' shopping citations.
+//
+// This same URL is also registered as a scheduled feed on the Meta
+// Commerce Manager "HOUSE_OF_EON_INTERNAL" catalog, since Meta accepts the
+// same Google RSS `g:` namespace format. <g:id> intentionally matches
+// lib/products.ts product.id, which is also each product's retailer_id in
+// the Meta catalog — one feed, one set of IDs, kept in sync everywhere.
 
 function escapeXml(value: string) {
   return value
@@ -35,6 +42,7 @@ export async function GET() {
       <g:image_link>${siteUrl}${product.image}</g:image_link>
       <g:availability>in stock</g:availability>
       <g:price>${product.price}.00 INR</g:price>
+      <g:sale_price>${EON20_DISCOUNTED_PRICE_INR}.00 INR</g:sale_price>
       <g:brand>${escapeXml(brandName)}</g:brand>
       <g:condition>new</g:condition>
       <g:identifier_exists>false</g:identifier_exists>

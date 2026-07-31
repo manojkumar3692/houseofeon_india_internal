@@ -17,7 +17,10 @@ import {
   trackCheckoutStartedClarity,
   trackPaymentSuccessClarity,
 } from "@/lib/clarity";
-import { COD_TOKEN_AMOUNT_INR, isPartialCodEligible } from "@/lib/codToken";
+import {
+  isPartialCodEligible,
+  getEffectiveTokenAmountInPaise,
+} from "@/lib/codToken";
 import { getUnitPrice } from "@/lib/pricing";
 import {
   captureCheckoutSession,
@@ -61,11 +64,18 @@ export default function CheckoutPage() {
   const codEligible = isPartialCodEligible(Math.round(finalTotal * 100));
   const effectivePaymentType =
     paymentType === "partial_cod" && codEligible ? "partial_cod" : "full";
+  // Capped at the order's own total, same as the server — at real order
+  // values this is just the usual token amount (e.g. ₹99), but it means
+  // "pay now" can never cost more than paying in full, even at very low
+  // test totals (the admin ₹1 coupon), so both options are always safe
+  // to show side by side and the customer just picks whichever is cheaper.
+  const tokenAmountInr =
+    getEffectiveTokenAmountInPaise(Math.round(finalTotal * 100)) / 100;
   const amountDueNow =
-    effectivePaymentType === "partial_cod" ? COD_TOKEN_AMOUNT_INR : finalTotal;
+    effectivePaymentType === "partial_cod" ? tokenAmountInr : finalTotal;
   const balanceDueNow =
     effectivePaymentType === "partial_cod"
-      ? Math.max(0, finalTotal - COD_TOKEN_AMOUNT_INR)
+      ? Math.max(0, finalTotal - tokenAmountInr)
       : 0;
 
   const beginCheckoutTrackedRef = useRef(false);
@@ -557,9 +567,9 @@ export default function CheckoutPage() {
                       });
                     }}
                   >
-                    <b>Pay {formatINR(COD_TOKEN_AMOUNT_INR)} now, rest on delivery</b>
+                    <b>Pay {formatINR(tokenAmountInr)} now, rest on delivery</b>
                     <span>
-                      Balance {formatINR(finalTotal - COD_TOKEN_AMOUNT_INR)} in
+                      Balance {formatINR(Math.max(0, finalTotal - tokenAmountInr))} in
                       cash when your order arrives
                     </span>
                   </button>

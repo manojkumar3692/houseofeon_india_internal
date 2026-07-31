@@ -1,4 +1,9 @@
-export type CouponType = "percentage" | "flat";
+// "fixed_final" means: regardless of subtotal, the discount is whatever
+// brings the order down to exactly `value` — used for the admin-only
+// ₹1 test checkout, where a flat discount amount wouldn't work (it would
+// need to change every time the subtotal does) and a percentage wouldn't
+// reliably land on exactly ₹1 either.
+export type CouponType = "percentage" | "flat" | "fixed_final";
 
 export type Coupon = {
   code: string;
@@ -8,6 +13,11 @@ export type Coupon = {
   active: boolean;
   minSubtotal?: number;
   maxDiscount?: number;
+  // Bypasses the normal coupon+bundle mutual-exclusion rule (see below).
+  // Only meant for internal/admin test coupons — real customer-facing
+  // coupons should never set this, since bundle pricing is deliberately
+  // the better deal and shouldn't be stackable.
+  allowWithBundle?: boolean;
 };
 
 export const coupons: Coupon[] = [
@@ -22,12 +32,11 @@ export const coupons: Coupon[] = [
   },
   {
     code: "ONLYADMIN",
-    label: "Only Admin",
-    type: "percentage",
-    value: 99,
+    label: "Admin Test Checkout - ₹1",
+    type: "fixed_final",
+    value: 1,
     active: true,
-    minSubtotal: 0,
-    maxDiscount: 1000,
+    allowWithBundle: true,
   },
 ];
 
@@ -65,7 +74,9 @@ export function calculateCouponDiscount({
 
   // The 2-bottle bundle rate is already a bigger automatic discount and is
   // deliberately kept mutually exclusive with coupon codes — no stacking.
-  if (hasBundleLine) {
+  // Admin test coupons (allowWithBundle) are exempt since they're not a
+  // real customer-facing offer and this exclusion doesn't apply to them.
+  if (hasBundleLine && !coupon.allowWithBundle) {
     return {
       valid: false,
       error: "Coupon codes can't be combined with 2-bottle bundle pricing.",
@@ -91,6 +102,12 @@ export function calculateCouponDiscount({
 
   if (coupon.type === "flat") {
     discount = coupon.value;
+  }
+
+  if (coupon.type === "fixed_final") {
+    // Bring the order down to exactly `value`, whatever the subtotal is —
+    // e.g. value: 1 means "this order costs ₹1", not "₹1 off".
+    discount = Math.max(0, subtotal - coupon.value);
   }
 
   if (coupon.maxDiscount) {

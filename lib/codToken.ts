@@ -20,10 +20,28 @@ export const COD_TOKEN_AMOUNT_INR = (() => {
 export const COD_TOKEN_AMOUNT_IN_PAISE = COD_TOKEN_AMOUNT_INR * 100;
 
 /**
- * Partial COD only makes sense if there's a meaningful balance left to
- * collect on delivery. Require the order total to be at least double the
- * token amount, otherwise fall back to full prepaid / full COD only.
+ * Both payment options (pay in full, or pay a token now + rest on
+ * delivery) are always shown side by side whenever there's a real order
+ * total — there's no scenario where showing the token option is unsafe,
+ * because getEffectiveTokenAmountInPaise() below guarantees the token
+ * charged upfront can never exceed the order's own total. A customer (or
+ * an admin testing with a ₹1 coupon) always sees both and can simply pick
+ * whichever costs less right now; there's no version of this where
+ * "pay the token now" ends up costing more than "pay in full".
  */
 export function isPartialCodEligible(orderTotalInPaise: number) {
-  return orderTotalInPaise >= COD_TOKEN_AMOUNT_IN_PAISE * 2;
+  return orderTotalInPaise > 0;
+}
+
+/**
+ * The amount actually charged upfront for the "pay token now, rest on
+ * delivery" option. Capped at the order's own total — at ordinary order
+ * values (well above the token amount) this is just the token amount as
+ * usual; at a very low total (e.g. an admin ₹1 test order), it collapses
+ * to the full amount instead of trying to charge more upfront than the
+ * order is worth, which would make the "rest on delivery" balance
+ * nonsensical.
+ */
+export function getEffectiveTokenAmountInPaise(orderTotalInPaise: number) {
+  return Math.min(COD_TOKEN_AMOUNT_IN_PAISE, Math.max(0, orderTotalInPaise));
 }
