@@ -8,8 +8,8 @@ import {
   normalizeCouponCode,
 } from "@/lib/coupons";
 import {
-  COD_TOKEN_AMOUNT_IN_PAISE,
   isPartialCodEligible,
+  getEffectiveTokenAmountInPaise,
 } from "@/lib/codToken";
 
 const schema = z.object({
@@ -98,7 +98,13 @@ export async function POST(request: Request) {
       isPartialCodEligible(finalAmountInPaise);
 
     const paymentType = usePartialCod ? "partial_cod" : "full";
-    const tokenAmountInPaise = usePartialCod ? COD_TOKEN_AMOUNT_IN_PAISE : 0;
+    // Capped at the order's own total — at real order values this is just
+    // the usual token amount, but it means the "pay now" amount can never
+    // exceed what the order is actually worth (matters for very low test
+    // totals, e.g. the admin ₹1 coupon).
+    const tokenAmountInPaise = usePartialCod
+      ? getEffectiveTokenAmountInPaise(finalAmountInPaise)
+      : 0;
     const chargeNowInPaise = usePartialCod
       ? tokenAmountInPaise
       : finalAmountInPaise;

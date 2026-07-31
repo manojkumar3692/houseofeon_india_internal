@@ -1,11 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Script from "next/script";
+
+// Same hostname gate as components/AnalyticsScripts.tsx (GA/Meta) — hardcoded
+// on purpose rather than read from NEXT_PUBLIC_SITE_URL, so no environment's
+// config can accidentally satisfy it. Without this, Clarity recorded every
+// local `npm run dev` session under the same live project as real visitors.
+const PRODUCTION_HOSTNAME = "www.houseofeon.in";
 
 export default function MicrosoftClarity() {
   const clarityId = process.env.NEXT_PUBLIC_MICROSOFT_CLARITY_ID;
+  const [isProductionHost, setIsProductionHost] = useState(false);
 
-  if (!clarityId) return null;
+  useEffect(() => {
+    setIsProductionHost(window.location.hostname === PRODUCTION_HOSTNAME);
+  }, []);
+
+  if (!clarityId || !isProductionHost) return null;
 
   return (
     <Script

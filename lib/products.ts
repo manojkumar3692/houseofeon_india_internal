@@ -68,7 +68,14 @@ export const products: Product[] = [
     mood: ["Warm", "Rich", "Masculine", "Luxury", "Magnetic"],
     occasion: ["Evening", "Date Night", "Festive Wear", "Winter", "Gifting"],
     image: "/products/desert-tonka.png",
-    gallery: ["/products/desert-tonka.png"],
+    gallery: [
+      "/products/desert-lifestyle-1.png",
+      "/products/desert-lifestyle-2.png",
+      "/products/desert-lifestyle-3.png",
+      "/products/desert-lifestyle-4.png",
+      "/products/desert-lifestyle-6.png",
+      // "/products/desert-tonka.png"
+    ],
 
     rating: 5,
     reviewCount: 0,
@@ -217,9 +224,12 @@ export const products: Product[] = [
     gallery: [
       "/products/zyrox-lifestyle-1.png",
       "/products/zyrox-lifestyle-2.png",
+      // "/products/zyrox-lifestyle-7.png",
+      "/products/zyrox-lifestyle-8.png",
       "/products/zyrox-lifestyle-3.png",
+      
       "/products/zyrox.png",
-      "/products/zyrox-lifestyle-4.png",
+      // "/products/zyrox-lifestyle-4.png",
     ],
     rating: 5,
     reviewCount: 0,
