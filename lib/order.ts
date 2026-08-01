@@ -54,6 +54,25 @@ export function calculateOrder(items: CheckoutItem[]) {
   return { items: safeItems, total, amountInPaise: total * 100, hasBundleLine };
 }
 
+// Shared by /api/orders/verify and the Razorpay webhook — both need to
+// build the same customer-facing address block for confirmation emails.
+export function buildCustomerAddress(order: {
+  customer_address?: string | null;
+  customer_city?: string | null;
+  customer_state?: string | null;
+  customer_pincode?: string | null;
+}) {
+  const line1 = order.customer_address || "";
+  const city = order.customer_city || "";
+  const state = order.customer_state || "";
+  const pincode = order.customer_pincode || "";
+
+  const cityStateLine = [city, state].filter(Boolean).join(", ");
+  const pincodeLine = pincode ? `${cityStateLine} - ${pincode}` : cityStateLine;
+
+  return [line1, pincodeLine].filter(Boolean).join("\n") || "Not provided";
+}
+
 export function createOrderNumber() {
   const date = new Date();
   const stamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
