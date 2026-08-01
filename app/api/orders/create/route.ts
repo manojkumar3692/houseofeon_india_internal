@@ -21,7 +21,6 @@ const schema = z.object({
     city: z.string().min(2),
     state: z.string().min(2),
     pincode: z.string().min(4),
-    notes: z.string().optional(),
   }),
   items: z
     .array(
@@ -154,7 +153,6 @@ export async function POST(request: Request) {
       customer_city: payload.customer.city,
       customer_state: payload.customer.state,
       customer_pincode: payload.customer.pincode,
-      notes: payload.customer.notes || null,
 
       items: orderCalc.items,
 

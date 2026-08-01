@@ -38,7 +38,6 @@ type CustomerForm = {
   city: string;
   state: string;
   pincode: string;
-  notes: string;
 };
 
 export default function CheckoutPage() {
@@ -94,7 +93,6 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     pincode: "",
-    notes: "",
   });
 
   // Mirrors `form` into a ref so the unload/visibility listener (set up
@@ -519,13 +517,6 @@ export default function CheckoutPage() {
               }
               onFocus={() => handleFieldFocus("pincode")}
               onBlur={(e) => handleFieldBlur("pincode", e.target.value)}
-            />
-
-            <textarea
-              className="textarea"
-              placeholder="Notes optional"
-              value={form.notes}
-              onChange={(e) => update("notes", e.target.value)}
             />
 
             {codEligible ? (
