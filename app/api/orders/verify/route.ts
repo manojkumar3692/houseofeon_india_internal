@@ -2,7 +2,6 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { sendOrderEmails } from "@/lib/email";
 
 const schema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -10,18 +9,18 @@ const schema = z.object({
   razorpay_signature: z.string().min(1),
 });
 
-function buildCustomerAddress(updated: any) {
-  const line1 = updated.customer_address || "";
-  const city = updated.customer_city || "";
-  const state = updated.customer_state || "";
-  const pincode = updated.customer_pincode || "";
-
-  const cityStateLine = [city, state].filter(Boolean).join(", ");
-  const pincodeLine = pincode ? `${cityStateLine} - ${pincode}` : cityStateLine;
-
-  return [line1, pincodeLine].filter(Boolean).join("\n") || "Not provided";
-}
-
+// IMPORTANT: this route is the customer's browser reporting back after the
+// Razorpay Checkout popup closes — it is NOT the source of truth for
+// whether the order is actually paid. It only proves the payment_id/
+// order_id pair it received really was issued by Razorpay (the signature
+// can only be generated with our secret key), which is enough to let the
+// customer through to the success page and to record which payment_id
+// this attempt produced. Whether that payment actually resulted in money
+// being captured is decided independently and exclusively by
+// /api/webhooks/razorpay, called directly by Razorpay's own servers — this
+// is what closes the gap where a payment stuck at "created" on Razorpay's
+// side could previously still end up looking "paid" here, based on nothing
+// but a single message from the customer's device.
 export async function POST(request: Request) {
   try {
     const payload = schema.parse(await request.json());
@@ -55,10 +54,16 @@ export async function POST(request: Request) {
       throw fetchError || new Error("Order not found");
     }
 
+    // Deliberately does NOT set payment_status here — only records which
+    // payment_id this signature-verified attempt produced, so it's visible
+    // even before the webhook lands. If the webhook (the actual authority)
+    // already processed this order — e.g. it arrived first, which can
+    // happen since it's a direct server-to-server call — this simply
+    // leaves payment_status/payment_captured_at untouched rather than
+    // risking overwriting a state this route has no business deciding.
     const { data: updated, error: updateError } = await supabase
       .from("orders")
       .update({
-        payment_status: "paid",
         razorpay_payment_id: payload.razorpay_payment_id,
       })
       .eq("id", order.id)
@@ -67,46 +72,6 @@ export async function POST(request: Request) {
 
     if (updateError || !updated) {
       throw updateError || new Error("Order update failed");
-    }
-
-    // Best-effort: mark the linked funnel-tracking row as converted. Done
-    // server-side (rather than relying on the client after redirect) so it
-    // doesn't depend on the browser still running JS at this point.
-    try {
-      await supabase
-        .from("checkout_sessions")
-        .update({
-          paid_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("order_number", updated.order_number);
-    } catch (linkError) {
-      console.error("checkout_sessions paid-link failed:", linkError);
-    }
-
-    try {
-      await sendOrderEmails({
-        orderNumber: updated.order_number,
-        order_id: updated.order_number,
-
-        customerName: updated.customer_name,
-        customerPhone: updated.customer_phone,
-        customerEmail: updated.customer_email,
-
-        address: buildCustomerAddress(updated),
-
-        amountInPaise: updated.amount_in_paise,
-        items: Array.isArray(updated.items) ? updated.items : [],
-
-        razorpayOrderId: updated.razorpay_order_id,
-        razorpayPaymentId: updated.razorpay_payment_id,
-
-        paymentType: updated.payment_type,
-        tokenAmountInPaise: updated.token_amount_in_paise,
-        balanceDueInPaise: updated.balance_due_in_paise,
-      });
-    } catch (emailError) {
-      console.error("Email failed after payment success:", emailError);
     }
 
     return NextResponse.json({
