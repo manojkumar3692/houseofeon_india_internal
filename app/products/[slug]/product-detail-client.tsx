@@ -25,7 +25,12 @@ import {
 
 const paymentMethods = ["UPI", "Visa", "Mastercard", "RuPay"];
 
-const trustRowItems = ["COD Available", "Free Shipping", "7-Day Easy Returns"];
+const trustRowItems = [
+  "COD Available",
+  "Free Shipping",
+  "100% Original Perfume",
+  "The Compliment Getter",
+];
 
 // The per-unit price actually charged for a given quantity of THIS product
 // alone, assuming EON20 (auto-applied at checkout for a single bottle) or

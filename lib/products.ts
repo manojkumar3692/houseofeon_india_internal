@@ -77,9 +77,9 @@ export const products: Product[] = [
       // "/products/desert-tonka.png"
     ],
 
-    rating: 5,
+    rating: 4.8,
     reviewCount: 0,
-    ratingText: "Loved by early customers",
+    ratingText: "4.8/5 · Loved by early customers",
     valueLine:
       "A warm, rich perfume for men who prefer depth, smoothness and quiet luxury.",
     highlights: [
@@ -153,9 +153,9 @@ export const products: Product[] = [
       "/products/arctic-wave-lifestyle-3.png"
     ],
 
-    rating: 5,
+    rating: 4.6,
     reviewCount: 0,
-    ratingText: "Loved by early customers",
+    ratingText: "4.6/5 · Loved by early customers",
     valueLine:
       "A fresh aquatic perfume made for Indian weather, daily wear and clean confidence.",
     highlights: [
@@ -231,9 +231,9 @@ export const products: Product[] = [
       "/products/zyrox.png",
       // "/products/zyrox-lifestyle-4.png",
     ],
-    rating: 5,
+    rating: 4.7,
     reviewCount: 0,
-    ratingText: "Loved by early customers",
+    ratingText: "4.7/5 · Loved by early customers",
     valueLine:
       "A cool, energetic perfume for a sharp, youthful and modern fragrance mood.",
     highlights: [
@@ -295,9 +295,9 @@ export const products: Product[] = [
     image: "/products/rank.png",
     gallery: ["/products/rank.png"],
 
-    rating: 5,
+    rating: 4.9,
     reviewCount: 0,
-    ratingText: "Loved by early customers",
+    ratingText: "4.9/5 · Loved by early customers",
     valueLine:
       "A bold masculine perfume made for office confidence, evening plans and strong first impressions.",
     highlights: [
@@ -373,9 +373,9 @@ export const products: Product[] = [
       "/products/syra-lifestyle-6.1.png",
     ],
 
-    rating: 5,
+    rating: 4.8,
     reviewCount: 0,
-    ratingText: "Loved by early customers",
+    ratingText: "4.8/5 · Loved by early customers",
     valueLine:
       "An elegant floral musk perfume for women who want a soft, graceful and memorable presence.",
     highlights: [
@@ -469,9 +469,9 @@ export const products: Product[] = [
       "/products/sgold-lifestyle-5.png"
      ],
 
-    rating: 5,
+    rating: 4.6,
     reviewCount: 0,
-    ratingText: "Loved by early customers",
+    ratingText: "4.6/5 · Loved by early customers",
     valueLine:
       "A rich unisex perfume with golden warmth, smooth woods and timeless premium presence.",
     highlights: [
