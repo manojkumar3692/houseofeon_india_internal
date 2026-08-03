@@ -59,6 +59,8 @@ export default function CheckoutPage() {
   const [paymentType, setPaymentType] = useState<"full" | "partial_cod">(
     "full"
   );
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const payButtonRef = useRef<HTMLButtonElement>(null);
 
   const codEligible = isPartialCodEligible(Math.round(finalTotal * 100));
   const effectivePaymentType =
@@ -174,6 +176,51 @@ export default function CheckoutPage() {
       quantity: number;
     }[];
   }, [lines]);
+
+  // Line items for the visual order summary — mirrors analyticsItems but
+  // keeps the image/size around for rendering, so customers can see exactly
+  // what they're paying for without leaving checkout to check the cart.
+  //
+  // getUnitPrice only bakes in the bundle rate (2+ bottles) — it knows
+  // nothing about coupon codes like EON20, which are applied as a separate
+  // subtract-from-subtotal step in CartContext. So a raw getUnitPrice
+  // number would show ₹1249 for a single bottle even though EON20 (or any
+  // other active coupon) has already brought the real total down to ₹999.
+  // Scaling every line by the same ratio the cart's total was scaled by
+  // keeps these numbers matching whatever coupon math produced finalTotal,
+  // without hardcoding EON20 specifically.
+  const checkoutLineItems = useMemo(() => {
+    const discountFactor = total > 0 ? finalTotal / total : 1;
+
+    return lines
+      .map((line) => {
+        const product = getProductById(line.productId);
+        if (!product) return null;
+
+        const rawLineTotal =
+          getUnitPrice(product.price, totalItems) * line.quantity;
+        const lineTotal = Math.round(rawLineTotal * discountFactor);
+
+        return {
+          productId: product.id,
+          name: product.name,
+          image: product.image,
+          size: product.size,
+          quantity: line.quantity,
+          unitPrice: Math.round(lineTotal / line.quantity),
+          lineTotal,
+        };
+      })
+      .filter(Boolean) as {
+      productId: string;
+      name: string;
+      image: string;
+      size: string;
+      quantity: number;
+      unitPrice: number;
+      lineTotal: number;
+    }[];
+  }, [lines, totalItems, total, finalTotal]);
 
   useEffect(() => {
     if (!lines.length) return;
@@ -417,7 +464,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <section className="section">
+    <section className="section checkout-page-pad">
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="afterInteractive"
@@ -425,6 +472,58 @@ export default function CheckoutPage() {
 
       <div className="container">
         <h1 className="section-title">Checkout</h1>
+
+        {lines.length ? (
+          <div className="checkout-mobile-summary">
+            <button
+              type="button"
+              className="checkout-mobile-summary-toggle"
+              onClick={() => setSummaryOpen((open) => !open)}
+            >
+              <span className="checkout-mobile-summary-thumbs">
+                {checkoutLineItems.slice(0, 3).map((item) => (
+                  <img key={item.productId} src={item.image} alt="" />
+                ))}
+              </span>
+
+              <span className="checkout-mobile-summary-text">
+                <b>Order summary</b>
+                <span>
+                  {totalItems} item{totalItems > 1 ? "s" : ""} ·{" "}
+                  {formatINR(finalTotal)}
+                </span>
+              </span>
+
+              <span
+                className={`checkout-mobile-summary-chevron${
+                  summaryOpen ? " open" : ""
+                }`}
+                aria-hidden="true"
+              >
+                ⌄
+              </span>
+            </button>
+
+            {summaryOpen ? (
+              <div className="checkout-mobile-summary-body">
+                {checkoutLineItems.map((item) => (
+                  <div className="checkout-line-item" key={item.productId}>
+                    <img src={item.image} alt={item.name} />
+                    <div>
+                      <b>{item.name}</b>
+                      <span>
+                        Qty {item.quantity} · {item.size}
+                      </span>
+                    </div>
+                    <span className="checkout-line-item-price">
+                      {formatINR(item.lineTotal)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="hero-grid" style={{ alignItems: "start" }}>
           <form className="card form" onSubmit={submit}>
@@ -571,6 +670,7 @@ export default function CheckoutPage() {
             {error ? <div className="notice">{error}</div> : null}
 
             <button
+              ref={payButtonRef}
               className="btn"
               disabled={loading || !razorpayReady}
               type="submit"
@@ -588,6 +688,25 @@ export default function CheckoutPage() {
           <div className="card checkout-summary-card">
             <div className="eyebrow">Payment Summary</div>
             <h2>Secure checkout</h2>
+
+            {checkoutLineItems.length ? (
+              <div className="checkout-summary-lineitems">
+                {checkoutLineItems.map((item) => (
+                  <div className="checkout-line-item" key={item.productId}>
+                    <img src={item.image} alt={item.name} />
+                    <div>
+                      <b>{item.name}</b>
+                      <span>
+                        Qty {item.quantity} · {item.size}
+                      </span>
+                    </div>
+                    <span className="checkout-line-item-price">
+                      {formatINR(item.lineTotal)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
 
             <div className="summary-lines">
               <div>
@@ -667,9 +786,56 @@ export default function CheckoutPage() {
                   )} in cash to the delivery agent.`
                 : "After successful Razorpay payment, your order will be saved and emailed to office."}
             </p>
+
+            <div className="checkout-trust-strip">
+              <div>
+                <b>Secure payment</b>
+                <span>Powered by Razorpay</span>
+              </div>
+              <div>
+                <b>100% Original</b>
+                <span>Every bottle sealed &amp; quality checked</span>
+              </div>
+              <div>
+                <b>The Compliment Getter</b>
+                <span>Loved for how long it lasts</span>
+              </div>
+              <div>
+                <b>No returns once opened</b>
+                <span>Fragrances can&apos;t be returned once the seal is broken</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {lines.length ? (
+        <div className="checkout-sticky-pay">
+          <div className="checkout-sticky-pay-info">
+            <span>
+              {effectivePaymentType === "partial_cod" ? "Pay now" : "Total"}
+            </span>
+            <b>
+              {formatINR(
+                effectivePaymentType === "partial_cod"
+                  ? amountDueNow
+                  : finalTotal
+              )}
+            </b>
+          </div>
+          <button
+            type="button"
+            disabled={loading || !razorpayReady}
+            onClick={() => payButtonRef.current?.click()}
+          >
+            {loading
+              ? "Opening..."
+              : !razorpayReady
+              ? "Loading..."
+              : "Pay now"}
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }
