@@ -5007,6 +5007,171 @@
   }
 }
 
+.urgency-strip {
+  position: relative;
+  overflow: hidden;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 247, 232, 0.5)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 30px rgba(31, 23, 17, 0.08);
+}
+
+.urgency-strip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 45%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  animation: urgencyShine 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes urgencyShine {
+  0% {
+    left: -60%;
+  }
+  35% {
+    left: 130%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+.urgency-strip-critical {
+  border-color: rgba(192, 57, 43, 0.32);
+  box-shadow: 0 12px 30px rgba(192, 57, 43, 0.14);
+}
+
+.urgency-strip-low {
+  border-color: rgba(217, 122, 52, 0.28);
+  box-shadow: 0 12px 30px rgba(217, 122, 52, 0.12);
+}
+
+.urgency-strip-medium {
+  border-color: rgba(219, 166, 34, 0.26);
+  box-shadow: 0 12px 30px rgba(219, 166, 34, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .urgency-strip::before,
+  .urgency-live-dot {
+    animation: none;
+  }
+}
+
+.urgency-strip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.urgency-strip-label {
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.urgency-strip-critical .urgency-strip-label {
+  color: #b23a1f;
+}
+
+.urgency-strip-low .urgency-strip-label {
+  color: #b9791f;
+}
+
+.urgency-strip-medium .urgency-strip-label {
+  color: #96731f;
+}
+
+.urgency-strip-count {
+  font-weight: 800;
+  font-size: 12px;
+  color: #1f1711;
+}
+
+.urgency-gauge {
+  position: relative;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #c0392b 0%,
+    #d97a34 32%,
+    #dba622 62%,
+    #8ba05a 100%
+  );
+  margin-bottom: 12px;
+}
+
+.urgency-gauge-marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1f1711;
+  border: 2px solid #fffaf4;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px rgba(31, 23, 17, 0.3);
+}
+
+.urgency-strip-viewers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6f6257;
+}
+
+.urgency-strip-viewers b {
+  color: #1f1711;
+}
+
+.urgency-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4caf6d;
+  flex-shrink: 0;
+  animation: urgencyPulse 1.8s infinite;
+}
+
+@keyframes urgencyPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 109, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(76, 175, 109, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 109, 0);
+  }
+}
+
+.urgency-strip-checkout {
+  margin: 4px 0 16px;
+}
+
 .quiz-cta-banner {
   padding: 0 20px;
   margin: 44px 0;

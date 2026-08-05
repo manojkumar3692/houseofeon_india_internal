@@ -9,6 +9,7 @@ import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
 import ProductImageGallery from "@/components/ProductImageGallery";
 import SocialProofSection from "@/components/SocialProofSection";
+import UrgencyStrip from "@/components/UrgencyStrip";
 import styles from "./product-detail.module.css";
 import {
   trackProductViewed,
@@ -358,6 +359,8 @@ ${productUrl}`;
                 </span>
               </button>
             </div>
+
+            <UrgencyStrip productId={product.id} productName={product.name} />
 
             <div className={`${styles.productCtaBlock} detail-actions`}>
               <button className={styles.buyNowButton} onClick={handleBuyNow}>
