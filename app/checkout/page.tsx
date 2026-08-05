@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useCart } from "@/components/CartContext";
+import UrgencyStrip from "@/components/UrgencyStrip";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import {
@@ -668,6 +669,18 @@ export default function CheckoutPage() {
             ) : null}
 
             {error ? <div className="notice">{error}</div> : null}
+
+            {checkoutLineItems.length ? (
+              <UrgencyStrip
+                productId={checkoutLineItems[0].productId}
+                productName={
+                  checkoutLineItems.length === 1
+                    ? checkoutLineItems[0].name
+                    : undefined
+                }
+                className="urgency-strip-checkout"
+              />
+            ) : null}
 
             <button
               ref={payButtonRef}
