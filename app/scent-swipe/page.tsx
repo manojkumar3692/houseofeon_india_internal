@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import SwipeGame from "@/components/SwipeGame";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   title: "Scent Swipe Game | Find Your Perfume Match | House of Eon",

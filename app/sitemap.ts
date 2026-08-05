@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { products } from "@/lib/products";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

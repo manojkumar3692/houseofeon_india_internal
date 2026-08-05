@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import ProductDetailClient from "./product-detail-client";
 import ProductViewTracker from "@/components/ProductViewTracker";
 import { getProductBySlug, products } from "@/lib/products";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 
 export async function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
