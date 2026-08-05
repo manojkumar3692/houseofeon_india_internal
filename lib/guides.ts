@@ -256,6 +256,134 @@ export const guides: Guide[] = [
       "zyrox",
     ],
   },
+  {
+    slug: "best-unisex-perfume-in-india",
+    title: "Best Unisex Perfume in India: What Actually Makes a Scent Unisex?",
+    seoTitle: "Best Unisex Perfume in India | House of Eon",
+    seoDescription:
+      "Unisex perfume doesn't mean neutral or boring — it means a scent profile built to work on anyone. Here's what actually makes a fragrance unisex, and our pick for India.",
+    seoKeywords: [
+      "best unisex perfume in india",
+      "unisex perfume india",
+      "unisex fragrance for men and women",
+      "gender neutral perfume india",
+    ],
+    excerpt:
+      "Unisex doesn't mean neutral or boring — it means a scent profile built to work well on anyone. Here's what actually makes a fragrance unisex, and our pick for India.",
+    eyebrow: "Fragrance Basics",
+    heroTitle: "What actually makes a perfume unisex?",
+    heroSubtitle:
+      "It's not about being \"gender neutral\" in a flat, boring way — it's about a scent character built around notes that read as premium and confident regardless of who's wearing it.",
+    sections: [
+      {
+        heading: "It's about the notes, not a marketing label",
+        body: [
+          "Traditionally, \"masculine\" fragrances lean into woods, spice and musk, while \"feminine\" ones lean into florals and fruit. A genuinely unisex perfume is usually built around notes that sit outside that split entirely — amber, saffron, smooth woods, warm resins — characters that read as rich and premium rather than clearly gendered.",
+          "That's a deliberate choice in how a fragrance is composed, not just a label stuck on an existing men's or women's scent.",
+        ],
+      },
+      {
+        heading: "Why unisex works especially well for gifting",
+        body: [
+          "If you're not entirely sure of someone's fragrance preference — a colleague, a new partner, a friend you're buying for the first time — a well-built unisex scent is a safer bet than guessing between a strongly masculine or feminine profile. It's also a strong pick for couples who want to share one bottle.",
+        ],
+      },
+      {
+        heading: "Our pick: Silent Gold",
+        body: [
+          "Silent Gold is House of Eon's unisex fragrance — golden amber, a saffron-style touch and smooth woods, built for quiet luxury rather than a loud, clearly gendered statement. It's Extrait de Parfum concentration, so it's built to last through a full evening or festive occasion without needing reapplication.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Is unisex perfume the same as gender-neutral perfume?",
+        answer:
+          "They're often used interchangeably. Both describe a fragrance built around notes that aren't strongly associated with either traditionally masculine or feminine profiles.",
+      },
+      {
+        question: "Can a unisex perfume smell too strong on one gender?",
+        answer:
+          "Not if it's well composed — a genuinely unisex scent is built to sit well on any skin chemistry, though everyone's skin does subtly affect how any fragrance develops.",
+      },
+      {
+        question: "Is Silent Gold a good first unisex perfume to try?",
+        answer:
+          "Yes — it's built around warm, rich notes (golden amber, saffron, smooth woods) that read as premium rather than clearly masculine or feminine, making it an easy entry point into unisex fragrance.",
+      },
+    ],
+    relatedProductIds: ["silent-gold"],
+  },
+  {
+    slug: "perfume-gift-for-girlfriend-boyfriend",
+    title: "How to Choose a Perfume Gift for Your Girlfriend or Boyfriend",
+    seoTitle:
+      "Perfume Gift for Girlfriend or Boyfriend: How to Choose | House of Eon",
+    seoDescription:
+      "Choosing a perfume for your partner is more personal than picking any gift under a budget. Here's how to actually match a scent to their personality, not just their gender.",
+    seoKeywords: [
+      "perfume gift for girlfriend",
+      "perfume gift for boyfriend",
+      "perfume for partner india",
+      "romantic perfume gift india",
+    ],
+    excerpt:
+      "Choosing a perfume for your partner is more personal than picking any gift under a budget. Here's how to actually match a scent to who they are.",
+    eyebrow: "Gifting Guide",
+    heroTitle: "Choosing a perfume gift for someone you actually know well.",
+    heroSubtitle:
+      "A partner gift is different from a colleague gift — you already know their personality, so the goal is matching that, not just picking a safe, universally-liked option.",
+    sections: [
+      {
+        heading: "For a girlfriend who's confident and understated",
+        body: [
+          "SYRA's soft floral musk works well for someone who prefers elegance over making a loud statement — graceful for office and daily wear, but with enough presence for evenings out.",
+        ],
+      },
+      {
+        heading: "For a girlfriend (or anyone) who prefers rich, warm scents",
+        body: [
+          "Silent Gold's golden amber and saffron character suits someone who leans toward warmth and richness over florals — a strong choice if you already know she prefers deeper, more timeless scents over anything sweet or fruity.",
+        ],
+      },
+      {
+        heading: "For a boyfriend with a warm, confident presence",
+        body: [
+          "Desert Tonka's tonka-amber depth suits someone who already has a warm, easygoing confidence — it reads as rich without being flashy, which makes it a strong fit for evenings, dates and special occasions specifically.",
+        ],
+      },
+      {
+        heading: "For a boyfriend who's bold and direct",
+        body: [
+          "RANK's stronger, more powerful masculine profile suits someone with a more assertive personality — it's built for presence, which makes sense as a gift for someone who already carries himself that way.",
+        ],
+      },
+      {
+        heading: "If you genuinely can't decide",
+        body: [
+          "Our Scent Finder quiz takes 30 seconds and matches a personality/occasion profile to one of our six perfumes — a useful shortcut if you know your partner well but aren't confident translating that into a specific scent family.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Should I match a perfume to my partner's personality or their existing scent preference?",
+        answer:
+          "Both matter, but if you have to pick one, existing preference wins — someone who already loves florals is unlikely to switch to a heavy woody scent just because it \"matches their personality\" on paper.",
+      },
+      {
+        question: "Is it risky to gift perfume to a partner?",
+        answer:
+          "It's more personal than a lot of gifts, which is exactly why matching their known preferences (not just their gender) matters more than picking the most popular option.",
+      },
+      {
+        question: "What if I'm still not sure which scent fits them?",
+        answer:
+          "Try the House of Eon Scent Finder quiz — it takes about 30 seconds and suggests a match based on mood and occasion rather than asking you to guess a fragrance family from scratch.",
+      },
+    ],
+    relatedProductIds: ["syra", "silent-gold", "desert-tonka", "rank"],
+  },
 ];
 
 export function getGuideBySlug(slug: string) {

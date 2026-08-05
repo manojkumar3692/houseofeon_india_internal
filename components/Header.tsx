@@ -11,6 +11,8 @@ export default function Header() {
         <Link href="/" className="brand">HOUSE OF EON</Link>
         <nav className="navlinks">
           <Link href="/products">Perfumes</Link>
+          <Link href="/long-lasting-perfume-for-men-india">Men</Link>
+          <Link href="/best-perfume-for-women-in-india">Women</Link>
           <Link href="/track-order">Track</Link>
           <Link href="/cart" className="btn ghost">Cart ({count})</Link>
         </nav>
