@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           "/best-perfume-for-women-in-india",
           "/scent-finder",
           "/scent-swipe",
+          "/guides",
         ],
         disallow: [
           "/cart",
