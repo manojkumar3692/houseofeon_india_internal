@@ -5,8 +5,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
 const supportWhatsapp = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "";
 

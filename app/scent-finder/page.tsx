@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import ScentQuiz from "@/components/ScentQuiz";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   title: "Scent Finder Quiz | Find Your Perfect Perfume | House of Eon",

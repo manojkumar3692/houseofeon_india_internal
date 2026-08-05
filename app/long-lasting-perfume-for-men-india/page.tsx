@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 
 const menProducts = products.filter((product) => product.gender === "Men");
 const rankProduct = products.find((product) => product.id === "rank");

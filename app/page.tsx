@@ -5,7 +5,9 @@ import { products } from "@/lib/products";
 import ProductCarousel from "@/components/ProductCarousel";
 import HeroProductShowcase from "@/components/HeroProductShowcase";
 import SocialProofSection from "@/components/SocialProofSection";
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+import { SITE_URL } from "@/lib/seo";
+
+const siteUrl = SITE_URL;
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
 
 

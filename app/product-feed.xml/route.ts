@@ -1,7 +1,8 @@
 import { products } from "@/lib/products";
 import { EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
+import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://houseofeon.in";
+const siteUrl = SITE_URL;
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
 
 // Google Shopping / Merchant Center RSS 2.0 feed, generated from the same
