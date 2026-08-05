@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const instagramUrl = "https://www.instagram.com/houseofeon_india/";
 const instagramReelsUrl = "https://www.instagram.com/houseofeon_india/reels/";
@@ -6,6 +9,15 @@ const facebookUrl = "https://www.facebook.com/profile.php?id=61569101812630";
 const whatsappUrl = "https://wa.me/919902376600";
 
 export default function Footer() {
+  const pathname = usePathname();
+  // The floating WhatsApp bubble is fixed-position at the bottom-right —
+  // on checkout that's the exact spot the sticky mobile Pay bar lives too,
+  // so it's a genuine accidental-tap risk sitting right on top of the one
+  // button that matters most. Hide only the floating bubble here; the
+  // plain WhatsApp support link further down in the footer still works for
+  // anyone who deliberately scrolls down looking for it.
+  const isCheckout = pathname?.startsWith("/checkout");
+
   return (
     <footer className="footer brand-footer">
       <div className="container footer-grid">
@@ -70,15 +82,17 @@ export default function Footer() {
         <span>Made in India · Premium perfumes</span>
       </div>
 
-      <a
-        className="whatsapp"
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat with House of Eon on WhatsApp"
-      >
-        WhatsApp
-      </a>
+      {!isCheckout ? (
+        <a
+          className="whatsapp"
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat with House of Eon on WhatsApp"
+        >
+          WhatsApp
+        </a>
+      ) : null}
     </footer>
   );
 }
