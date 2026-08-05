@@ -60,6 +60,7 @@ export default function Footer() {
           </Link>
           <Link href="/scent-finder">Find your scent</Link>
           <Link href="/scent-swipe">Play &amp; win 20%</Link>
+          <Link href="/guides">Perfume guides</Link>
           <Link href="/cart">Cart</Link>
           <Link href="/track-order">Track order</Link>
         </div>

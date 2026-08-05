@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { products } from "@/lib/products";
+import { guides } from "@/lib/guides";
 import { SITE_URL } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
@@ -42,6 +43,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${siteUrl}/guides`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   const productPages: MetadataRoute.Sitemap = products.map((product) => ({
@@ -51,5 +58,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...productPages];
+  const guidePages: MetadataRoute.Sitemap = guides.map((guide) => ({
+    url: `${siteUrl}/guides/${guide.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.75,
+  }));
+
+  return [...staticPages, ...productPages, ...guidePages];
 }
