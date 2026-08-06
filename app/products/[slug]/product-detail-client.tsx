@@ -398,6 +398,33 @@ ${productUrl}`;
         </div>
       </section>
 
+      {product.videoUrl ? (
+        <section className={`section ${styles.videoSection}`}>
+          <div className="container">
+            {product.videoUrl.toLowerCase().endsWith(".gif") ? (
+              // GIFs autoplay/loop natively and can't go through <video> —
+              // browsers don't support gif as a video src.
+              <img
+                className={styles.videoPlayer}
+                src={product.videoUrl}
+                alt={`${product.name} by House of Eon`}
+              />
+            ) : (
+              <video
+                className={styles.videoPlayer}
+                src={product.videoUrl}
+                poster={product.videoPosterUrl}
+                controls
+                playsInline
+                preload="metadata"
+              >
+                Your browser doesn&apos;t support embedded video.
+              </video>
+            )}
+          </div>
+        </section>
+      ) : null}
+
       {hasHighlights ? (
         <section className={`section ${styles.highlightSection}`}>
           <div className="container">
