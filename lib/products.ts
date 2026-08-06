@@ -36,6 +36,13 @@ export type Product = {
   image: string;
   gallery?: string[];
 
+  // Optional product-story video (Supabase Storage public URL) shown as a
+  // full-width section right after the hero — below Buy Now in reading
+  // order on both mobile and desktop. Undefined = section doesn't render,
+  // so this can be rolled out product-by-product rather than all at once.
+  videoUrl?: string;
+  videoPosterUrl?: string;
+
   rating?: number;
   reviewCount?: number;
   ratingText?: string;
@@ -68,6 +75,8 @@ export const products: Product[] = [
     mood: ["Warm", "Rich", "Masculine", "Luxury", "Magnetic"],
     occasion: ["Evening", "Date Night", "Festive Wear", "Winter", "Gifting"],
     image: "/products/desert-tonka.png",
+    videoUrl:
+      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
     gallery: [
       "/products/desert-lifestyle-1.png",
       "/products/desert-lifestyle-2.png",
@@ -221,6 +230,8 @@ export const products: Product[] = [
     mood: ["Icy", "Bold", "Youthful", "Energetic", "Trendy"],
     occasion: ["College", "Parties", "Daily Wear", "Hangouts", "Summer"],
     image: "/products/zyrox.png",
+    videoUrl:
+      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
     gallery: [
       "/products/zyrox-lifestyle-1.png",
       "/products/zyrox-lifestyle-2.png",

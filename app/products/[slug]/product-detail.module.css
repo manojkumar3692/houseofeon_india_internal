@@ -279,6 +279,29 @@
     line-height: 1.45;
   }
   
+  /* Product story video — shown right after the hero (below Buy Now) when
+     a product has one set. playsInline on the <video> tag is what stops
+     iOS Safari from hijacking playback into fullscreen. */
+  .videoSection {
+    padding-top: 0;
+  }
+
+  .videoPlayer {
+    display: block;
+    width: 100%;
+    max-height: 640px;
+    border-radius: 28px;
+    background: #1f1711;
+    box-shadow: 0 22px 60px rgba(31, 23, 17, 0.12);
+  }
+
+  @media (max-width: 640px) {
+    .videoPlayer {
+      border-radius: 20px;
+      max-height: 420px;
+    }
+  }
+
   /* Generic highlights section for all products */
   .highlightSection {
     background:
