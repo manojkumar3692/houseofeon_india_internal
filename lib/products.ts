@@ -304,7 +304,11 @@ export const products: Product[] = [
     mood: ["Powerful", "Masculine", "Refined", "Bold", "Premium"],
     occasion: ["Office", "Business", "Evening", "Date Night", "Gifting"],
     image: "/products/rank.png",
-    gallery: ["/products/rank.png"],
+    gallery: [
+      "/products/rank-lifestyle-1.png",
+      "/products/rank-lifestyle-2.png",
+      "/products/rank.png",
+      "/products/rank-lifestyle-3.png",],
 
     rating: 4.9,
     reviewCount: 0,
