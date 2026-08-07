@@ -154,6 +154,8 @@ export const products: Product[] = [
     mood: ["Fresh", "Cool", "Clean", "Confident", "Modern"],
     occasion: ["Office", "College", "Daily Wear", "Summer", "Daytime"],
     image: "/products/arctic-wave.png",
+    videoUrl:
+      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
     gallery: [
       "/products/arctic-wave-lifestyle-1.png",
       "/products/arctic-wave-lifestyle-4.png",
@@ -304,6 +306,8 @@ export const products: Product[] = [
     mood: ["Powerful", "Masculine", "Refined", "Bold", "Premium"],
     occasion: ["Office", "Business", "Evening", "Date Night", "Gifting"],
     image: "/products/rank.png",
+    videoUrl:
+      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
     gallery: [
       "/products/rank-lifestyle-1.png",
       "/products/rank-lifestyle-2.png",
@@ -378,6 +382,8 @@ export const products: Product[] = [
     mood: ["Elegant", "Feminine", "Confident", "Soft", "Powerful"],
     occasion: ["Office", "Brunch", "Evening", "Gifting", "Daily Wear"],
     image: "/products/syra.png",
+    videoUrl:
+      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
     gallery: [
       "/products/syra-lifestyle-7.png",
       "/products/syra-lifestyle-1.png",
@@ -475,6 +481,8 @@ export const products: Product[] = [
       "Special Moments",
     ],
     image: "/products/silent-gold.png",
+    videoUrl:
+      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
     gallery: [
       "/products/sgold-lifestyle-3.png",
       "/products/sgold-lifestyle-1.png",
