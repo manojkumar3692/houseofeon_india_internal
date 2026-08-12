@@ -1,4 +1,9 @@
 import { hashEmailForMeta, hashPhoneForMeta } from "@/lib/checkoutSession";
+import {
+  getConciergeSessionId,
+  captureLandingContext,
+  getConciergeVariant,
+} from "@/lib/assistantSession";
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
@@ -414,24 +419,99 @@ export function trackScentFixCtaClick(ctaId: string) {
 }
 
 // -----------------------------------------------------------------------
-// AI perfume assistant (components/PerfumeAssistant.tsx) — opened, each
-// message sent (and whether it was typed or spoken), and errors, so it's
-// possible to see whether the assistant gets used at all and whether
-// voice input actually works for real visitors before investing further.
+// EON Concierge (components/PerfumeAssistant.tsx) — full funnel so it's
+// possible to answer the actual question that matters: do visitors who
+// interact with the concierge convert better than ones who don't. Every
+// call carries session_id + landing UTM + concierge A/B group as common
+// params (see withConciergeParams) so a GA/Meta report can slice by any of
+// those without a server-side join.
 // -----------------------------------------------------------------------
-export function trackAssistantOpened(context: "product" | "scent-fix") {
-  trackGAEvent("assistant_opened", { context });
-  trackMetaEvent("CustomEvent", { event_name: "AssistantOpened", context });
+function withConciergeParams(params?: Record<string, any>) {
+  const landing = captureLandingContext();
+  const variant = getConciergeVariant();
+
+  return {
+    session_id: getConciergeSessionId(),
+    variant: variant.group,
+    utm_source: landing.utmSource,
+    utm_campaign: landing.utmCampaign,
+    utm_content: landing.utmContent,
+    ...params,
+  };
 }
 
-export function trackAssistantMessageSent(inputMode: "text" | "voice") {
-  trackGAEvent("assistant_message_sent", { input_mode: inputMode });
-  trackMetaEvent("CustomEvent", {
-    event_name: "AssistantMessageSent",
-    input_mode: inputMode,
-  });
+export function trackConciergeOpened(context: "home" | "product" | "cart" | "scent-fix" | "other") {
+  trackGAEvent("concierge_opened", withConciergeParams({ context }));
+  trackMetaEvent("CustomEvent", { event_name: "ConciergeOpened", context });
+}
+
+export function trackQuickActionClicked(actionId: string) {
+  trackGAEvent("quick_action_clicked", withConciergeParams({ action_id: actionId }));
+}
+
+export function trackConciergeMessageSent(inputMode: "text" | "voice") {
+  trackGAEvent("message_sent", withConciergeParams({ input_mode: inputMode }));
+}
+
+export function trackRecommendationShown(productNames: string[]) {
+  trackGAEvent(
+    "recommendation_shown",
+    withConciergeParams({ products: productNames.join(", ") })
+  );
+}
+
+export function trackProductCardClicked(productName: string, action: "view" | "add_to_cart") {
+  trackGAEvent(
+    "product_card_clicked",
+    withConciergeParams({ product_name: productName, action })
+  );
+}
+
+export function trackComparisonStarted(productNames: string[]) {
+  trackGAEvent(
+    "comparison_started",
+    withConciergeParams({ products: productNames.join(", ") })
+  );
+}
+
+export function trackAddToCartFromAI(productName: string, quantity: number) {
+  trackGAEvent(
+    "add_to_cart_from_ai",
+    withConciergeParams({ product_name: productName, quantity })
+  );
+  trackMetaEvent("CustomEvent", { event_name: "AddToCartFromAI", product_name: productName });
+}
+
+export function trackCheckoutClickedFromAI() {
+  trackGAEvent("checkout_clicked_from_ai", withConciergeParams());
+  trackMetaEvent("CustomEvent", { event_name: "CheckoutClickedFromAI" });
+}
+
+export function trackDeliveryChecked() {
+  trackGAEvent("delivery_checked", withConciergeParams());
+}
+
+export function trackOrderTrackingUsed(found: boolean) {
+  trackGAEvent("order_tracking_used", withConciergeParams({ found }));
+}
+
+export function trackWhatsappHandoff(reason: string) {
+  trackGAEvent("whatsapp_handoff", withConciergeParams({ reason }));
+  trackMetaEvent("CustomEvent", { event_name: "ConciergeWhatsappHandoff", reason });
+}
+
+// Called from app/checkout/page.tsx right alongside the real trackPurchase
+// call, only when this browser session had an earlier concierge
+// interaction (see lib/assistantSession.ts markConciergeEngaged /
+// getConciergeEngagement) — this is the metric that actually answers
+// "does the concierge improve conversion."
+export function trackPurchaseAfterConcierge(productNames: string[], orderValue: number) {
+  trackGAEvent(
+    "purchase_after_ai_interaction",
+    withConciergeParams({ products: productNames.join(", "), value: orderValue })
+  );
 }
 
 export function trackAssistantError(reason: string) {
-  trackGAEvent("assistant_error", { reason });
+  trackGAEvent("assistant_error", withConciergeParams({ reason }));
 }

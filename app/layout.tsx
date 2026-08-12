@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
-import PerfumeAssistant from "@/components/PerfumeAssistant";
+import ConciergeLoader from "@/components/ConciergeLoader";
 import { SITE_URL } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
@@ -61,9 +61,11 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
-          {/* Self-gates to /scent-fix and /products/[slug] only — see
-              components/PerfumeAssistant.tsx */}
-          <PerfumeAssistant />
+          {/* EON Concierge — self-gates by pathname inside the component
+              (hidden on /checkout and /admin); lazy-loaded via
+              ConciergeLoader so its bundle isn't part of the critical
+              initial page render. See components/PerfumeAssistant.tsx */}
+          <ConciergeLoader />
         </CartProvider>
       </body>
     </html>

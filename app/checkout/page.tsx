@@ -13,7 +13,9 @@ import {
   trackPurchase,
   trackCheckoutLead,
   trackAddPaymentInfo,
+  trackPurchaseAfterConcierge,
 } from "@/lib/analytics";
+import { getConciergeEngagement } from "@/lib/assistantSession";
 import {
   trackCheckoutStartedClarity,
   trackPaymentSuccessClarity,
@@ -418,6 +420,19 @@ export default function CheckoutPage() {
               value: Number(createData.finalTotal ?? finalTotal),
               items: analyticsItems,
             });
+
+            // Only fires if this browser session actually interacted with
+            // EON Concierge earlier (see lib/assistantSession.ts) — this is
+            // the metric that answers whether the concierge moves the
+            // needle on conversion, not just whether it gets opened.
+            const engagement = getConciergeEngagement();
+            if (engagement.engaged) {
+              trackPurchaseAfterConcierge(
+                engagement.products,
+                Number(createData.finalTotal ?? finalTotal)
+              );
+            }
+
             trackPaymentSuccessClarity();
             clearCart();
 
