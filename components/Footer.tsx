@@ -18,6 +18,10 @@ export default function Footer() {
   // anyone who deliberately scrolls down looking for it.
   const isCheckout = pathname?.startsWith("/checkout");
 
+  // Same reasoning as Header: /scent-fix is a standalone ad landing page
+  // with its own dark design system and no site chrome.
+  if (pathname?.startsWith("/scent-fix")) return null;
+
   return (
     <footer className="footer brand-footer">
       <div className="container footer-grid">
@@ -58,7 +62,7 @@ export default function Footer() {
           <Link href="/best-perfume-for-women-in-india">
             Best perfume for women
           </Link>
-          <Link href="/scent-finder">Find your scent</Link>
+          <Link href="/scent-fix">Find your scent</Link>
           <Link href="/scent-swipe">Play &amp; win 20%</Link>
           <Link href="/guides">Perfume guides</Link>
           <Link href="/cart">Cart</Link>

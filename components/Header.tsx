@@ -1,10 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCart } from "./CartContext";
 
 export default function Header() {
   const { count } = useCart();
+  const pathname = usePathname();
+
+  // /scent-fix is a dedicated Meta-ad landing page — its own dark design
+  // system, deliberately no site nav so cold traffic can't click away
+  // from the one thing the ad promised before the payoff lands.
+  if (pathname?.startsWith("/scent-fix")) return null;
+
   return (
     <header className="header">
       <div className="container nav">

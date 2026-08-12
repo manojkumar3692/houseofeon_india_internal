@@ -13,7 +13,7 @@ export default function robots(): MetadataRoute.Robots {
           "/products",
           "/long-lasting-perfume-for-men-india",
           "/best-perfume-for-women-in-india",
-          "/scent-finder",
+          "/scent-fix",
           "/scent-swipe",
           "/guides",
         ],

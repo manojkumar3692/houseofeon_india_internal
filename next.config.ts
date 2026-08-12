@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
   // the content actually moved to.
   async redirects() {
     return [
+      {
+        source: "/scent-finder",
+        destination: "/scent-fix",
+        permanent: true,
+      },
       { source: "/shop", destination: "/products", permanent: true },
       { source: "/shop/shopping-cart", destination: "/cart", permanent: true },
       { source: "/blog", destination: "/guides", permanent: true },
