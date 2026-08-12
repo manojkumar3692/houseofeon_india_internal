@@ -192,7 +192,7 @@ export default function HomePage() {
             <b>Not sure which one is you? Take the quiz — unlock 20% off.</b>
           </div>
 
-          <Link href="/scent-finder" className="btn">
+          <Link href="/scent-fix" className="btn">
             Find my scent →
           </Link>
         </div>

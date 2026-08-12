@@ -278,28 +278,10 @@ export function trackPaymentFailed(reason?: string) {
   });
 }
 
-export function trackQuizStarted() {
-  trackGAEvent("quiz_started");
-  trackMetaEvent("CustomEvent", { event_name: "ScentQuizStarted" });
-}
-
-export function trackQuizCompleted(productId: string, productName: string) {
-  trackGAEvent("quiz_completed", {
-    item_id: productId,
-    item_name: productName,
-  });
-
-  trackMetaEvent("CustomEvent", {
-    event_name: "ScentQuizCompleted",
-    content_ids: [productId],
-    content_name: productName,
-  });
-}
-
-export function trackQuizLeadCaptured() {
-  trackGAEvent("generate_lead");
-  trackMetaEvent("Lead");
-}
+// trackQuizStarted / trackQuizCompleted / trackQuizLeadCaptured were the
+// /scent-finder quiz's events — removed along with that route. /scent-fix
+// uses trackScentFixViewContent / trackScentFixCompleted (further below)
+// plus the existing trackAddToCart.
 
 export function trackSwipeGameStarted() {
   trackGAEvent("swipe_game_started");
@@ -327,4 +309,33 @@ export function trackSwipeLeadCaptured() {
 export function trackSwipeShared() {
   trackGAEvent("swipe_game_shared");
   trackMetaEvent("CustomEvent", { event_name: "SwipeGameShared" });
+}
+
+// /scent-fix — the Meta-ad landing page. Exactly the 3 events the ad
+// account cares about: a real ViewContent on load (so Meta's optimization
+// sees this as a genuine landing page view, not just a generic PageView),
+// a Lead the moment the diagnostic produces a scored match (this is the
+// real "did the ad's promise land" signal — it fires whether or not they
+// ever hand over a phone number), and AddToCart is just the existing
+// trackAddToCart() reused as-is on the CTA.
+export function trackScentFixViewContent() {
+  trackGAEvent("view_item", { content_name: "Scent Fix" });
+  trackMetaEvent("ViewContent", {
+    content_name: "Scent Fix",
+    content_category: "landing_page",
+  });
+}
+
+export function trackScentFixCompleted(productId: string, productName: string) {
+  trackGAEvent("generate_lead", {
+    source: "scent-fix",
+    item_id: productId,
+    item_name: productName,
+  });
+
+  trackMetaEvent("Lead", {
+    content_name: "Scent Fix Result",
+    content_ids: [productId],
+    contents: [{ id: productId, quantity: 1 }],
+  });
 }
