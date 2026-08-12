@@ -223,6 +223,23 @@ export default function CheckoutPage() {
     }[];
   }, [lines, totalItems, total, finalTotal]);
 
+  // A real, order-verified review pulled from whichever product is actually
+  // in the cart — shown right at the point of payment so the last thing a
+  // customer reads before tapping Pay is proof someone else already
+  // received and liked this exact perfume, not generic marketing copy.
+  const checkoutReview = useMemo(() => {
+    for (const item of checkoutLineItems) {
+      const product = getProductById(item.productId);
+      const verifiedReview = product?.reviews?.find(
+        (review) => review.verified
+      );
+      if (verifiedReview && product) {
+        return { review: verifiedReview, productName: product.name };
+      }
+    }
+    return null;
+  }, [checkoutLineItems]);
+
   useEffect(() => {
     if (!lines.length) return;
     if (beginCheckoutTrackedRef.current) return;
@@ -680,6 +697,45 @@ export default function CheckoutPage() {
                 }
                 className="urgency-strip-checkout"
               />
+            ) : null}
+
+            {checkoutReview ? (
+              <div className="checkout-review-snippet">
+                <div className="checkout-review-snippet-top">
+                  <span className="checkout-review-snippet-stars" aria-hidden="true">
+                    {"★".repeat(Math.round(checkoutReview.review.rating))}
+                    {"☆".repeat(5 - Math.round(checkoutReview.review.rating))}
+                  </span>
+                  <span className="checkout-review-snippet-badge">
+                    <svg width="12" height="12" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path
+                        d="M10 1.5l2.34 1.36 2.7-.15 1.02 2.52 2.24 1.62-.87 2.6.87 2.6-2.24 1.62-1.02 2.52-2.7-.15L10 18.5l-2.34-1.36-2.7.15-1.02-2.52-2.24-1.62.87-2.6-.87-2.6 2.24-1.62L4.96 2.71l2.7.15L10 1.5z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M6.8 10.2l2.1 2.1 4.3-4.6"
+                        stroke="#fff"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Verified Buyer
+                  </span>
+                </div>
+
+                <p className="checkout-review-snippet-text">
+                  &ldquo;{checkoutReview.review.text}&rdquo;
+                </p>
+
+                <div className="checkout-review-snippet-meta">
+                  <b>{checkoutReview.review.name}</b>
+                  <span>
+                    {checkoutReview.review.city} · Order verified · Bought{" "}
+                    {checkoutReview.productName}
+                  </span>
+                </div>
+              </div>
             ) : null}
 
             <button

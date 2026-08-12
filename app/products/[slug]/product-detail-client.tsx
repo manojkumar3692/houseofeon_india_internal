@@ -516,6 +516,31 @@ ${productUrl}`;
                 <article key={`${review.name}-${review.city}`}>
                   <div className={styles.reviewStars}>
                     <Stars rating={review.rating} />
+
+                    {review.verified ? (
+                      <span className={styles.verifiedBadge}>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M10 1.5l2.34 1.36 2.7-.15 1.02 2.52 2.24 1.62-.87 2.6.87 2.6-2.24 1.62-1.02 2.52-2.7-.15L10 18.5l-2.34-1.36-2.7.15-1.02-2.52-2.24-1.62.87-2.6-.87-2.6 2.24-1.62L4.96 2.71l2.7.15L10 1.5z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M6.8 10.2l2.1 2.1 4.3-4.6"
+                            stroke="#fff"
+                            strokeWidth="1.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        Verified Buyer
+                      </span>
+                    ) : null}
                   </div>
 
                   <p>“{review.text}”</p>
