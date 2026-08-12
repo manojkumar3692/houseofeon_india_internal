@@ -6,16 +6,16 @@ import { SITE_URL } from "@/lib/seo";
 const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
-  title: "Your Perfume Didn't Fail, Your Skin Did | Scent Fix — House of Eon",
+  title: "Sprayed at 9. Gone by 11. Here's Why. | House of Eon",
   description:
-    "That ₹3,000 bottle dies by 11am because of Indian heat, not the perfume. Take the 30-second Scent Fix diagnostic, get matched with your perfume, and get 3 techniques to make it last today.",
+    "House of Eon fragrances are formulated with 30-35% pure fragrance oil — no fancy box, no celebrity contract, no brand tax. ₹999. Find your match in one tap.",
   alternates: {
     canonical: `${siteUrl}/scent-fix`,
   },
   openGraph: {
-    title: "Your Perfume Didn't Fail. Your Skin Did.",
+    title: "Same Heat. Same Skin. Built Different. | House of Eon",
     description:
-      "30-second diagnostic: find out why your perfume dies by lunch in Indian heat, and get matched with a perfume built for it.",
+      "30-35% pure fragrance oil, ₹999. Find out why House of Eon lasts through Indian heat when a ₹3,000 bottle doesn't.",
     url: `${siteUrl}/scent-fix`,
     type: "website",
   },

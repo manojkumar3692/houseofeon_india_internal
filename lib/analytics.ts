@@ -339,3 +339,76 @@ export function trackScentFixCompleted(productId: string, productName: string) {
     contents: [{ id: productId, quantity: 1 }],
   });
 }
+
+// -----------------------------------------------------------------------
+// Full-funnel depth tracking for /scent-fix. The page is built around a
+// specific psychological sequence (ad curiosity -> problem -> why it
+// happens -> ingredient difference -> where the money goes -> value
+// reframe -> personal identity -> recommendation -> social proof -> risk
+// reduction -> delivery -> purchase) — these events let that sequence show
+// up as an actual funnel in GA/Ads Manager instead of just "landed" vs
+// "converted", so a high-traffic-low-conversion problem can be traced to
+// the specific section people stop at.
+//
+// One shared custom event (ScentFixSectionView) parameterized by section,
+// rather than 11 differently-named events — easier to build one funnel
+// report from than to hunt through 11 separate event names in Ads Manager.
+// -----------------------------------------------------------------------
+export function trackScentFixSectionView(sectionId: string, sectionIndex: number) {
+  trackGAEvent("scent_fix_section_view", {
+    section_id: sectionId,
+    section_index: sectionIndex,
+  });
+
+  trackMetaEvent("CustomEvent", {
+    event_name: "ScentFixSectionView",
+    section_id: sectionId,
+    section_index: sectionIndex,
+  });
+}
+
+// The "personal identity" tap in Section 8 — which of the 4 feelings a
+// visitor picked. This is the single most useful marketing signal on the
+// whole page: it tells you which emotional angle (fresh/confident/warm/
+// elegant) is actually pulling people in, independent of which product
+// they end up buying.
+export function trackScentFixFeelingSelected(
+  feelingId: string,
+  feelingLabel: string
+) {
+  trackGAEvent("select_content", {
+    content_type: "scent_fix_feeling",
+    item_id: feelingId,
+    item_name: feelingLabel,
+  });
+
+  trackMetaEvent("CustomEvent", {
+    event_name: "ScentFixFeelingSelected",
+    feeling_id: feelingId,
+    feeling_label: feelingLabel,
+  });
+}
+
+// Cycling to the alternate product within a feeling — a soft "not quite,
+// show me the next best thing" signal distinct from picking a feeling.
+export function trackScentFixShowAnother(productId: string, productName: string) {
+  trackGAEvent("scent_fix_show_another", {
+    item_id: productId,
+    item_name: productName,
+  });
+
+  trackMetaEvent("CustomEvent", {
+    event_name: "ScentFixShowAnother",
+    content_ids: [productId],
+    content_name: productName,
+  });
+}
+
+// Every non-purchase CTA click on the page (Section 1's "Show me why",
+// Section 6's "Find my fragrance", the sticky bar, Final's primary/
+// secondary) — one shared event parameterized by which button, so the
+// funnel report can show exactly which nudge actually moves people.
+export function trackScentFixCtaClick(ctaId: string) {
+  trackGAEvent("scent_fix_cta_click", { cta_id: ctaId });
+  trackMetaEvent("CustomEvent", { event_name: "ScentFixCtaClick", cta_id: ctaId });
+}
