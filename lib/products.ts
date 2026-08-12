@@ -3,6 +3,10 @@ export type ProductReview = {
   city: string;
   rating: number;
   text: string;
+  // True only for reviews traced back to a real order_number in the orders
+  // table — lets the UI show a "Verified Buyer" badge that's actually true.
+  verified?: boolean;
+  orderNumber?: string;
 };
 
 export type ProductScentProfile = {
@@ -87,8 +91,8 @@ export const products: Product[] = [
     ],
 
     rating: 4.8,
-    reviewCount: 0,
-    ratingText: "4.8/5 · Loved by early customers",
+    reviewCount: 7,
+    ratingText: "4.8/5 · From 7 verified orders",
     valueLine:
       "A warm, rich perfume for men who prefer depth, smoothness and quiet luxury.",
     highlights: [
@@ -115,7 +119,64 @@ export const products: Product[] = [
       performance:
         "Designed for evening wear, festive moments and cooler weather. Performance can vary based on skin, weather and number of sprays.",
     },
-    reviews: [],
+    reviews: [
+      {
+        name: "Piraisudi L.C",
+        city: "Nallampalli",
+        rating: 4.8,
+        text: "First time trying Desert Tonka. Smells really good after it settles, warm and different from my usual perfumes. Liked it.",
+        verified: true,
+        orderNumber: "HOE-20260811-50118",
+      },
+      {
+        name: "Raju Thiruvenkadam",
+        city: "Chennai",
+        rating: 4.7,
+        text: "Saw this on Instagram and thought of trying. Actually very nice, especially after 15-20 mins. Good purchase.",
+        verified: true,
+        orderNumber: "HOE-20260808-TGP9F",
+      },
+      {
+        name: "Mariappan M",
+        city: "Dindigul",
+        rating: 4.9,
+        text: "Ordered both Rank and Desert Tonka. Rank is fresh and easy for daily use, Tonka is more rich. Personally liked Rank slightly more.",
+        verified: true,
+        orderNumber: "HOE-20260807-VDB75",
+      },
+      {
+        name: "Jose Varghese",
+        city: "Nedumbassery",
+        rating: 4.6,
+        text: "Was not sure while ordering from an insta ad but fragrance is good. Nice warm smell and packaging was also neat.",
+        verified: true,
+        orderNumber: "HOE-20260806-XQKVV",
+      },
+      {
+        name: "Soumya Ghosh",
+        city: "Bally",
+        rating: 5,
+        text: "Honestly better than I expected at this price. Smells rich and the dry down is the best part. Will try another one next.",
+        verified: true,
+        orderNumber: "HOE-20260804-FK3L2",
+      },
+      {
+        name: "Deen",
+        city: "Karaikal",
+        rating: 4.7,
+        text: "Nice perfume. Initially little strong for me but after sometime it becomes very smooth. Lasted quite well too.",
+        verified: true,
+        orderNumber: "HOE-20260803-1SDPI",
+      },
+      {
+        name: "Balaji R",
+        city: "Chennai",
+        rating: 4.6,
+        text: "Desert Tonka surprised me. Opening was strong but give it 10-15 mins, it settles really well. For the price it's definitely good.",
+        verified: true,
+        orderNumber: "HOE-20260625-VXTTA",
+      },
+    ],
 
     seoTitle:
       "Desert Tonka Perfume for Men | Warm Long Lasting Luxury Perfume India",
@@ -164,9 +225,9 @@ export const products: Product[] = [
       "/products/arctic-wave-lifestyle-3.png"
     ],
 
-    rating: 4.6,
-    reviewCount: 0,
-    ratingText: "4.6/5 · Loved by early customers",
+    rating: 4.8,
+    reviewCount: 2,
+    ratingText: "4.8/5 · From 2 verified orders",
     valueLine:
       "A fresh aquatic perfume made for Indian weather, daily wear and clean confidence.",
     highlights: [
@@ -193,7 +254,24 @@ export const products: Product[] = [
       performance:
         "Designed for daytime, office, college and warm weather. Performance can vary based on skin, weather and number of sprays.",
     },
-    reviews: [],
+    reviews: [
+      {
+        name: "Devraj",
+        city: "Lucknow",
+        rating: 4.8,
+        text: "Fresh and clean. Been using it mostly for office and daytime. Doesn't feel too heavy which I like.",
+        verified: true,
+        orderNumber: "HOE-20260729-61MM7",
+      },
+      {
+        name: "Jani Basha",
+        city: "Chennai",
+        rating: 4.8,
+        text: "Proper fresh everyday perfume. Clean smell and works really well in Chennai weather. Worth trying.",
+        verified: true,
+        orderNumber: "HOE-20260724-TYWNH",
+      },
+    ],
 
     seoTitle:
       "Arctic Wave Perfume for Men | Fresh Long Lasting Perfume India",
@@ -315,8 +393,8 @@ export const products: Product[] = [
       "/products/rank-lifestyle-3.png",],
 
     rating: 4.9,
-    reviewCount: 0,
-    ratingText: "4.9/5 · Loved by early customers",
+    reviewCount: 1,
+    ratingText: "4.9/5 · From 1 verified order",
     valueLine:
       "A bold masculine perfume made for office confidence, evening plans and strong first impressions.",
     highlights: [
@@ -343,7 +421,16 @@ export const products: Product[] = [
       performance:
         "Designed for office, business, evenings and special occasions. Performance can vary based on skin, weather and number of sprays.",
     },
-    reviews: [],
+    reviews: [
+      {
+        name: "Mariappan M",
+        city: "Dindigul",
+        rating: 4.9,
+        text: "Ordered both Rank and Desert Tonka. Rank is fresh and easy for daily use, Tonka is more rich. Personally liked Rank slightly more.",
+        verified: true,
+        orderNumber: "HOE-20260807-VDB75",
+      },
+    ],
 
     seoTitle:
       "RANK Perfume for Men | Raw Power Long Lasting Perfume India",
@@ -395,8 +482,8 @@ export const products: Product[] = [
     ],
 
     rating: 4.8,
-    reviewCount: 0,
-    ratingText: "4.8/5 · Loved by early customers",
+    reviewCount: 2,
+    ratingText: "4.8/5 · From 2 verified orders",
     valueLine:
       "An elegant floral musk perfume for women who want a soft, graceful and memorable presence.",
     highlights: [
@@ -425,22 +512,20 @@ export const products: Product[] = [
     },
     reviews: [
       {
-        name: "Priya",
-        city: "Chennai",
-        rating: 5,
-        text: "SYRA feels soft, elegant and perfect for daily wear. It is not too loud but still noticeable.",
+        name: "Rabi Banerjee",
+        city: "Kolkata",
+        rating: 4.7,
+        text: "SYRA is soft and elegant, not overly sweet. Bought it after seeing the ad and quite happy with the fragrance.",
+        verified: true,
+        orderNumber: "HOE-20260727-23IYJ",
       },
       {
-        name: "Aishwarya",
-        city: "Bengaluru",
-        rating: 5,
-        text: "The bottle looks premium and the fragrance feels graceful. Good option for gifting.",
-      },
-      {
-        name: "Neha",
+        name: "Sonal Venu Venkat",
         city: "Hyderabad",
-        rating: 5,
-        text: "I liked the soft feminine smell. It works well for office and evening plans.",
+        rating: 4.9,
+        text: "Loved Syra. Very feminine and pleasant. I can still smell it on my clothes later in the day. Bottle also looks beautiful.",
+        verified: true,
+        orderNumber: "HOE-20260725-SKPHD",
       },
     ],
 
@@ -492,9 +577,9 @@ export const products: Product[] = [
       "/products/sgold-lifestyle-5.png"
      ],
 
-    rating: 4.6,
-    reviewCount: 0,
-    ratingText: "4.6/5 · Loved by early customers",
+    rating: 4.9,
+    reviewCount: 1,
+    ratingText: "4.9/5 · From 1 verified order",
     valueLine:
       "A rich unisex perfume with golden warmth, smooth woods and timeless premium presence.",
     highlights: [
@@ -521,7 +606,16 @@ export const products: Product[] = [
       performance:
         "Designed for evening wear, festive moments, premium gifting and special occasions. Performance can vary based on skin, weather and number of sprays.",
     },
-    reviews: [],
+    reviews: [
+      {
+        name: "Dhanaraj K",
+        city: "Tirupur",
+        rating: 4.9,
+        text: "Really good. Smells classy but not too loud. Got a compliment at office also. Happy with it.",
+        verified: true,
+        orderNumber: "HOE-20260728-0EAI0",
+      },
+    ],
 
     seoTitle:
       "Silent Gold Unisex Perfume | Premium Long Lasting Perfume India",

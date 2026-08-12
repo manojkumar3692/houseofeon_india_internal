@@ -408,12 +408,34 @@
   }
   
   .reviewStars {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     color: #b9822f;
     letter-spacing: 0.04em;
     font-size: 15px;
     margin-bottom: 12px;
   }
-  
+
+  .verifiedBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px 4px 7px;
+    border-radius: 999px;
+    background: rgba(46, 125, 87, 0.1);
+    color: #1f6e46;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .verifiedBadge svg path[fill="currentColor"] {
+    color: #2e8b5f;
+  }
+
   .reviewGrid p {
     margin: 0 0 18px;
     color: #4d3a2c;

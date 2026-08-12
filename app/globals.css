@@ -4864,6 +4864,65 @@
   line-height: 1.4;
 }
 
+.checkout-review-snippet {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffaf4, #fbf3e6);
+  border: 1px solid rgba(31, 23, 17, 0.08);
+}
+
+.checkout-review-snippet-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.checkout-review-snippet-stars {
+  color: #b9822f;
+  letter-spacing: 0.04em;
+  font-size: 14px;
+}
+
+.checkout-review-snippet-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px 4px 7px;
+  border-radius: 999px;
+  background: rgba(46, 125, 87, 0.1);
+  color: #1f6e46;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.checkout-review-snippet-text {
+  margin: 10px 0 8px;
+  color: #4d3a2c;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.checkout-review-snippet-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.checkout-review-snippet-meta b {
+  color: #1f1711;
+  font-size: 13px;
+}
+
+.checkout-review-snippet-meta span {
+  color: #8b7a6b;
+}
+
 .checkout-mobile-summary {
   display: none;
 }
