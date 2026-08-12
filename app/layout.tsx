@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
+import PerfumeAssistant from "@/components/PerfumeAssistant";
 import { SITE_URL } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
@@ -60,6 +61,9 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          {/* Self-gates to /scent-fix and /products/[slug] only — see
+              components/PerfumeAssistant.tsx */}
+          <PerfumeAssistant />
         </CartProvider>
       </body>
     </html>
