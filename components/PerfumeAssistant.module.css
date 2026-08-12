@@ -1,0 +1,283 @@
+.launcher {
+  position: fixed;
+  z-index: 45;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  background: #1f1711;
+  color: #fff7e8;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.launcher svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Product pages already have a floating WhatsApp bubble bottom-right, so
+   the assistant sits bottom-left there instead of stacking on top of it. */
+.posProduct {
+  left: 18px;
+  bottom: 18px;
+}
+
+/* /scent-fix has its own full-width sticky "Find my scent" bar right at
+   the bottom edge — sit above it instead of overlapping. */
+.posScentFix {
+  right: 16px;
+  bottom: 84px;
+}
+
+.panel {
+  position: fixed;
+  z-index: 46;
+  width: min(360px, calc(100vw - 24px));
+  height: min(560px, calc(100vh - 110px));
+  background: #fffaf4;
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #eadfce;
+}
+
+.panelProduct {
+  left: 18px;
+  bottom: 84px;
+}
+
+.panelScentFix {
+  right: 16px;
+  bottom: 150px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #1f1711;
+  color: #fff7e8;
+}
+
+.headerTitle {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.headerSub {
+  font-size: 11.5px;
+  color: rgba(255, 247, 232, 0.65);
+  margin-top: 1px;
+}
+
+.closeBtn {
+  background: none;
+  border: 0;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubbleRow {
+  display: flex;
+}
+
+.bubbleRowUser {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 84%;
+  padding: 10px 13px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.bubbleAssistant {
+  background: #fff;
+  border: 1px solid #eadfce;
+  color: #1f1711;
+  border-bottom-left-radius: 4px;
+}
+
+.bubbleUser {
+  background: #1f1711;
+  color: #fff7e8;
+  border-bottom-right-radius: 4px;
+}
+
+.typing {
+  display: inline-flex;
+  gap: 3px;
+  padding: 4px 0;
+}
+
+.typing span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #b9a68c;
+  animation: typingBounce 1.1s infinite ease-in-out;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typingBounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.errorNote {
+  font-size: 12px;
+  color: #a4402c;
+  padding: 0 14px 6px;
+}
+
+.suggestRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 0 14px 10px;
+}
+
+.suggestChip {
+  border: 1px solid #eadfce;
+  background: #fff;
+  color: #1f1711;
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.suggestChip:hover {
+  border-color: #b9822f;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid #eadfce;
+  background: #fff;
+}
+
+.input {
+  flex: 1;
+  border: 1px solid #d8c8b2;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.input:focus-visible {
+  outline: 2px solid #b9822f;
+  outline-offset: 1px;
+}
+
+.iconBtn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #d8c8b2;
+  background: #fff;
+  color: #1f1711;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.iconBtn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.iconBtnActive {
+  background: #b9822f;
+  border-color: #b9822f;
+  color: #fff;
+}
+
+.sendBtn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 0;
+  background: #1f1711;
+  color: #fff7e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sendBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sendBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.listeningNote {
+  padding: 0 14px 8px;
+  font-size: 11.5px;
+  color: #8b6236;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing span {
+    animation: none;
+  }
+}
+
+.launcher:focus-visible,
+.closeBtn:focus-visible,
+.iconBtn:focus-visible,
+.sendBtn:focus-visible,
+.suggestChip:focus-visible {
+  outline: 2px solid #b9822f;
+  outline-offset: 2px;
+}

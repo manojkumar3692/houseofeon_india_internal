@@ -412,3 +412,26 @@ export function trackScentFixCtaClick(ctaId: string) {
   trackGAEvent("scent_fix_cta_click", { cta_id: ctaId });
   trackMetaEvent("CustomEvent", { event_name: "ScentFixCtaClick", cta_id: ctaId });
 }
+
+// -----------------------------------------------------------------------
+// AI perfume assistant (components/PerfumeAssistant.tsx) — opened, each
+// message sent (and whether it was typed or spoken), and errors, so it's
+// possible to see whether the assistant gets used at all and whether
+// voice input actually works for real visitors before investing further.
+// -----------------------------------------------------------------------
+export function trackAssistantOpened(context: "product" | "scent-fix") {
+  trackGAEvent("assistant_opened", { context });
+  trackMetaEvent("CustomEvent", { event_name: "AssistantOpened", context });
+}
+
+export function trackAssistantMessageSent(inputMode: "text" | "voice") {
+  trackGAEvent("assistant_message_sent", { input_mode: inputMode });
+  trackMetaEvent("CustomEvent", {
+    event_name: "AssistantMessageSent",
+    input_mode: inputMode,
+  });
+}
+
+export function trackAssistantError(reason: string) {
+  trackGAEvent("assistant_error", { reason });
+}
