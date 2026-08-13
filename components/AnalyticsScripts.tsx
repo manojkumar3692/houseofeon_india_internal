@@ -5,6 +5,12 @@ import Script from "next/script";
 
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// Separate from the GA4/Meta tags above — this is a Google Tag Manager
+// container (currently just holding a Google Ads conversion tag,
+// AW-16872254318). GTM was never actually installed on the site before;
+// the container existed in the GTM dashboard but had no data flowing
+// through it, which is why it showed "Container quality: Urgent."
+const gtmId = process.env.NEXT_PUBLIC_GTM_CONTAINER_ID;
 
 // Deliberately NOT read from NEXT_PUBLIC_SITE_URL or any other env var.
 // That variable is meant to differ per environment (it's correctly
@@ -37,6 +43,29 @@ export default function AnalyticsScripts() {
 
   return (
     <>
+      {gtmId ? (
+        <>
+          <Script id="google-tag-manager" strategy="afterInteractive">
+            {`
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${gtmId}');
+            `}
+          </Script>
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+              title="gtm"
+            />
+          </noscript>
+        </>
+      ) : null}
+
       {gaId ? (
         <>
           <Script
