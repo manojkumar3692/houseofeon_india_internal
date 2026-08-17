@@ -108,6 +108,33 @@ export default function CheckoutPage() {
     formRef.current = form;
   }, [form]);
 
+  // Autofill-safe capture: browser/mobile autofill can fill several fields
+  // at once (name, phone, address, city, pincode all from one saved-address
+  // tap) without the customer ever individually focusing and blurring each
+  // one — so the per-field onBlur capture below can silently miss most of
+  // an autofilled form. This watches the actual form STATE instead of
+  // blur/focus events, so it doesn't care how a value got there. Debounced
+  // so it doesn't fire on every keystroke, just ~1.2s after things settle.
+  useEffect(() => {
+    const hasAnyValue = Object.values(form).some((value) => value.trim());
+    if (!hasAnyValue) return;
+
+    const timeout = setTimeout(() => {
+      captureCheckoutSession(undefined, {
+        name: form.name || undefined,
+        phone: form.phone || undefined,
+        email: form.email || undefined,
+        address: form.address || undefined,
+        city: form.city || undefined,
+        state: form.state || undefined,
+        pincode: form.pincode || undefined,
+        lastActiveField: lastActiveFieldRef.current || undefined,
+      });
+    }, 1200);
+
+    return () => clearTimeout(timeout);
+  }, [form]);
+
   function update<K extends keyof CustomerForm>(key: K, value: CustomerForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
   }
@@ -350,7 +377,20 @@ export default function CheckoutPage() {
     setLoading(true);
 
     lastActiveFieldRef.current = "submit_button";
-    captureCheckoutSession("submitted", { lastActiveField: "submit_button" });
+    // Full form snapshot, not just the field name — this is the moment
+    // we're most sure the form is complete (Razorpay's about to open), and
+    // it shouldn't depend on the debounced watcher above having already
+    // fired in time.
+    captureCheckoutSession("submitted", {
+      name: form.name || undefined,
+      phone: form.phone || undefined,
+      email: form.email || undefined,
+      address: form.address || undefined,
+      city: form.city || undefined,
+      state: form.state || undefined,
+      pincode: form.pincode || undefined,
+      lastActiveField: "submit_button",
+    });
     trackAddPaymentInfo({
       items: analyticsItems,
       value: finalTotal,

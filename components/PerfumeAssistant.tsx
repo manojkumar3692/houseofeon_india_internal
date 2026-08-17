@@ -119,15 +119,24 @@ export default function PerfumeAssistant() {
 
   const pageType = derivePageType(pathname);
 
-  // Hidden during payment, in the admin console, and — for now, per
-  // explicit request — on product pages and the cart page. Currently live
-  // on home, /scent-fix, and everything else ("other"). Easy to widen back
-  // by just removing the pageType checks below.
+  // Hidden during payment, in the admin console, on product pages and the
+  // cart page (explicit request), and on /scent-fix. The scent-fix hide is
+  // a bug fix: Clarity recordings from the live ad traffic showed dead
+  // clicks / rage clicks on that page, and this launcher (bottom:84px,
+  // right:16px, z-index 45) sits directly above the page's own near-full-
+  // width sticky "Find my fragrance" CTA bar (bottom:14px, z-index 30) with
+  // only ~18px of clearance — on shorter viewports or with mobile browser
+  // chrome eating into that gap, a tap meant for the sticky CTA can land on
+  // this launcher instead (it renders on top, being the higher z-index).
+  // /scent-fix already has its own dedicated conversion funnel, so a second
+  // floating CTA competing for the same corner is redundant on top of
+  // being a real collision risk — simplest fix is to not double up here.
   const isHidden =
     pathname.startsWith("/checkout") ||
     pathname.startsWith("/admin") ||
     pageType === "product" ||
-    pageType === "cart";
+    pageType === "cart" ||
+    pageType === "scent-fix";
   const isScentFix = pageType === "scent-fix";
   const productSlugMatch = pathname.match(/^\/products\/([^/]+)\/?$/);
   const productSlug = productSlugMatch?.[1];
