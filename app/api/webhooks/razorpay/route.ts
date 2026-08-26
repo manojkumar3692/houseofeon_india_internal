@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { buildCustomerAddress } from "@/lib/order";
 import { sendOrderEmails } from "@/lib/email";
+import { markTrialCreditRedeemed } from "@/lib/trialCredit";
 
 // This route is the ONLY thing allowed to mark an order as truly paid.
 // Everything else in the checkout flow (the browser's post-payment callback
@@ -131,9 +132,19 @@ export async function POST(request: Request) {
         console.error("checkout_sessions paid-link failed:", linkError);
       }
 
-      // Only send the confirmation email the first time this order is
-      // confirmed captured — not on every retry of the same webhook event.
+      // Only process these the first time this order is confirmed
+      // captured — not on every retry of the same webhook event.
       if (!alreadyCaptured) {
+        // If a trial-pack credit code was used on this order, this is the
+        // moment it actually counts as "redeemed" — same reasoning as
+        // payment_status itself only flipping here, not in the client-
+        // facing /api/orders/verify route. If coupon_code was a normal
+        // static coupon (or none), this is a harmless no-op — see
+        // lib/trialCredit.ts's markTrialCreditRedeemed.
+        if (updated.coupon_code) {
+          await markTrialCreditRedeemed(updated.coupon_code);
+        }
+
         try {
           await sendOrderEmails({
             orderNumber: updated.order_number,
@@ -144,6 +155,7 @@ export async function POST(request: Request) {
             customerEmail: updated.customer_email,
 
             address: buildCustomerAddress(updated),
+            isTrialPack: updated.order_type === "trial_pack",
 
             amountInPaise: updated.amount_in_paise,
             items: Array.isArray(updated.items) ? updated.items : [],

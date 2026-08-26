@@ -4864,6 +4864,275 @@
   line-height: 1.4;
 }
 
+.checkout-credit-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fffaf4;
+  border: 1px solid rgba(31, 23, 17, 0.07);
+}
+
+.checkout-credit-box label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1f1711;
+  margin-bottom: 2px;
+}
+
+.checkout-credit-sublabel {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  color: #706458;
+}
+
+.checkout-credit-row {
+  display: flex;
+  gap: 8px;
+}
+
+.checkout-credit-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.checkout-credit-message {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #706458;
+}
+
+/* TRIAL PACK "HOW IT WORKS" **/
+
+.trial-pack-how {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 22px 0 30px;
+}
+
+.trial-pack-how div {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fffaf4;
+  border: 1px solid rgba(31, 23, 17, 0.07);
+}
+
+.trial-pack-how div > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1f1711;
+  color: #fffaf4;
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.trial-pack-how b {
+  display: block;
+  font-size: 13.5px;
+  color: #1f1711;
+}
+
+.trial-pack-how div > span:last-child {
+  display: block;
+  font-size: 11.5px;
+  color: #706458;
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .trial-pack-how {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* TRIAL PACK PICKER **/
+
+.trial-pack-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.trial-pack-picker-head b {
+  font-size: 15px;
+  color: #1f1711;
+}
+
+.trial-pack-picker-head span {
+  font-size: 12.5px;
+  color: #706458;
+}
+
+.trial-pack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.trial-pack-scent-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px 12px;
+  border-radius: 20px;
+  border: 2px solid rgba(31, 23, 17, 0.08);
+  background: #fffaf4;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  text-align: center;
+}
+
+.trial-pack-scent-card:hover:not(.disabled) {
+  transform: translateY(-2px);
+}
+
+.trial-pack-scent-card.selected {
+  border-color: #1f1711;
+  background: #fff;
+}
+
+.trial-pack-scent-card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.trial-pack-scent-card img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.trial-pack-scent-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f1711;
+  line-height: 1.25;
+}
+
+.trial-pack-scent-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1f1711;
+  color: #fff;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TRIAL PACK CHECKOUT RESCUE **/
+
+.trial-rescue-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 23, 17, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  animation: trial-rescue-fade 0.2s ease;
+}
+
+@keyframes trial-rescue-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.trial-rescue-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: #fffaf4;
+  border-radius: 24px 24px 0 0;
+  padding: 26px 22px 22px;
+  box-shadow: 0 -8px 30px rgba(31, 23, 17, 0.18);
+}
+
+.trial-rescue-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(31, 23, 17, 0.06);
+  color: #1f1711;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.trial-rescue-eyebrow {
+  display: block;
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a9704a;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.trial-rescue-card h3 {
+  margin: 0 0 8px;
+  font-size: 21px;
+  color: #1f1711;
+}
+
+.trial-rescue-card p {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: #706458;
+  line-height: 1.5;
+}
+
+.trial-rescue-card .btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.trial-rescue-secondary {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: none;
+  border: 0;
+  color: #706458;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .trial-rescue-backdrop {
+    align-items: center;
+  }
+
+  .trial-rescue-card {
+    border-radius: 24px;
+  }
+}
+
 .checkout-review-snippet {
   margin-top: 14px;
   padding: 16px 18px;
@@ -5268,6 +5537,98 @@
 .quiz-cta-banner .btn {
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* TRIAL PACK "RISK FREE" BANNER — components/TrialPackBanner.tsx **/
+
+.trial-banner {
+  padding: 0 20px;
+  margin: 44px 0;
+}
+
+.trial-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: 32px;
+  align-items: center;
+  background: linear-gradient(120deg, #1f1711, #3a2a1a);
+  color: #fffaf4;
+  border-radius: 28px;
+  padding: 40px 36px;
+  box-shadow: 0 22px 60px rgba(31, 23, 17, 0.18);
+}
+
+.trial-banner-head h2 {
+  margin: 0 0 18px;
+  font-size: 30px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.trial-banner-cta {
+  display: inline-block;
+}
+
+.trial-banner-fineprint {
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #c9b79e;
+}
+
+.trial-banner-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.trial-banner-step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 250, 244, 0.4);
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.trial-banner-steps b {
+  display: block;
+  font-size: 15.5px;
+  margin-bottom: 4px;
+}
+
+.trial-banner-steps span {
+  display: block;
+  font-size: 12px;
+  color: #d7c6ae;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .trial-banner-inner {
+    grid-template-columns: 1fr;
+    padding: 32px 26px;
+  }
+
+  .trial-banner-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .trial-banner-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .trial-banner-head h2 {
+    font-size: 26px;
+  }
 }
 
 @media (max-width: 640px) {
