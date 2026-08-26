@@ -713,8 +713,24 @@
   letter-spacing: 0.02em;
 }
 
+.s9TrialLink {
+  margin-top: 18px;
+  display: block;
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--burnt);
+  background: transparent;
+  color: var(--burnt);
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .s9Cta {
-  margin-top: 22px;
+  margin-top: 12px;
   width: 100%;
   padding: 16px 18px;
   border-radius: 999px;

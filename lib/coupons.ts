@@ -52,26 +52,16 @@ export function getCouponByCode(code: string) {
   );
 }
 
-export function calculateCouponDiscount({
-  code,
-  subtotal,
-  hasBundleLine,
-}: {
-  code: string;
-  subtotal: number;
-  hasBundleLine?: boolean;
-}) {
-  const coupon = getCouponByCode(code);
-
-  if (!coupon) {
-    return {
-      valid: false,
-      error: "Invalid coupon code",
-      discount: 0,
-      coupon: null,
-    };
-  }
-
+// Pure discount math for an already-resolved coupon — pulled out of
+// calculateCouponDiscount so lib/trialCredit.ts can run a virtual,
+// DB-resolved "coupon" (the ₹249 trial credit) through the exact same
+// rules (bundle mutual-exclusion, min-subtotal, cap at subtotal) without
+// duplicating the logic or needing to fake an entry in the static list.
+export function applyCouponMath(
+  coupon: Coupon,
+  subtotal: number,
+  hasBundleLine?: boolean
+) {
   // The 2-bottle bundle rate is already a bigger automatic discount and is
   // deliberately kept mutually exclusive with coupon codes — no stacking.
   // Admin test coupons (allowWithBundle) are exempt since they're not a
@@ -122,4 +112,27 @@ export function calculateCouponDiscount({
     discount,
     coupon,
   };
+}
+
+export function calculateCouponDiscount({
+  code,
+  subtotal,
+  hasBundleLine,
+}: {
+  code: string;
+  subtotal: number;
+  hasBundleLine?: boolean;
+}) {
+  const coupon = getCouponByCode(code);
+
+  if (!coupon) {
+    return {
+      valid: false,
+      error: "Invalid coupon code",
+      discount: 0,
+      coupon: null,
+    };
+  }
+
+  return applyCouponMath(coupon, subtotal, hasBundleLine);
 }

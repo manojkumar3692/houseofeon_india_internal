@@ -36,7 +36,10 @@ type CartContextValue = {
   couponCode: string;
   couponDiscount: number;
   finalTotal: number;
-  applyCoupon: (code: string) => Promise<ApplyCouponResult>;
+  // phone is optional and only meaningful for trial-pack credit codes
+  // (see lib/trialCredit.ts) — a static coupon like EON20 validates fine
+  // without it.
+  applyCoupon: (code: string, phone?: string) => Promise<ApplyCouponResult>;
   removeCoupon: () => void;
 };
 
@@ -324,7 +327,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem(COUPON_STORAGE_KEY);
       },
 
-      async applyCoupon(code) {
+      async applyCoupon(code, phone) {
         const cleanCode = normalizeCouponInput(code);
 
         if (!cleanCode) {
@@ -365,6 +368,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
               code: cleanCode,
               subtotal: total,
               hasBundleLine,
+              phone: phone || undefined,
             }),
           });
 

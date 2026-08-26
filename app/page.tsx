@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import TrialPackBanner from "@/components/TrialPackBanner";
 import { products } from "@/lib/products";
 import ProductCarousel from "@/components/ProductCarousel";
 import HeroProductShowcase from "@/components/HeroProductShowcase";
@@ -210,6 +211,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      <TrialPackBanner ctaSource="homepage" />
 
       <section className="section home-products-section">
       <div className="container">

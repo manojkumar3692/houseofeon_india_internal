@@ -515,3 +515,69 @@ export function trackPurchaseAfterConcierge(productNames: string[], orderValue: 
 export function trackAssistantError(reason: string) {
   trackGAEvent("assistant_error", withConciergeParams({ reason }));
 }
+
+// Trial Pack funnel (₹249, pick-3, see lib/trialPack.ts / lib/trialCredit.ts).
+// Purchase itself still goes through the regular trackBeginCheckout /
+// trackAddPaymentInfo / trackPurchase calls (generic GA4/Meta ecommerce
+// events, order-type-agnostic) — these four are the funnel-specific markers
+// layered on top so the trial pack can be analyzed as its own journey.
+export function trackTrialPackViewed() {
+  trackGAEvent("trial_pack_viewed");
+  trackMetaEvent("CustomEvent", { event_name: "TrialPackViewed" });
+}
+
+export function trackTrialScentSelected(productName: string, position: number) {
+  trackGAEvent("trial_scent_selected", { product_name: productName, position });
+}
+
+export function trackTrialPackPurchased(orderId: string, scentNames: string[]) {
+  trackGAEvent("trial_pack_purchased", {
+    order_id: orderId,
+    scents: scentNames.join(", "),
+  });
+  trackMetaEvent("CustomEvent", {
+    event_name: "TrialPackPurchased",
+    order_id: orderId,
+  });
+}
+
+// Fired from app/checkout/page.tsx when a trial-pack order number is
+// successfully applied as a ₹249 credit on a later full-size order.
+export function trackTrialCreditRedeemed(trialOrderNumber: string) {
+  trackGAEvent("trial_credit_redeemed", { trial_order_number: trialOrderNumber });
+}
+
+// Checkout abandonment rescue (see components/TrialPackRescue.tsx). `trigger`
+// identifies which signal fired it — "razorpay_dismissed" / "payment_failed"
+// (universal, mobile+desktop), "exit_intent" (desktop mouseleave), or
+// "idle_timeout" / "tab_returned" (heuristic) — so we can see in GA which
+// triggers actually convert vs. just annoy people, and drop the weaker ones
+// later without guessing.
+export function trackTrialRescueShown(trigger: string) {
+  trackGAEvent("trial_rescue_shown", { trigger });
+}
+
+export function trackTrialRescueClicked(trigger: string) {
+  trackGAEvent("trial_rescue_clicked", { trigger });
+  trackMetaEvent("CustomEvent", { event_name: "TrialRescueClicked", trigger });
+}
+
+export function trackTrialRescueDismissed(trigger: string) {
+  trackGAEvent("trial_rescue_dismissed", { trigger });
+}
+
+// The small, deliberately-subordinate trial-pack block on the product
+// detail page (below the normal Buy Now / Add to Cart, never competing with
+// them) — kept separate from the checkout rescue events above so PDP entry
+// and checkout-abandonment entry can be compared, not conflated.
+export function trackTrialPackPdpClicked(productId: string, productName: string) {
+  trackGAEvent("trial_pack_pdp_clicked", { product_id: productId, product_name: productName });
+}
+
+// The bold 4-step "Try our fragrances, risk free" banner (see
+// components/TrialPackBanner.tsx) — `source` is "homepage" or
+// "pdp_lower_section" so we can tell the quiet PDP text link, the homepage
+// strip, and this bigger banner apart in the funnel data.
+export function trackTrialBannerClicked(source: string) {
+  trackGAEvent("trial_banner_clicked", { source });
+}

@@ -7,6 +7,7 @@ import {
   calculateCouponDiscount,
   normalizeCouponCode,
 } from "@/lib/coupons";
+import { resolveTrialCredit } from "@/lib/trialCredit";
 import {
   isPartialCodEligible,
   getEffectiveTokenAmountInPaise,
@@ -58,11 +59,24 @@ export async function POST(request: Request) {
     if (payload.couponCode) {
       const normalizedCode = normalizeCouponCode(payload.couponCode);
 
-      const couponResult = calculateCouponDiscount({
+      let couponResult = calculateCouponDiscount({
         code: normalizedCode,
         subtotal,
         hasBundleLine: orderCalc.hasBundleLine,
       });
+
+      // Not a static coupon — check if it's a real, paid, unredeemed trial
+      // pack order number instead (phone-matched, 30-day window; see
+      // lib/trialCredit.ts). This is the authoritative check: the preview
+      // in /api/coupons/validate can be wrong or stale, this can't be.
+      if (!couponResult.valid) {
+        couponResult = await resolveTrialCredit({
+          code: normalizedCode,
+          phone: payload.customer.phone,
+          subtotal,
+          hasBundleLine: orderCalc.hasBundleLine,
+        });
+      }
 
       if (!couponResult.valid || !couponResult.coupon) {
         return NextResponse.json(

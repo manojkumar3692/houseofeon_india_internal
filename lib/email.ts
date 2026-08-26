@@ -1,4 +1,5 @@
 import { formatINR } from "@/lib/money";
+import { TRIAL_PACK_PRICE_INR, TRIAL_CREDIT_EXPIRY_DAYS } from "@/lib/trialPack";
 
 type OrderEmailItem = {
   name?: string;
@@ -51,6 +52,9 @@ type OrderEmailInput = {
 
   balanceDueInPaise?: number | null;
   balance_due_in_paise?: number | null;
+
+  isTrialPack?: boolean;
+  is_trial_pack?: boolean;
 };
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -132,6 +136,8 @@ function normalizeOrder(order: OrderEmailInput) {
   const balanceDueInPaise =
     order.balanceDueInPaise ?? order.balance_due_in_paise ?? 0;
 
+  const isTrialPack = Boolean(order.isTrialPack ?? order.is_trial_pack ?? false);
+
   return {
     orderId,
     customerName,
@@ -145,6 +151,7 @@ function normalizeOrder(order: OrderEmailInput) {
     paymentType,
     tokenAmountInPaise,
     balanceDueInPaise,
+    isTrialPack,
   };
 }
 
@@ -240,6 +247,23 @@ function customerEmailHtml(rawOrder: OrderEmailInput) {
 
       <h3>Delivery Address</h3>
       <p>${formatAddressForEmail(order.address)}</p>
+
+      ${
+        order.isTrialPack
+          ? `<div style="background:#fdf3e6;border:1px solid #e2c48c;border-radius:8px;padding:14px 16px;margin:16px 0;">
+              <p style="margin:0 0 6px;font-weight:bold;color:#7a5200;">Your ${formatINR(
+                TRIAL_PACK_PRICE_INR
+              )} credit</p>
+              <p style="margin:0;color:#7a5200;">This order number — <b>${escapeHtml(
+                order.orderId
+              )}</b> — also works as a one-time ${formatINR(
+                TRIAL_PACK_PRICE_INR
+              )} discount code on a full-size bottle. Enter it at checkout under "Redeem your Trial Pack credit" within ${TRIAL_CREDIT_EXPIRY_DAYS} days. The phone number on that order must match this one (${escapeHtml(
+                order.customerPhone
+              )}), and it can only be used once.</p>
+            </div>`
+          : ""
+      }
 
       ${
         order.paymentType === "partial_cod"

@@ -10,6 +10,7 @@ import { trackAddToCart } from "@/lib/analytics";
 import ProductImageGallery from "@/components/ProductImageGallery";
 import SocialProofSection from "@/components/SocialProofSection";
 import UrgencyStrip from "@/components/UrgencyStrip";
+import TrialPackBanner from "@/components/TrialPackBanner";
 import styles from "./product-detail.module.css";
 import {
   trackProductViewed,
@@ -23,6 +24,13 @@ import {
   BUNDLE_TOTAL_INR,
   BUNDLE_SAVINGS_VS_DISCOUNTED_INR,
 } from "@/lib/pricing";
+import {
+  TRIAL_PACK_PRICE_INR,
+  TRIAL_VIAL_SIZE_ML,
+  TRIAL_PICK_COUNT,
+  isTrialEligibleProductId,
+} from "@/lib/trialPack";
+import { trackTrialPackPdpClicked } from "@/lib/analytics";
 
 const paymentMethods = ["UPI", "Visa", "Mastercard", "RuPay"];
 
@@ -378,6 +386,31 @@ ${productUrl}`;
               </div>
             </div>
 
+            {isTrialEligibleProductId(product.id) ? (
+              <div className={styles.trialPackBlock}>
+                <span className={styles.trialPackBlockLabel}>
+                  Not ready to commit?
+                </span>
+                <p className={styles.trialPackBlockText}>
+                  Try {product.name} + any {TRIAL_PICK_COUNT - 1} fragrances —{" "}
+                  {TRIAL_PICK_COUNT} × {TRIAL_VIAL_SIZE_ML}ml ·{" "}
+                  {formatINR(TRIAL_PACK_PRICE_INR)}
+                  <br />
+                  Your {formatINR(TRIAL_PACK_PRICE_INR)} is fully redeemable on
+                  your {product.size}.
+                </p>
+                <Link
+                  href="/trial-pack"
+                  className={styles.trialPackBlockLink}
+                  onClick={() =>
+                    trackTrialPackPdpClicked(product.id, product.name)
+                  }
+                >
+                  Try this + 2 more →
+                </Link>
+              </div>
+            ) : null}
+
             <div className={styles.trustRow}>
               {trustRowItems.map((item) => (
                 <span key={item}>✓ {item}</span>
@@ -554,6 +587,10 @@ ${productUrl}`;
             </div>
           </div>
         </section>
+      ) : null}
+
+      {isTrialEligibleProductId(product.id) ? (
+        <TrialPackBanner ctaSource="pdp_lower_section" />
       ) : null}
 
       <section className="section product-info-section">

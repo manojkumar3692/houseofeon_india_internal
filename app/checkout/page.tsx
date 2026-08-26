@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useCart } from "@/components/CartContext";
 import UrgencyStrip from "@/components/UrgencyStrip";
+import TrialPackRescue from "@/components/TrialPackRescue";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import {
@@ -14,6 +15,7 @@ import {
   trackCheckoutLead,
   trackAddPaymentInfo,
   trackPurchaseAfterConcierge,
+  trackTrialCreditRedeemed,
 } from "@/lib/analytics";
 import { getConciergeEngagement } from "@/lib/assistantSession";
 import {
@@ -54,7 +56,44 @@ export default function CheckoutPage() {
     couponDiscount,
     finalTotal,
     clearCart,
+    applyCoupon,
   } = useCart();
+
+  // The general "Coupon code" box lives on /cart (EON20 etc., no phone
+  // needed there). Trial-pack credit codes are phone-matched though (see
+  // lib/trialCredit.ts), and phone is only known once someone's actually
+  // on this page — so this is a second, checkout-only entry point for
+  // "I have a trial pack order number" that reuses the exact same
+  // applyCoupon/validate pipeline, just with form.phone attached. Typing a
+  // normal coupon code in here works too, it's the same endpoint.
+  const [creditInput, setCreditInput] = useState("");
+  const [creditMessage, setCreditMessage] = useState("");
+  const [creditApplying, setCreditApplying] = useState(false);
+
+  async function handleApplyCredit() {
+    if (!form.phone) {
+      setCreditMessage("Enter your phone number above first.");
+      return;
+    }
+    setCreditApplying(true);
+    const codeAttempted = creditInput;
+    const result = await applyCoupon(creditInput, form.phone);
+    setCreditMessage(result.message);
+    if (result.ok) {
+      setCreditInput("");
+      // A trial pack order number redeeming here looks just like any other
+      // coupon code from applyCoupon's perspective — no separate "this was
+      // a trial credit" flag comes back. HOE-YYYYMMDD-XXXXX is the trial
+      // order-number format (see lib/order.ts createOrderNumber), which
+      // never collides with a real coupon code like EON20, so matching on
+      // that shape is a safe way to fire the funnel-specific event without
+      // over-counting normal coupon applies.
+      if (/^HOE-\d{8}-[A-Z0-9]{5}$/i.test(codeAttempted.trim())) {
+        trackTrialCreditRedeemed(codeAttempted.trim().toUpperCase());
+      }
+    }
+    setCreditApplying(false);
+  }
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -64,6 +103,27 @@ export default function CheckoutPage() {
   );
   const [summaryOpen, setSummaryOpen] = useState(false);
   const payButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Checkout abandonment rescue (see components/TrialPackRescue.tsx and the
+  // discussion that shaped this — deliberately NOT shown to everyone, only
+  // on a real abandonment signal, so it doesn't cannibalize full-price
+  // purchases from people who were always going to complete checkout).
+  const [rescueTrigger, setRescueTrigger] = useState<string | null>(null);
+  const rescueShownRef = useRef(false);
+  const paymentSucceededRef = useRef(false);
+  const hasEngagedRef = useRef(false);
+  const lastInteractionAtRef = useRef(Date.now());
+  const wasHiddenRef = useRef(false);
+  const pageLoadAtRef = useRef(Date.now());
+
+  function maybeShowRescue(trigger: string) {
+    if (rescueShownRef.current) return;
+    if (paymentSucceededRef.current) return;
+    if (!lines.length) return;
+
+    rescueShownRef.current = true;
+    setRescueTrigger(trigger);
+  }
 
   const codEligible = isPartialCodEligible(Math.round(finalTotal * 100));
   const effectivePaymentType =
@@ -110,6 +170,7 @@ export default function CheckoutPage() {
 
   function update<K extends keyof CustomerForm>(key: K, value: CustomerForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+    lastInteractionAtRef.current = Date.now();
   }
 
   // Generic field capture — fired on blur, only when the field actually has
@@ -126,6 +187,8 @@ export default function CheckoutPage() {
 
   function handleFieldFocus(field: string) {
     lastActiveFieldRef.current = field;
+    hasEngagedRef.current = true;
+    lastInteractionAtRef.current = Date.now();
   }
 
   // Phone gets special handling: the moment it looks like a real number,
@@ -293,7 +356,21 @@ export default function CheckoutPage() {
     }
 
     function handleVisibilityChange() {
-      if (document.visibilityState === "hidden") sendBeacon();
+      if (document.visibilityState === "hidden") {
+        sendBeacon();
+        wasHiddenRef.current = true;
+        return;
+      }
+
+      // "Tab returned" — the softest of the rescue signals (could just be
+      // someone checking an OTP SMS or comparing prices elsewhere), so it's
+      // gated harder than the others: only fires if they'd actually left the
+      // tab before, haven't completed payment, and get a short grace period
+      // after returning rather than popping the instant the tab refocuses.
+      if (wasHiddenRef.current) {
+        wasHiddenRef.current = false;
+        setTimeout(() => maybeShowRescue("tab_returned"), 1500);
+      }
     }
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -303,6 +380,46 @@ export default function CheckoutPage() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("pagehide", sendBeacon);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Desktop exit intent — cursor heading toward the tab/address bar.
+  // mouseleave with clientY <= 0 is the standard technique; it simply never
+  // fires on touch devices (no mouse), so no separate mobile gating is
+  // needed, but matchMedia still guards against odd hybrid-device hover
+  // events. Armed only after a few seconds on page so it can't fire on the
+  // initial mouse jitter right after the page loads.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    function handleMouseLeave(e: MouseEvent) {
+      if (Date.now() - pageLoadAtRef.current < 4000) return;
+      if (e.clientY > 0) return;
+      maybeShowRescue("exit_intent");
+    }
+
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Idle timeout — the other heuristic signal. Only arms after the shopper
+  // has actually engaged with the form (so it can't fire on someone who just
+  // landed and is still reading), and uses a fairly long threshold so normal
+  // slow typing/thinking doesn't get mistaken for abandonment.
+  useEffect(() => {
+    const IDLE_THRESHOLD_MS = 45000;
+
+    const interval = setInterval(() => {
+      if (!hasEngagedRef.current) return;
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - lastInteractionAtRef.current < IDLE_THRESHOLD_MS) return;
+      maybeShowRescue("idle_timeout");
+    }, 5000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fallback in case the Razorpay script tag was already injected by a
@@ -434,6 +551,7 @@ export default function CheckoutPage() {
             }
 
             trackPaymentSuccessClarity();
+            paymentSucceededRef.current = true;
             clearCart();
 
             const balanceQuery =
@@ -466,11 +584,18 @@ export default function CheckoutPage() {
               "Payment window closed before completing. Your order has been saved — tap Pay to try again."
             );
             setLoading(false);
+            // Strongest signal in the whole rescue system — they got all the
+            // way to the payment sheet and backed out. Universal (fires
+            // identically on mobile and desktop, it's a Razorpay SDK
+            // callback, not a browser heuristic).
+            maybeShowRescue("razorpay_dismissed");
           },
         },
       });
 
       razorpay.on("payment.failed", (response) => {
+        maybeShowRescue("payment_failed");
+
         const description =
           response?.error?.description ||
           response?.error?.reason ||
@@ -830,6 +955,39 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {!hasBundleLine && (
+              <div className="checkout-credit-box">
+                <label htmlFor="credit-code">Redeem your Trial Pack credit</label>
+                <p className="checkout-credit-sublabel">
+                  No coupon needed. Enter your Trial Pack order number and use
+                  the same phone number in your delivery details. When they
+                  match, ₹249 is deducted automatically.
+                </p>
+                <div className="checkout-credit-row">
+                  <input
+                    id="credit-code"
+                    className="input"
+                    type="text"
+                    placeholder="e.g. HOE-20260813-7ZUE1"
+                    value={creditInput}
+                    onChange={(e) => setCreditInput(e.target.value)}
+                    disabled={creditApplying}
+                  />
+                  <button
+                    type="button"
+                    className="btn ghost"
+                    onClick={handleApplyCredit}
+                    disabled={creditApplying || !creditInput.trim()}
+                  >
+                    {creditApplying ? "Checking…" : "Apply"}
+                  </button>
+                </div>
+                {creditMessage && (
+                  <p className="checkout-credit-message">{creditMessage}</p>
+                )}
+              </div>
+            )}
+
             {effectivePaymentType === "partial_cod" ? (
               <>
                 <div className="summary-lines">
@@ -919,6 +1077,13 @@ export default function CheckoutPage() {
               : "Pay now"}
           </button>
         </div>
+      ) : null}
+
+      {rescueTrigger ? (
+        <TrialPackRescue
+          trigger={rescueTrigger}
+          onDismiss={() => setRescueTrigger(null)}
+        />
       ) : null}
     </section>
   );
