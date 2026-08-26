@@ -125,6 +125,7 @@ export default function PerfumeAssistant() {
   // by just removing the pageType checks below.
   const isHidden =
     pathname.startsWith("/checkout") ||
+    pathname.startsWith("/trial-pack") ||
     pathname.startsWith("/admin") ||
     pageType === "product" ||
     pageType === "cart";

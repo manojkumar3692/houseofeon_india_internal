@@ -959,7 +959,9 @@ export default function CheckoutPage() {
               <div className="checkout-credit-box">
                 <label htmlFor="credit-code">Redeem your Trial Pack credit</label>
                 <p className="checkout-credit-sublabel">
-                  Enter the order number from a previous Trial Pack purchase.
+                  No coupon needed. Enter your Trial Pack order number and use
+                  the same phone number in your delivery details. When they
+                  match, ₹249 is deducted automatically.
                 </p>
                 <div className="checkout-credit-row">
                   <input

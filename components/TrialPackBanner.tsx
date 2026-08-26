@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   TRIAL_PACK_PRICE_INR,
@@ -10,62 +11,80 @@ import {
 import { formatINR } from "@/lib/money";
 import { trackTrialBannerClicked } from "@/lib/analytics";
 
-// Shared between the homepage and (lower down, away from the primary ₹999
-// CTA — see product-detail-client.tsx) the product detail page. Visually
-// bold on purpose — this is meant to be the "cool," confident explainer —
-// but the copy is deliberately NOT modeled on the common "100% refund, no
-// questions asked" pattern other brands use for this kind of banner: House
-// of Eon's trial pack is a one-time discount CODE toward a later order, not
-// a cash refund, so step 3/4 say exactly that rather than borrowing a
-// refund promise we don't actually make.
+// Shared between the homepage and product detail pages. The redemption copy
+// stays explicit: the trial value becomes a one-time discount code toward a
+// later order, rather than a cash refund.
 export default function TrialPackBanner({ ctaSource }: { ctaSource: string }) {
   return (
     <section className="trial-banner">
       <div className="container trial-banner-inner">
-        <div className="trial-banner-head">
-          <h2>
-            Try our fragrances,
-            <br />
-            risk free.
-          </h2>
+        <div className="trial-banner-visual">
           <Link
+            className="trial-banner-campaign-crop"
             href="/trial-pack"
-            className="btn trial-banner-cta"
+            aria-label="Build your House of Eon Discovery Set"
             onClick={() => trackTrialBannerClicked(ctaSource)}
           >
-            Try now
+            <Image
+              className="trial-banner-campaign-image"
+              src="/discovery-set-campaign.png"
+              alt="Three House of Eon 8 ml discovery fragrances"
+              fill
+              sizes="(max-width: 900px) 90vw, 40vw"
+            />
           </Link>
-          <span className="trial-banner-fineprint">
-            *Discount code, not a cash refund
-          </span>
         </div>
 
-        <div className="trial-banner-steps">
-          <div>
-            <span className="trial-banner-step-num">1</span>
-            <b>Pick {TRIAL_PICK_COUNT} scents</b>
+        <div className="trial-banner-content">
+          <span className="trial-banner-eyebrow">The Discovery Set</span>
+          <h2>Meet your fragrance before you commit.</h2>
+          <p className="trial-banner-intro">
+            Choose any {TRIAL_PICK_COUNT} House of Eon fragrances and live with
+            each one before selecting your full-size bottle.
+          </p>
+
+          <div className="trial-banner-offer">
+            <strong>{TRIAL_PICK_COUNT} × {TRIAL_VIAL_SIZE_ML} ml</strong>
+            <span aria-hidden="true" />
+            <strong>{formatINR(TRIAL_PACK_PRICE_INR)}</strong>
+          </div>
+
+          <div className="trial-banner-steps" aria-label="How the Discovery Set works">
+            <div>
+              <span>01</span>
+              <b>Choose three</b>
+              <small>Create your own edit.</small>
+            </div>
+            <div>
+              <span>02</span>
+              <b>Try and choose</b>
+              <small>Find your full-size fragrance.</small>
+            </div>
+            <div>
+              <span>03</span>
+              <b>Enter your order number</b>
+              <small>Use the same phone. ₹249 comes off.</small>
+            </div>
+          </div>
+
+          <div className="trial-banner-redeem-note">
+            <b>No coupon to search for.</b>
             <span>
-              {TRIAL_VIAL_SIZE_ML}ml vials each, {formatINR(TRIAL_PACK_PRICE_INR)}{" "}
-              total.
+              At full-size checkout, enter your Trial Pack order number. If the
+              phone number matches, ₹249 is deducted automatically.
             </span>
           </div>
-          <div>
-            <span className="trial-banner-step-num">2</span>
-            <b>Find your favorite</b>
-            <span>Live with them for a few days before deciding.</span>
-          </div>
-          <div>
-            <span className="trial-banner-step-num">3</span>
-            <b>Redeem full value</b>
-            <span>
-              Your order number = a {formatINR(TRIAL_PACK_PRICE_INR)} code
-              toward any full-size bottle.
-            </span>
-          </div>
-          <div>
-            <span className="trial-banner-step-num">4</span>
-            <b>Within {TRIAL_CREDIT_EXPIRY_DAYS} days</b>
-            <span>Same phone number, one-time use.</span>
+
+          <div className="trial-banner-action">
+            <Link
+              href="/trial-pack"
+              className="trial-banner-cta"
+              onClick={() => trackTrialBannerClicked(ctaSource)}
+            >
+              Build Your Discovery Set
+              <span aria-hidden="true">→</span>
+            </Link>
+            <p>Redeem once within {TRIAL_CREDIT_EXPIRY_DAYS} days.</p>
           </div>
         </div>
       </div>
