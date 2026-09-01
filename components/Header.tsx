@@ -51,6 +51,31 @@ export default function Header() {
     );
   }
 
+  // Checkout intentionally removes shopping navigation so a customer who is
+  // ready to pay has one clear path forward, while keeping help one tap away.
+  if (pathname?.startsWith("/checkout")) {
+    return (
+      <header className="header checkout-focused-header">
+        <div className="container checkout-focused-nav">
+          <span className="brand">HOUSE OF EON</span>
+          <div className="checkout-focused-actions">
+            <span className="checkout-focused-secure" aria-label="Secure checkout">
+              <span aria-hidden="true">&#128274;</span> Secure checkout
+            </span>
+            <a
+              className="checkout-focused-help"
+              href="https://wa.me/919902376600?text=Hi%20House%20of%20Eon%2C%20I%20need%20help%20completing%20my%20payment."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Need help? <strong>WhatsApp</strong>
+            </a>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="header">
       <div className="container nav">

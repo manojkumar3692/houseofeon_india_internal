@@ -4,7 +4,6 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useCart } from "@/components/CartContext";
-import UrgencyStrip from "@/components/UrgencyStrip";
 import TrialPackRescue from "@/components/TrialPackRescue";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
@@ -16,6 +15,8 @@ import {
   trackAddPaymentInfo,
   trackPurchaseAfterConcierge,
   trackTrialCreditRedeemed,
+  trackCheckoutPaymentRetry,
+  trackCheckoutPaymentHelpClicked,
 } from "@/lib/analytics";
 import { getConciergeEngagement } from "@/lib/assistantSession";
 import {
@@ -44,6 +45,9 @@ type CustomerForm = {
   state: string;
   pincode: string;
 };
+
+const PAYMENT_HELP_URL =
+  "https://wa.me/919902376600?text=Hi%20House%20of%20Eon%2C%20I%20need%20help%20completing%20my%20payment.";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -102,6 +106,7 @@ export default function CheckoutPage() {
     "full"
   );
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const [paymentRecovery, setPaymentRecovery] = useState<string | null>(null);
   const payButtonRef = useRef<HTMLButtonElement>(null);
 
   // Checkout abandonment rescue (see components/TrialPackRescue.tsx and the
@@ -115,14 +120,22 @@ export default function CheckoutPage() {
   const lastInteractionAtRef = useRef(Date.now());
   const wasHiddenRef = useRef(false);
   const pageLoadAtRef = useRef(Date.now());
+  const paymentRecoveryActiveRef = useRef(false);
 
   function maybeShowRescue(trigger: string) {
     if (rescueShownRef.current) return;
     if (paymentSucceededRef.current) return;
+    if (paymentRecoveryActiveRef.current) return;
     if (!lines.length) return;
 
     rescueShownRef.current = true;
     setRescueTrigger(trigger);
+  }
+
+  function showPaymentRecovery(message: string) {
+    paymentRecoveryActiveRef.current = true;
+    setPaymentRecovery(message);
+    setError("");
   }
 
   const codEligible = isPartialCodEligible(Math.round(finalTotal * 100));
@@ -159,6 +172,33 @@ export default function CheckoutPage() {
     state: "",
     pincode: "",
   });
+
+  const formComplete = useMemo(() => {
+    const phoneDigits = form.phone.replace(/[^0-9]/g, "");
+    return (
+      form.name.trim().length >= 2 &&
+      phoneDigits.length >= 10 &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()) &&
+      form.address.trim().length >= 8 &&
+      form.city.trim().length >= 2 &&
+      form.state.trim().length >= 2 &&
+      /^\d{6}$/.test(form.pincode)
+    );
+  }, [form]);
+
+  function handleStickyPay() {
+    const formElement = payButtonRef.current?.form;
+    if (!formElement) return;
+
+    if (!formElement.checkValidity()) {
+      const firstInvalid = formElement.querySelector<HTMLElement>(":invalid");
+      firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
+      window.setTimeout(() => formElement.reportValidity(), 350);
+      return;
+    }
+
+    payButtonRef.current?.click();
+  }
 
   // Mirrors `form` into a ref so the unload/visibility listener (set up
   // once on mount, see below) can always read the latest values without
@@ -444,6 +484,9 @@ export default function CheckoutPage() {
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
+    setPaymentRecovery(null);
+    setRescueTrigger(null);
+    paymentRecoveryActiveRef.current = false;
 
     if (!lines.length) {
       setError("Cart is empty.");
@@ -570,7 +613,7 @@ export default function CheckoutPage() {
                 : "Payment verification failed";
 
             trackPaymentFailed(message);
-            setError(message);
+            showPaymentRecovery(message);
             setLoading(false);
           }
         },
@@ -580,22 +623,17 @@ export default function CheckoutPage() {
               lastActiveField: "razorpay_modal",
             });
             trackPaymentFailed("customer_closed_razorpay_modal");
-            setError(
-              "Payment window closed before completing. Your order has been saved — tap Pay to try again."
-            );
+            if (!paymentRecoveryActiveRef.current) {
+              showPaymentRecovery(
+                "The payment window was closed before payment was completed."
+              );
+            }
             setLoading(false);
-            // Strongest signal in the whole rescue system — they got all the
-            // way to the payment sheet and backed out. Universal (fires
-            // identically on mobile and desktop, it's a Razorpay SDK
-            // callback, not a browser heuristic).
-            maybeShowRescue("razorpay_dismissed");
           },
         },
       });
 
       razorpay.on("payment.failed", (response) => {
-        maybeShowRescue("payment_failed");
-
         const description =
           response?.error?.description ||
           response?.error?.reason ||
@@ -605,7 +643,7 @@ export default function CheckoutPage() {
           paymentFailedReason: description,
         });
         trackPaymentFailed(description);
-        setError(description);
+        showPaymentRecovery(description);
         setLoading(false);
       });
 
@@ -825,19 +863,71 @@ export default function CheckoutPage() {
               </div>
             ) : null}
 
-            {error ? <div className="notice">{error}</div> : null}
+            {error && !paymentRecovery ? <div className="notice">{error}</div> : null}
 
-            {checkoutLineItems.length ? (
-              <UrgencyStrip
-                productId={checkoutLineItems[0].productId}
-                productName={
-                  checkoutLineItems.length === 1
-                    ? checkoutLineItems[0].name
-                    : undefined
-                }
-                className="urgency-strip-checkout"
-              />
+            {paymentRecovery ? (
+              <div className="checkout-payment-recovery" role="alert">
+                <span>Payment wasn&apos;t completed</span>
+                <h3>Your order details are safe.</h3>
+                <p>
+                  Your cart and delivery details are still here. Retry securely,
+                  choose another payment option, or message us for help. If your
+                  bank shows a debit, contact us before retrying.
+                </p>
+                <small>{paymentRecovery}</small>
+                <div className="checkout-payment-recovery-actions">
+                  <button
+                    className="checkout-payment-retry"
+                    type="submit"
+                    disabled={loading || !razorpayReady}
+                    onClick={() => {
+                      trackCheckoutPaymentRetry(effectivePaymentType);
+                      setPaymentRecovery(null);
+                      paymentRecoveryActiveRef.current = false;
+                    }}
+                  >
+                    {loading
+                      ? "Opening payment..."
+                      : `Retry secure payment · ${formatINR(amountDueNow)}`}
+                  </button>
+
+                  {codEligible ? (
+                    <button
+                      className="checkout-payment-switch"
+                      type="button"
+                      onClick={() => {
+                        const nextType =
+                          effectivePaymentType === "full" ? "partial_cod" : "full";
+                        setPaymentType(nextType);
+                        captureCheckoutSession(undefined, {
+                          paymentMethod: nextType,
+                          lastActiveField: "payment_recovery",
+                        });
+                      }}
+                    >
+                      {effectivePaymentType === "full"
+                        ? `Switch to ${formatINR(tokenAmountInr)} now, rest on delivery`
+                        : `Switch to full online payment · ${formatINR(finalTotal)}`}
+                    </button>
+                  ) : null}
+
+                  <a
+                    href={PAYMENT_HELP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackCheckoutPaymentHelpClicked(effectivePaymentType)}
+                  >
+                    Get payment help on WhatsApp
+                  </a>
+                </div>
+              </div>
             ) : null}
+
+            <div className="checkout-payment-assurance" aria-label="Checkout assurances">
+              <span>Free shipping</span>
+              <span>Delivery in 2–3 working days</span>
+              <span>Secured by Razorpay</span>
+            </div>
 
             {checkoutReview ? (
               <div className="checkout-review-snippet">
@@ -878,20 +968,24 @@ export default function CheckoutPage() {
               </div>
             ) : null}
 
-            <button
-              ref={payButtonRef}
-              className="btn"
-              disabled={loading || !razorpayReady}
-              type="submit"
-            >
-              {loading
-                ? "Opening payment..."
-                : !razorpayReady
-                ? "Loading payment..."
-                : effectivePaymentType === "partial_cod"
-                ? `Pay ${formatINR(amountDueNow)} now`
-                : `Pay ${formatINR(finalTotal)}`}
-            </button>
+            {!paymentRecovery ? (
+              <button
+                ref={payButtonRef}
+                className="btn"
+                disabled={loading || !razorpayReady}
+                type="submit"
+              >
+                {loading
+                  ? "Opening payment..."
+                  : !razorpayReady
+                  ? "Loading payment..."
+                  : effectivePaymentType === "partial_cod"
+                  ? `Pay ${formatINR(amountDueNow)} now securely`
+                  : `Pay ${formatINR(finalTotal)} securely`}
+              </button>
+            ) : (
+              <button ref={payButtonRef} type="submit" hidden aria-hidden="true" />
+            )}
           </form>
 
           <div className="card checkout-summary-card">
@@ -952,6 +1046,11 @@ export default function CheckoutPage() {
               <div>
                 <span>Estimated delivery</span>
                 <b>2–3 working days</b>
+              </div>
+
+              <div>
+                <span>Shipping</span>
+                <b>FREE</b>
               </div>
             </div>
 
@@ -1023,10 +1122,10 @@ export default function CheckoutPage() {
               {effectivePaymentType === "partial_cod"
                 ? `After your ${formatINR(
                     amountDueNow
-                  )} token payment, your order will be saved and emailed to office. Pay the remaining ${formatINR(
+                  )} token payment, you will receive an order confirmation. Pay the remaining ${formatINR(
                     balanceDueNow
-                  )} in cash to the delivery agent.`
-                : "After successful Razorpay payment, your order will be saved and emailed to office."}
+                  )} in cash to the delivery agent. Tracking details are shared after dispatch.`
+                : "After successful payment, you will receive an order confirmation. Tracking details are shared after dispatch."}
             </p>
 
             <div className="checkout-trust-strip">
@@ -1039,12 +1138,12 @@ export default function CheckoutPage() {
                 <span>Every bottle sealed &amp; quality checked</span>
               </div>
               <div>
-                <b>The Compliment Getter</b>
-                <span>Loved for how long it lasts</span>
+                <b>Free shipping</b>
+                <span>No extra delivery charge at checkout</span>
               </div>
               <div>
-                <b>No returns once opened</b>
-                <span>Fragrances can&apos;t be returned once the seal is broken</span>
+                <b>Help when you need it</b>
+                <span>Payment support available on WhatsApp</span>
               </div>
             </div>
           </div>
@@ -1055,7 +1154,11 @@ export default function CheckoutPage() {
         <div className="checkout-sticky-pay">
           <div className="checkout-sticky-pay-info">
             <span>
-              {effectivePaymentType === "partial_cod" ? "Pay now" : "Total"}
+              {formComplete
+                ? effectivePaymentType === "partial_cod"
+                  ? "Pay now · Free shipping"
+                  : "Total · Free shipping"
+                : "Free shipping · Secure payment"}
             </span>
             <b>
               {formatINR(
@@ -1067,14 +1170,18 @@ export default function CheckoutPage() {
           </div>
           <button
             type="button"
-            disabled={loading || !razorpayReady}
-            onClick={() => payButtonRef.current?.click()}
+            disabled={loading || (formComplete && !razorpayReady)}
+            onClick={handleStickyPay}
           >
             {loading
               ? "Opening..."
+              : !formComplete
+              ? "Complete details"
               : !razorpayReady
               ? "Loading..."
-              : "Pay now"}
+              : effectivePaymentType === "partial_cod"
+              ? `Pay ${formatINR(amountDueNow)} now`
+              : `Pay ${formatINR(finalTotal)}`}
           </button>
         </div>
       ) : null}

@@ -563,6 +563,24 @@ export function trackTrialPaymentHelpClicked() {
   trackMetaEvent("CustomEvent", { event_name: "TrialPaymentHelpClicked" });
 }
 
+export function trackCheckoutPaymentRetry(paymentMethod: string) {
+  trackGAEvent("checkout_payment_retry", { payment_method: paymentMethod });
+  trackMetaEvent("CustomEvent", {
+    event_name: "CheckoutPaymentRetry",
+    payment_method: paymentMethod,
+  });
+}
+
+export function trackCheckoutPaymentHelpClicked(paymentMethod: string) {
+  trackGAEvent("checkout_payment_help_clicked", {
+    payment_method: paymentMethod,
+  });
+  trackMetaEvent("CustomEvent", {
+    event_name: "CheckoutPaymentHelpClicked",
+    payment_method: paymentMethod,
+  });
+}
+
 export function trackTrialPackPurchased(orderId: string, scentNames: string[]) {
   trackGAEvent("trial_pack_purchased", {
     order_id: orderId,
