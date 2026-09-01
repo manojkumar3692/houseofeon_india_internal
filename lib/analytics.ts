@@ -530,6 +530,39 @@ export function trackTrialScentSelected(productName: string, position: number) {
   trackGAEvent("trial_scent_selected", { product_name: productName, position });
 }
 
+export function trackTrialBuilderStarted() {
+  trackGAEvent("trial_builder_started");
+  trackMetaEvent("CustomEvent", { event_name: "TrialBuilderStarted" });
+}
+
+export function trackTrialSetCompleted(scentNames: string[]) {
+  trackGAEvent("trial_set_completed", { scents: scentNames.join(", ") });
+  trackMetaEvent("CustomEvent", {
+    event_name: "TrialSetCompleted",
+    content_name: scentNames.join(", "),
+  });
+}
+
+export function trackTrialContinueClicked() {
+  trackGAEvent("trial_continue_clicked");
+  trackMetaEvent("CustomEvent", { event_name: "TrialContinueClicked" });
+}
+
+export function trackTrialFormStarted() {
+  trackGAEvent("trial_form_started");
+  trackMetaEvent("CustomEvent", { event_name: "TrialFormStarted" });
+}
+
+export function trackTrialPaymentRetry() {
+  trackGAEvent("trial_payment_retry");
+  trackMetaEvent("CustomEvent", { event_name: "TrialPaymentRetry" });
+}
+
+export function trackTrialPaymentHelpClicked() {
+  trackGAEvent("trial_payment_help_clicked");
+  trackMetaEvent("CustomEvent", { event_name: "TrialPaymentHelpClicked" });
+}
+
 export function trackTrialPackPurchased(orderId: string, scentNames: string[]) {
   trackGAEvent("trial_pack_purchased", {
     order_id: orderId,
