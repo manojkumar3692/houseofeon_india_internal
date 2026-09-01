@@ -24,7 +24,10 @@ const schema = z.object({
   customer: z.object({
     name: z.string().min(2),
     phone: z.string().min(8),
-    email: z.string().email("Valid email is required"),
+    email: z.union([
+      z.literal(""),
+      z.string().email("Enter a valid email or leave it blank"),
+    ]),
     address: z.string().min(8),
     city: z.string().min(2),
     state: z.string().min(2),

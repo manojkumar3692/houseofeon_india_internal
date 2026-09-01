@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
@@ -19,7 +19,25 @@ import {
   trackAddPaymentInfo,
   trackPurchase,
   trackPaymentFailed,
+  trackCheckoutLead,
+  trackTrialBuilderStarted,
+  trackTrialSetCompleted,
+  trackTrialContinueClicked,
+  trackTrialFormStarted,
+  trackTrialPaymentRetry,
+  trackTrialPaymentHelpClicked,
 } from "@/lib/analytics";
+
+const SCENT_GUIDANCE: Record<string, string> = {
+  "desert-tonka": "Warm · Sweet · Evening",
+  "arctic-wave": "Fresh · Clean · Everyday",
+  zyrox: "Cool · Energetic · Summer",
+  rank: "Bold · Spicy · Date night",
+  "silent-gold": "Rich · Elegant · Occasion",
+};
+
+const PAYMENT_HELP_URL =
+  "https://wa.me/919902376600?text=Hi%20House%20of%20Eon%2C%20I%20need%20help%20completing%20my%20Discovery%20Set%20payment.";
 
 type CustomerForm = {
   name: string;
@@ -55,7 +73,14 @@ export default function TrialPackPage() {
   const [form, setForm] = useState<CustomerForm>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [paymentRecovery, setPaymentRecovery] = useState(false);
   const [razorpayReady, setRazorpayReady] = useState(false);
+  const [checkoutInView, setCheckoutInView] = useState(false);
+  const checkoutRef = useRef<HTMLFormElement | null>(null);
+  const builderStartedRef = useRef(false);
+  const setCompletedRef = useRef(false);
+  const formStartedRef = useRef(false);
+  const phoneLeadFiredRef = useRef(false);
 
   useEffect(() => {
     trackTrialPackViewed();
@@ -83,6 +108,7 @@ export default function TrialPackPage() {
   function toggleScent(productId: string) {
     setSelected((current) => {
       if (current.includes(productId)) {
+        setCompletedRef.current = false;
         return current.filter((id) => id !== productId);
       }
       if (current.length >= TRIAL_PICK_COUNT) return current;
@@ -90,15 +116,101 @@ export default function TrialPackPage() {
       const next = [...current, productId];
       const product = eligibleProducts.find((p) => p.id === productId);
       if (product) trackTrialScentSelected(product.name, next.length);
+      if (!builderStartedRef.current) {
+        builderStartedRef.current = true;
+        trackTrialBuilderStarted();
+      }
+      if (next.length === TRIAL_PICK_COUNT && !setCompletedRef.current) {
+        setCompletedRef.current = true;
+        trackTrialSetCompleted(
+          next.map((id) => eligibleProducts.find((p) => p.id === id)?.name || id)
+        );
+      }
       return next;
     });
   }
 
   const remaining = TRIAL_PICK_COUNT - selected.length;
+  const selectedItems = useMemo(
+    () =>
+      selected.map((id) => ({
+        item_id: id,
+        item_name: eligibleProducts.find((p) => p.id === id)?.name || id,
+        price: TRIAL_PACK_PRICE_INR / TRIAL_PICK_COUNT,
+        quantity: 1,
+      })),
+    [eligibleProducts, selected]
+  );
+  const verifiedReviews = useMemo(
+    () =>
+      eligibleProducts
+        .flatMap((product) =>
+          (product.reviews || [])
+            .filter((review) => review.verified)
+            .map((review) => ({ ...review, productName: product.name }))
+        )
+        .slice(0, 3),
+    [eligibleProducts]
+  );
+
+  useEffect(() => {
+    if (selected.length !== TRIAL_PICK_COUNT || !checkoutRef.current) {
+      setCheckoutInView(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setCheckoutInView(entry.isIntersecting),
+      { threshold: 0.12 }
+    );
+    observer.observe(checkoutRef.current);
+    return () => observer.disconnect();
+  }, [selected.length]);
+
+  function chooseBalancedTrio() {
+    const trio = eligibleProducts.slice(0, TRIAL_PICK_COUNT);
+    setSelected(trio.map((product) => product.id));
+    if (!builderStartedRef.current) {
+      builderStartedRef.current = true;
+      trackTrialBuilderStarted();
+    }
+    if (!setCompletedRef.current) {
+      setCompletedRef.current = true;
+      trio.forEach((product, index) =>
+        trackTrialScentSelected(product.name, index + 1)
+      );
+      trackTrialSetCompleted(trio.map((product) => product.name));
+    }
+  }
+
+  function continueToCheckout() {
+    trackTrialContinueClicked();
+    checkoutRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function handleFormFocus() {
+    if (formStartedRef.current) return;
+    formStartedRef.current = true;
+    trackTrialFormStarted();
+  }
+
+  function handlePhoneBlur() {
+    const digits = form.phone.replace(/[^0-9]/g, "");
+    if (digits.length < 10 || phoneLeadFiredRef.current) return;
+    phoneLeadFiredRef.current = true;
+    void trackCheckoutLead({
+      name: form.name || undefined,
+      phone: form.phone,
+      email: form.email || undefined,
+      items: selectedItems,
+      value: TRIAL_PACK_PRICE_INR,
+    });
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
+    setPaymentRecovery(false);
 
     if (selected.length !== TRIAL_PICK_COUNT) {
       setError(`Pick ${TRIAL_PICK_COUNT} scents to continue.`);
@@ -118,16 +230,7 @@ export default function TrialPackPage() {
     const selectedNames = selected
       .map((id) => eligibleProducts.find((p) => p.id === id)?.name || id);
 
-    trackBeginCheckout({
-      value: TRIAL_PACK_PRICE_INR,
-      items: selected.map((id) => ({
-        item_id: id,
-        item_name:
-          eligibleProducts.find((p) => p.id === id)?.name || id,
-        price: TRIAL_PACK_PRICE_INR / TRIAL_PICK_COUNT,
-        quantity: 1,
-      })),
-    });
+    trackBeginCheckout({ value: TRIAL_PACK_PRICE_INR, items: selectedItems });
 
     try {
       const createResponse = await fetch("/api/trial-orders/create", {
@@ -147,7 +250,7 @@ export default function TrialPackPage() {
       }
 
       trackAddPaymentInfo({
-        items: [],
+        items: selectedItems,
         value: TRIAL_PACK_PRICE_INR,
         paymentMethod: "full",
       });
@@ -209,6 +312,7 @@ export default function TrialPackPage() {
                 : "Payment verification failed";
             trackPaymentFailed(message);
             setError(message);
+            setPaymentRecovery(true);
             setLoading(false);
           }
         },
@@ -218,6 +322,7 @@ export default function TrialPackPage() {
             setError(
               "Payment window closed before completing. Tap Pay to try again."
             );
+            setPaymentRecovery(true);
             setLoading(false);
           },
         },
@@ -230,6 +335,7 @@ export default function TrialPackPage() {
           "Payment failed. Please try again or use a different payment method.";
         trackPaymentFailed(description);
         setError(description);
+        setPaymentRecovery(true);
         setLoading(false);
       });
 
@@ -238,6 +344,7 @@ export default function TrialPackPage() {
       const message = err instanceof Error ? err.message : "Something went wrong";
       trackPaymentFailed(message);
       setError(message);
+      setPaymentRecovery(true);
       setLoading(false);
     }
   }
@@ -253,10 +360,10 @@ export default function TrialPackPage() {
         <div className="container trial-page-hero-grid">
           <div className="trial-page-hero-copy">
             <span className="trial-page-kicker">House of Eon Discovery Set</span>
-            <h1>Meet your fragrance before you commit.</h1>
+            <h1>Try any 3 perfumes for ₹249.</h1>
             <p>
-              Choose three fragrances. Wear each one on your skin. Find the
-              scent that feels unmistakably yours.
+              Wear them on your skin, find your favourite, then get the full
+              ₹249 back as credit on your full-size purchase.
             </p>
 
             <div className="trial-page-offer" aria-label="Discovery Set details">
@@ -266,8 +373,14 @@ export default function TrialPackPage() {
             </div>
 
             <a className="trial-page-start" href="#build-your-set">
-              Build your set <span aria-hidden="true">↓</span>
+              Choose my 3 scents · ₹249 <span aria-hidden="true">↓</span>
             </a>
+
+            <div className="trial-page-hero-trust" aria-label="Delivery and payment benefits">
+              <span>Free shipping</span>
+              <span>2–3 working days</span>
+              <span>UPI · Cards · Net banking</span>
+            </div>
           </div>
 
           <div className="trial-page-hero-visual">
@@ -290,35 +403,15 @@ export default function TrialPackPage() {
       </section>
 
       <div className="container trial-page-content">
-        <section className="trial-page-how" aria-labelledby="discovery-how-title">
-          <div className="trial-page-how-title">
-            <span>How it works</span>
-            <h2 id="discovery-how-title">How your ₹249 comes back.</h2>
-          </div>
-          <ol>
-            <li><span>01</span><div><b>Choose any three</b><small>Create a set around your taste.</small></div></li>
-            <li><span>02</span><div><b>Wear, don&apos;t just smell</b><small>Give every fragrance time on skin.</small></div></li>
-            <li><span>03</span><div><b>Keep your order number</b><small>It is your key to the ₹249 credit.</small></div></li>
-            <li><span>04</span><div><b>Enter it at checkout</b><small>Use the same phone number. ₹249 is deducted automatically.</small></div></li>
-          </ol>
-          <div className="trial-page-redeem-flow" aria-label="How to redeem the Discovery Set credit">
-            <b>No coupon to find</b>
-            <span>Full-size checkout</span>
-            <i aria-hidden="true">→</i>
-            <span>Enter Trial Pack order number</span>
-            <i aria-hidden="true">→</i>
-            <span>Same phone number</span>
-            <i aria-hidden="true">→</i>
-            <strong>₹249 deducted</strong>
-          </div>
-        </section>
-
         <section className="trial-page-builder" id="build-your-set" aria-labelledby="builder-title">
           <div className="trial-page-builder-head">
             <div>
               <span className="trial-page-kicker">Your edit</span>
               <h2 id="builder-title">Build your Discovery Set.</h2>
               <p>Select exactly three fragrances. Tap again to remove one.</p>
+              <button className="trial-page-quick-pick" type="button" onClick={chooseBalancedTrio}>
+                Not sure? Choose a balanced trio
+              </button>
             </div>
 
             <div className="trial-page-progress" aria-live="polite">
@@ -373,7 +466,7 @@ export default function TrialPackPage() {
                       <span className="trial-pack-scent-order">0{productIndex + 1}</span>
                       <span className="trial-pack-scent-name">{product.name}</span>
                       <span className="trial-pack-scent-notes">
-                        {product.notes.slice(0, 3).join(" · ")}
+                        {SCENT_GUIDANCE[product.id] || product.notes.slice(0, 3).join(" · ")}
                       </span>
                     </span>
                     <span className="trial-pack-scent-check" aria-hidden="true">
@@ -413,7 +506,12 @@ export default function TrialPackPage() {
             </div>
 
             {selected.length === TRIAL_PICK_COUNT ? (
-              <form className="form trial-page-form" onSubmit={submit}>
+              <form
+                ref={checkoutRef}
+                className="form trial-page-form"
+                onSubmit={submit}
+                onFocusCapture={handleFormFocus}
+              >
                 <div className="trial-page-form-head">
                   <span>Delivery details</span>
                   <small>Secure checkout</small>
@@ -421,10 +519,10 @@ export default function TrialPackPage() {
 
                 <div className="two">
                   <input className="input" required autoComplete="name" placeholder="Full name" aria-label="Full name" value={form.name} onChange={(e) => update("name", e.target.value)} />
-                  <input className="input" required type="tel" inputMode="tel" autoComplete="tel" placeholder="Phone" aria-label="Phone" value={form.phone} onChange={(e) => update("phone", e.target.value)} />
+                  <input className="input" required type="tel" inputMode="tel" autoComplete="tel" minLength={10} placeholder="Phone" aria-label="Phone" value={form.phone} onChange={(e) => update("phone", e.target.value)} onBlur={handlePhoneBlur} />
                 </div>
 
-                <input className="input" type="email" inputMode="email" autoComplete="email" required placeholder="Email for order confirmation" aria-label="Email for order confirmation" value={form.email} onChange={(e) => update("email", e.target.value)} />
+                <input className="input" type="email" inputMode="email" autoComplete="email" placeholder="Email for confirmation (optional)" aria-label="Email for confirmation (optional)" value={form.email} onChange={(e) => update("email", e.target.value)} />
 
                 <textarea className="textarea" required autoComplete="street-address" placeholder="Full delivery address" aria-label="Full delivery address" value={form.address} onChange={(e) => update("address", e.target.value)} />
 
@@ -435,16 +533,54 @@ export default function TrialPackPage() {
 
                 <input className="input" required type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="postal-code" maxLength={6} placeholder="Pincode" aria-label="Pincode" value={form.pincode} onChange={(e) => update("pincode", e.target.value.replace(/[^0-9]/g, ""))} />
 
-                {error ? <div className="notice">{error}</div> : null}
+                {error && !paymentRecovery ? <div className="notice">{error}</div> : null}
+
+                {paymentRecovery ? (
+                  <div className="trial-page-payment-recovery" role="alert">
+                    <span>Payment wasn&apos;t completed</span>
+                    <h3>Your Discovery Set is still ready.</h3>
+                    <p>
+                      Your three fragrances and delivery details are saved on
+                      this page. Retry now or message us if you need help.
+                    </p>
+                    {error ? <small>{error}</small> : null}
+                    <div>
+                      <button
+                        className="trial-page-retry"
+                        type="submit"
+                        disabled={loading || !razorpayReady}
+                        onClick={() => {
+                          trackTrialPaymentRetry();
+                          setPaymentRecovery(false);
+                        }}
+                      >
+                        {loading ? "Opening payment..." : `Retry payment · ${formatINR(TRIAL_PACK_PRICE_INR)}`}
+                      </button>
+                      <a
+                        href={PAYMENT_HELP_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={trackTrialPaymentHelpClicked}
+                      >
+                        Get help on WhatsApp
+                      </a>
+                    </div>
+                  </div>
+                ) : null}
 
                 <div className="summary-total">
                   <span>Total payable</span>
                   <strong>{formatINR(TRIAL_PACK_PRICE_INR)}</strong>
                 </div>
 
-                <button className="btn trial-page-pay" disabled={loading || !razorpayReady} type="submit">
-                  {loading ? "Opening payment..." : !razorpayReady ? "Loading payment..." : `Continue to secure payment · ${formatINR(TRIAL_PACK_PRICE_INR)}`}
-                </button>
+                {!paymentRecovery ? (
+                  <button className="btn trial-page-pay" disabled={loading || !razorpayReady} type="submit">
+                    {loading ? "Opening payment..." : !razorpayReady ? "Loading payment..." : `Continue to secure payment · ${formatINR(TRIAL_PACK_PRICE_INR)}`}
+                  </button>
+                ) : null}
+                <p className="trial-page-payment-methods">
+                  Free shipping · Pay securely with UPI, cards or net banking
+                </p>
               </form>
             ) : (
               <div className="trial-page-checkout-prompt">
@@ -467,7 +603,61 @@ export default function TrialPackPage() {
           </aside>
         </div>
         </section>
+
+        {verifiedReviews.length ? (
+          <section className="trial-page-reviews" aria-labelledby="trial-reviews-title">
+            <div className="trial-page-reviews-head">
+              <span>Verified buyers</span>
+              <h2 id="trial-reviews-title">Chosen by people who found us online.</h2>
+            </div>
+            <div className="trial-page-review-grid">
+              {verifiedReviews.map((review) => (
+                <article key={review.orderNumber}>
+                  <div aria-label={`${review.rating} out of 5 stars`}>★★★★★</div>
+                  <p>“{review.text}”</p>
+                  <b>{review.name}</b>
+                  <small>{review.city} · {review.productName} · Verified buyer</small>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="trial-page-how" aria-labelledby="discovery-how-title">
+          <div className="trial-page-how-title">
+            <span>How it works</span>
+            <h2 id="discovery-how-title">How your ₹249 comes back.</h2>
+          </div>
+          <ol>
+            <li><span>01</span><div><b>Choose any three</b><small>Create a set around your taste.</small></div></li>
+            <li><span>02</span><div><b>Wear, don&apos;t just smell</b><small>Give every fragrance time on skin.</small></div></li>
+            <li><span>03</span><div><b>Keep your order number</b><small>It is your key to the ₹249 credit.</small></div></li>
+            <li><span>04</span><div><b>Enter it at checkout</b><small>Use the same phone number. ₹249 is deducted automatically.</small></div></li>
+          </ol>
+          <div className="trial-page-redeem-flow" aria-label="How to redeem the Discovery Set credit">
+            <b>No coupon to find</b>
+            <span>Full-size checkout</span>
+            <i aria-hidden="true">→</i>
+            <span>Enter Trial Pack order number</span>
+            <i aria-hidden="true">→</i>
+            <span>Same phone number</span>
+            <i aria-hidden="true">→</i>
+            <strong>₹249 deducted</strong>
+          </div>
+        </section>
       </div>
+
+      {selected.length === TRIAL_PICK_COUNT && !checkoutInView ? (
+        <div className="trial-page-mobile-continue">
+          <div>
+            <b>3/3 selected</b>
+            <span>Free shipping · ₹249 total</span>
+          </div>
+          <button type="button" onClick={continueToCheckout}>
+            Continue →
+          </button>
+        </div>
+      ) : null}
     </main>
   );
 }

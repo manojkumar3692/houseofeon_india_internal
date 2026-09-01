@@ -30,6 +30,27 @@ export default function Header() {
   // from the one thing the ad promised before the payoff lands.
   if (pathname?.startsWith("/scent-fix")) return null;
 
+  // The Discovery Set is primarily a paid-traffic landing page. Keep the
+  // visitor focused on choosing and checking out while retaining a direct
+  // support route for the trust questions that commonly block cold traffic.
+  if (pathname?.startsWith("/trial-pack")) {
+    return (
+      <header className="header trial-landing-header">
+        <div className="container trial-landing-nav">
+          <Link href="/" className="brand">HOUSE OF EON</Link>
+          <a
+            className="trial-landing-help"
+            href="https://wa.me/919902376600"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Need help? <strong>WhatsApp</strong>
+          </a>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="header">
       <div className="container nav">
