@@ -64,6 +64,7 @@ export default function Footer() {
             Best perfume for women
           </Link>
           <Link href="/scent-fix">Find your scent</Link>
+          <Link href="/pages/diwali-perfume">Diwali perfume gifts</Link>
           <Link href="/scent-swipe">Play &amp; win 20%</Link>
           <Link href="/guides">Perfume guides</Link>
           <Link href="/cart">Cart</Link>

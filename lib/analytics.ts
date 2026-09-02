@@ -4,6 +4,7 @@ import {
   captureLandingContext,
   getConciergeVariant,
 } from "@/lib/assistantSession";
+import { getCampaignEventParams } from "@/lib/campaignAttribution";
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
@@ -247,6 +248,7 @@ export function trackPurchase({
     currency: "INR",
     value: safeValue,
     items,
+    ...getCampaignEventParams(),
   });
 
   trackMetaEvent("Purchase", {
@@ -269,6 +271,7 @@ export function trackPurchase({
     ),
 
     order_id: orderId,
+    ...getCampaignEventParams(),
   });
 }
 
@@ -522,8 +525,11 @@ export function trackAssistantError(reason: string) {
 // events, order-type-agnostic) — these four are the funnel-specific markers
 // layered on top so the trial pack can be analyzed as its own journey.
 export function trackTrialPackViewed() {
-  trackGAEvent("trial_pack_viewed");
-  trackMetaEvent("CustomEvent", { event_name: "TrialPackViewed" });
+  trackGAEvent("trial_pack_viewed", getCampaignEventParams());
+  trackMetaEvent("CustomEvent", {
+    event_name: "TrialPackViewed",
+    ...getCampaignEventParams(),
+  });
 }
 
 export function trackTrialScentSelected(productName: string, position: number) {
@@ -585,10 +591,12 @@ export function trackTrialPackPurchased(orderId: string, scentNames: string[]) {
   trackGAEvent("trial_pack_purchased", {
     order_id: orderId,
     scents: scentNames.join(", "),
+    ...getCampaignEventParams(),
   });
   trackMetaEvent("CustomEvent", {
     event_name: "TrialPackPurchased",
     order_id: orderId,
+    ...getCampaignEventParams(),
   });
 }
 

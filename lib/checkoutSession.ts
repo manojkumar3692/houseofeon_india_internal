@@ -4,6 +4,8 @@
 // UI and silently no-ops on failure, since this is background telemetry,
 // not something the actual purchase flow should ever depend on.
 
+import { getCampaignAttribution } from "@/lib/campaignAttribution";
+
 const SESSION_STORAGE_KEY = "houseofeon_checkout_session_key";
 
 export type CheckoutCartItem = {
@@ -78,11 +80,12 @@ export function getUtmParams(): Pick<
   if (typeof window === "undefined") return {};
 
   const params = new URLSearchParams(window.location.search);
+  const campaign = getCampaignAttribution();
 
   return {
-    utmSource: params.get("utm_source") || undefined,
-    utmMedium: params.get("utm_medium") || undefined,
-    utmCampaign: params.get("utm_campaign") || undefined,
+    utmSource: params.get("utm_source") || campaign?.source || undefined,
+    utmMedium: params.get("utm_medium") || campaign?.medium || undefined,
+    utmCampaign: params.get("utm_campaign") || campaign?.campaign || undefined,
   };
 }
 

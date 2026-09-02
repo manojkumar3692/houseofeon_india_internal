@@ -34,6 +34,7 @@ const schema = z.object({
     pincode: z.string().min(4),
   }),
   selectedScents: z.array(z.string()).length(TRIAL_PICK_COUNT),
+  sessionKey: z.string().max(200).optional(),
 });
 
 export async function POST(request: Request) {
@@ -116,6 +117,21 @@ export async function POST(request: Request) {
     });
 
     if (error) throw error;
+
+    if (payload.sessionKey) {
+      try {
+        await supabase
+          .from("checkout_sessions")
+          .update({
+            order_number: orderNumber,
+            order_created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("session_key", payload.sessionKey);
+      } catch (linkError) {
+        console.error("trial checkout_sessions order link failed:", linkError);
+      }
+    }
 
     return NextResponse.json({
       orderNumber,

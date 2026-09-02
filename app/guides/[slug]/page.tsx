@@ -156,6 +156,22 @@ export default async function GuidePage({
         </div>
       </section>
 
+      {guide.campaignLink ? (
+        <section className="section guide-campaign-section">
+          <div className="container">
+            <div className="guide-campaign-card">
+              <div>
+                <div className="eyebrow">The Diwali Discovery</div>
+                <h2>{guide.campaignLink.text}</h2>
+              </div>
+              <Link href={guide.campaignLink.href} className="btn">
+                {guide.campaignLink.label} →
+              </Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       {relatedProducts.length ? (
         <section className="section seo-products-section">
           <div className="container">

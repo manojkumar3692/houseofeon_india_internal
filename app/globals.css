@@ -480,6 +480,113 @@
   overflow: hidden;
 }
 
+.guide-campaign-section {
+  padding-top: 8px;
+}
+
+.guide-campaign-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 34px;
+  border-radius: 28px;
+  background: linear-gradient(125deg, #1a100c, #512114);
+  color: #fff8ee;
+}
+
+.guide-campaign-card h2 {
+  max-width: 720px;
+  margin: 8px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(27px, 3.6vw, 43px);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.guide-campaign-card .btn {
+  flex: 0 0 auto;
+  background: #ef6c2f;
+  color: #17110e;
+}
+
+@media (max-width: 700px) {
+  .guide-campaign-card {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 26px;
+  }
+}
+
+/* Seasonal Diwali hub — visible internal link equity plus a clear homepage
+   route for visitors who arrive without a campaign URL. */
+.nav-diwali-link {
+  color: #bf531f;
+  font-weight: 800;
+}
+
+.nav-diwali-link[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.home-diwali-banner {
+  padding: 34px 0;
+  background: #1a100c;
+  color: #fff8ee;
+}
+
+.home-diwali-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  padding-top: 28px;
+  padding-bottom: 28px;
+  border-top: 1px solid rgba(255, 184, 113, .28);
+  border-bottom: 1px solid rgba(255, 184, 113, .28);
+}
+
+.home-diwali-banner span {
+  color: #f7a258;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.home-diwali-banner h2 {
+  margin: 8px 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400;
+  letter-spacing: -.035em;
+}
+
+.home-diwali-banner p {
+  max-width: 680px;
+  margin: 0;
+  color: rgba(255, 248, 238, .68);
+  line-height: 1.6;
+}
+
+.home-diwali-cta {
+  flex: 0 0 auto;
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: #ef6c2f;
+  color: #17110e;
+  font-weight: 900;
+}
+
+@media (max-width: 720px) {
+  .home-diwali-banner-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 22px;
+  }
+}
+
 .products-hero-inner {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;

@@ -186,6 +186,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="home-diwali-banner" aria-label="Diwali perfume gifting">
+        <div className="container home-diwali-banner-inner">
+          <div>
+            <span>Diwali 2026 · A gift without the guesswork</span>
+            <h2>Don&apos;t guess their perfume.</h2>
+            <p>Let them try three premium fragrances for ₹249, then redeem the full ₹249 on a 50ml.</p>
+          </div>
+          <Link href="/pages/diwali-perfume" className="home-diwali-cta">
+            Explore Diwali gifts →
+          </Link>
+        </div>
+      </section>
+
       <section className="quiz-cta-banner">
         <div className="quiz-cta-banner-inner">
           <div className="quiz-cta-copy">
