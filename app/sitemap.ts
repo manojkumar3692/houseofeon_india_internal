@@ -20,6 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${siteUrl}/pages/diwali-perfume`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.95,
+    },
+    {
       url: `${siteUrl}/long-lasting-perfume-for-men-india`,
       lastModified: new Date(),
       changeFrequency: "monthly",

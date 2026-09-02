@@ -44,14 +44,6 @@ export default function ScentMatcher({
 
   const [feelingId, setFeelingId] = useState<FeelingId | null>(null);
   const [productIndex, setProductIndex] = useState(0);
-  // Gates the trial-pack link — deliberately NOT shown the instant someone
-  // gets their first match, since that's the highest-intent moment in the
-  // whole funnel (the same moment they'd hit the ₹999 CTA). "Show me
-  // another" is a real hesitation signal — the first match didn't convince
-  // them — so only offer the cheaper alternative once they've demonstrated
-  // that, not to everyone by default. Once true, stays true for the rest of
-  // the session even if they pick a different feeling afterward.
-  const [hasShownHesitation, setHasShownHesitation] = useState(false);
   const leadFiredRef = useRef(false);
   const appliedSharedRef = useRef(false);
   const sectionViewFiredRef = useRef(false);
@@ -115,7 +107,6 @@ export default function ScentMatcher({
 
   function showAnother() {
     if (!feeling) return;
-    setHasShownHesitation(true);
     const nextIndex = (productIndex + 1) % feeling.productIds.length;
     setProductIndex(nextIndex);
 
@@ -197,13 +188,13 @@ export default function ScentMatcher({
                 30–35% fragrance oil · 50 ml · {product.concentration}
               </div>
 
-              {hasShownHesitation && isTrialEligibleProductId(product.id) ? (
+              {isTrialEligibleProductId(product.id) ? (
                 <Link
                   href="/trial-pack"
                   className={styles.s9TrialLink}
                   onClick={() => trackScentFixCtaClick("trial_pack_link")}
                 >
-                  Not ready to commit? Try {product.name} + 2 more for{" "}
+                  Not ready to blind buy? Try {product.name} + 2 more for{" "}
                   {formatINR(TRIAL_PACK_PRICE_INR)} →
                 </Link>
               ) : null}

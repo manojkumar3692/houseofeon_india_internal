@@ -27,6 +27,12 @@ import {
   trackTrialPaymentRetry,
   trackTrialPaymentHelpClicked,
 } from "@/lib/analytics";
+import {
+  captureCheckoutSession,
+  getCheckoutSessionKey,
+  getDeviceType,
+  getUtmParams,
+} from "@/lib/checkoutSession";
 
 const SCENT_GUIDANCE: Record<string, string> = {
   "desert-tonka": "Warm · Sweet · Evening",
@@ -141,6 +147,21 @@ export default function TrialPackPage() {
       })),
     [eligibleProducts, selected]
   );
+
+  useEffect(() => {
+    captureCheckoutSession("page_viewed", {
+      cartItems: [{
+        productId: "trial-pack",
+        name: "Discovery Set",
+        quantity: 1,
+        price: TRIAL_PACK_PRICE_INR,
+      }],
+      cartValueInPaise: TRIAL_PACK_PRICE_INR * 100,
+      referrer: document.referrer || undefined,
+      deviceType: getDeviceType(),
+      ...getUtmParams(),
+    });
+  }, []);
   const verifiedReviews = useMemo(
     () =>
       eligibleProducts
@@ -198,6 +219,12 @@ export default function TrialPackPage() {
     const digits = form.phone.replace(/[^0-9]/g, "");
     if (digits.length < 10 || phoneLeadFiredRef.current) return;
     phoneLeadFiredRef.current = true;
+    captureCheckoutSession("phone_captured", {
+      name: form.name || undefined,
+      phone: form.phone,
+      email: form.email || undefined,
+      lastActiveField: "phone",
+    });
     void trackCheckoutLead({
       name: form.name || undefined,
       phone: form.phone,
@@ -226,6 +253,17 @@ export default function TrialPackPage() {
     }
 
     setLoading(true);
+    captureCheckoutSession("submitted", {
+      name: form.name,
+      phone: form.phone,
+      email: form.email || undefined,
+      address: form.address,
+      city: form.city,
+      state: form.state,
+      pincode: form.pincode,
+      paymentMethod: "full",
+      lastActiveField: "submit_button",
+    });
 
     const selectedNames = selected
       .map((id) => eligibleProducts.find((p) => p.id === id)?.name || id);
@@ -239,6 +277,7 @@ export default function TrialPackPage() {
         body: JSON.stringify({
           customer: form,
           selectedScents: selected,
+          sessionKey: getCheckoutSessionKey() || undefined,
         }),
       });
 
@@ -318,6 +357,10 @@ export default function TrialPackPage() {
         },
         modal: {
           ondismiss: () => {
+            captureCheckoutSession("razorpay_dismissed", {
+              paymentMethod: "full",
+              paymentFailedReason: "customer_closed_razorpay_modal_trial_pack",
+            });
             trackPaymentFailed("customer_closed_razorpay_modal_trial_pack");
             setError(
               "Payment window closed before completing. Tap Pay to try again."
@@ -328,12 +371,18 @@ export default function TrialPackPage() {
         },
       });
 
+      captureCheckoutSession("razorpay_opened", { paymentMethod: "full" });
+
       razorpay.on("payment.failed", (response: any) => {
         const description =
           response?.error?.description ||
           response?.error?.reason ||
           "Payment failed. Please try again or use a different payment method.";
         trackPaymentFailed(description);
+        captureCheckoutSession("payment_failed", {
+          paymentMethod: "full",
+          paymentFailedReason: description,
+        });
         setError(description);
         setPaymentRecovery(true);
         setLoading(false);

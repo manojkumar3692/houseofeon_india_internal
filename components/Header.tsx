@@ -85,6 +85,13 @@ export default function Header() {
           <Link href="/products">Perfumes</Link>
           <Link href="/long-lasting-perfume-for-men-india">Men</Link>
           <Link href="/best-perfume-for-women-in-india">Women</Link>
+          <Link
+            href="/pages/diwali-perfume"
+            className="nav-diwali-link"
+            aria-current={pathname === "/pages/diwali-perfume" ? "page" : undefined}
+          >
+            Diwali
+          </Link>
           <Link href="/track-order">Track</Link>
           <Link
             href="/trial-pack"
@@ -104,7 +111,7 @@ export default function Header() {
           >
             Trial Pack
           </Link>
-          <Link href="/cart" className="mobile-cart-link" aria-label={`Cart with ${count} items`}>
+          <Link href="/cart" className="mobile-cart-link" aria-label={`Cart ${count} items`}>
             Cart <span>{count}</span>
           </Link>
           <button
@@ -130,7 +137,8 @@ export default function Header() {
           <Link href="/products" onClick={() => setMenuOpen(false)}>Perfumes <span>01</span></Link>
           <Link href="/long-lasting-perfume-for-men-india" onClick={() => setMenuOpen(false)}>Men <span>02</span></Link>
           <Link href="/best-perfume-for-women-in-india" onClick={() => setMenuOpen(false)}>Women <span>03</span></Link>
-          <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>04</span></Link>
+          <Link href="/pages/diwali-perfume" onClick={() => setMenuOpen(false)}>Diwali Gifts <span>04</span></Link>
+          <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>05</span></Link>
         </div>
       </nav>
     </header>
