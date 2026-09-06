@@ -42,6 +42,14 @@ const SCENT_GUIDANCE: Record<string, string> = {
   "silent-gold": "Rich · Elegant · Occasion",
 };
 
+const SCENT_PERSONALITY: Record<string, string> = {
+  "desert-tonka": "After dark",
+  "arctic-wave": "Clean energy",
+  zyrox: "Main character",
+  rank: "Bold entrance",
+  "silent-gold": "Quiet luxury",
+};
+
 const PAYMENT_HELP_URL =
   "https://wa.me/919902376600?text=Hi%20House%20of%20Eon%2C%20I%20need%20help%20completing%20my%20Discovery%20Set%20payment.";
 const TRIAL_SELECTION_STORAGE_KEY = "house-of-eon:trial-pack-selection";
@@ -496,6 +504,13 @@ export default function TrialPackPage() {
         </div>
       </section>
 
+      <div className="trial-page-marquee" aria-hidden="true">
+        <div>
+          <span>3 perfumes</span><i>✦</i><strong>₹249 fully redeemable</strong><i>✦</i><span>Find your signature</span><i>✦</i>
+          <span>3 perfumes</span><i>✦</i><strong>₹249 fully redeemable</strong><i>✦</i><span>Find your signature</span><i>✦</i>
+        </div>
+      </div>
+
       <div className="container trial-page-content">
         <section className="trial-page-builder" id="build-your-set" aria-labelledby="builder-title">
           <div className="trial-page-builder-head">
@@ -531,6 +546,41 @@ export default function TrialPackPage() {
               </span>
             </div>
 
+            <div className="trial-page-live-trio" aria-live="polite">
+              <span className="trial-page-live-trio-label">Your trio</span>
+              <div>
+                {Array.from({ length: TRIAL_PICK_COUNT }).map((_, index) => {
+                  const product = eligibleProducts.find((item) => item.id === selected[index]);
+                  return product ? (
+                    <button
+                      type="button"
+                      key={product.id}
+                      data-scent-id={product.id}
+                      onClick={() => toggleScent(product.id)}
+                      aria-label={`Remove ${product.name} from your trio`}
+                    >
+                      <span>{index + 1}</span>
+                      <b>{product.name}</b>
+                      <i aria-hidden="true">×</i>
+                    </button>
+                  ) : (
+                    <div key={index}>
+                      <span>{index + 1}</span>
+                      <b>Pick a vibe</b>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {selected.length === TRIAL_PICK_COUNT ? (
+              <div className="trial-page-complete-burst" role="status">
+                <span aria-hidden="true">✦</span>
+                <div><b>Trio locked in</b><small>Your edit is ready for checkout</small></div>
+                <span aria-hidden="true">✦</span>
+              </div>
+            ) : null}
+
             <div className="trial-pack-grid">
               {eligibleProducts.map((product, productIndex) => {
                 const isSelected = selected.includes(product.id);
@@ -547,6 +597,7 @@ export default function TrialPackPage() {
                     onClick={() => toggleScent(product.id)}
                     disabled={isDisabled}
                     aria-pressed={isSelected}
+                    data-scent-id={product.id}
                     aria-label={`${product.name}. ${SCENT_GUIDANCE[product.id] || product.notes.slice(0, 3).join(" · ")}. ${isSelected ? `Selected as number ${selectedIndex + 1}. Tap to remove.` : isDisabled ? "Three already selected." : "Tap to add."}`}
                   >
                     <span className="trial-pack-scent-image">
@@ -556,6 +607,9 @@ export default function TrialPackPage() {
                         fill
                         sizes="(max-width: 640px) 45vw, 250px"
                       />
+                      <span className="trial-pack-scent-vibe">
+                        {SCENT_PERSONALITY[product.id] || "Signature scent"}
+                      </span>
                     </span>
                     <span className="trial-pack-scent-content">
                       <span className="trial-pack-scent-order">0{productIndex + 1}</span>
