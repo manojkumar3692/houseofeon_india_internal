@@ -44,6 +44,7 @@ const SCENT_GUIDANCE: Record<string, string> = {
 
 const PAYMENT_HELP_URL =
   "https://wa.me/919902376600?text=Hi%20House%20of%20Eon%2C%20I%20need%20help%20completing%20my%20Discovery%20Set%20payment.";
+const TRIAL_SELECTION_STORAGE_KEY = "house-of-eon:trial-pack-selection";
 
 type CustomerForm = {
   name: string;
@@ -76,6 +77,7 @@ export default function TrialPackPage() {
   const eligibleProducts = useMemo(() => getTrialEligibleProducts(), []);
 
   const [selected, setSelected] = useState<string[]>([]);
+  const [selectionRestored, setSelectionRestored] = useState(false);
   const [form, setForm] = useState<CustomerForm>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -91,6 +93,31 @@ export default function TrialPackPage() {
   useEffect(() => {
     trackTrialPackViewed();
   }, []);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        window.sessionStorage.getItem(TRIAL_SELECTION_STORAGE_KEY) || "[]"
+      );
+      if (Array.isArray(saved)) {
+        const validIds = saved
+          .filter((id): id is string =>
+            typeof id === "string" && eligibleProducts.some((product) => product.id === id)
+          )
+          .slice(0, TRIAL_PICK_COUNT);
+        setSelected(validIds);
+      }
+    } catch {
+      window.sessionStorage.removeItem(TRIAL_SELECTION_STORAGE_KEY);
+    } finally {
+      setSelectionRestored(true);
+    }
+  }, [eligibleProducts]);
+
+  useEffect(() => {
+    if (!selectionRestored) return;
+    window.sessionStorage.setItem(TRIAL_SELECTION_STORAGE_KEY, JSON.stringify(selected));
+  }, [selected, selectionRestored]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -207,6 +234,13 @@ export default function TrialPackPage() {
   function continueToCheckout() {
     trackTrialContinueClicked();
     checkoutRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function continueSelecting() {
+    document.getElementById("scents")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 
   function handleFormFocus() {
@@ -342,6 +376,7 @@ export default function TrialPackPage() {
               })),
             });
             trackTrialPackPurchased(verifyData.orderNumber, selectedNames);
+            window.sessionStorage.removeItem(TRIAL_SELECTION_STORAGE_KEY);
 
             router.push(`/success?order=${verifyData.orderNumber}`);
           } catch (err) {
@@ -409,11 +444,21 @@ export default function TrialPackPage() {
         <div className="container trial-page-hero-grid">
           <div className="trial-page-hero-copy">
             <span className="trial-page-kicker">House of Eon Discovery Set</span>
-            <h1>Try any 3 perfumes for ₹249.</h1>
-            <p>
-              Wear them on your skin, find your favourite, then get the full
-              ₹249 back as credit on your full-size purchase.
-            </p>
+            <h1>Try 3 for ₹249. Get ₹249 credit.</h1>
+
+            <div className="trial-page-redeem-badge">
+              <span>₹249 fully redeemable</span>
+              <strong>Your ₹249 trial becomes ₹249 credit</strong>
+              <small>toward any full-size perfume · use within 30 days</small>
+            </div>
+
+            <div className="trial-page-value-flow" aria-label="Pay ₹249, try three perfumes, then get ₹249 credit toward a full-size perfume">
+              <span><b>₹249</b><small>Trial</small></span>
+              <i aria-hidden="true">→</i>
+              <span><b>3 × {TRIAL_VIAL_SIZE_ML} ml</b><small>Wear &amp; decide</small></span>
+              <i aria-hidden="true">→</i>
+              <span className="is-credit"><b>₹249</b><small>Full-size credit</small></span>
+            </div>
 
             <div className="trial-page-offer" aria-label="Discovery Set details">
               <strong>{TRIAL_PICK_COUNT} × {TRIAL_VIAL_SIZE_ML} ml</strong>
@@ -422,7 +467,7 @@ export default function TrialPackPage() {
             </div>
 
             <a className="trial-page-start" href="#build-your-set">
-              Choose my 3 scents · ₹249 <span aria-hidden="true">↓</span>
+              Choose my 3 perfumes <span aria-hidden="true">↓</span>
             </a>
 
             <div className="trial-page-hero-trust" aria-label="Delivery and payment benefits">
@@ -502,6 +547,7 @@ export default function TrialPackPage() {
                     onClick={() => toggleScent(product.id)}
                     disabled={isDisabled}
                     aria-pressed={isSelected}
+                    aria-label={`${product.name}. ${SCENT_GUIDANCE[product.id] || product.notes.slice(0, 3).join(" · ")}. ${isSelected ? `Selected as number ${selectedIndex + 1}. Tap to remove.` : isDisabled ? "Three already selected." : "Tap to add."}`}
                   >
                     <span className="trial-pack-scent-image">
                       <Image
@@ -519,7 +565,7 @@ export default function TrialPackPage() {
                       </span>
                     </span>
                     <span className="trial-pack-scent-check" aria-hidden="true">
-                      {isSelected ? selectedIndex + 1 : "+"}
+                      {isSelected ? `✓ ${selectedIndex + 1}` : "+"}
                     </span>
                   </button>
                 );
@@ -642,6 +688,7 @@ export default function TrialPackPage() {
             )}
 
             <div className="trial-page-credit-note">
+              <strong>₹249 trial → ₹249 full-size credit</strong>
               <b>No coupon needed — use your order number</b>
               <p>
                 Enter your Trial Pack order number at full-size checkout and use
@@ -696,14 +743,26 @@ export default function TrialPackPage() {
         </section>
       </div>
 
-      {selected.length === TRIAL_PICK_COUNT && !checkoutInView ? (
+      {selected.length !== TRIAL_PICK_COUNT || !checkoutInView ? (
         <div className="trial-page-mobile-continue">
           <div>
-            <b>3/3 selected</b>
-            <span>Free shipping · ₹249 total</span>
+            <b>{selected.length}/{TRIAL_PICK_COUNT} selected</b>
+            <span>
+              {remaining > 0
+                ? `${remaining} ${remaining === 1 ? "perfume" : "perfumes"} to go`
+                : "₹249 fully redeemable"}
+            </span>
           </div>
-          <button type="button" onClick={continueToCheckout}>
-            Continue →
+          <div className="trial-page-mobile-progress" aria-hidden="true">
+            {Array.from({ length: TRIAL_PICK_COUNT }).map((_, index) => (
+              <span className={index < selected.length ? "filled" : ""} key={index} />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={selected.length === TRIAL_PICK_COUNT ? continueToCheckout : continueSelecting}
+          >
+            {selected.length === TRIAL_PICK_COUNT ? "Continue →" : "Choose scents"}
           </button>
         </div>
       ) : null}
