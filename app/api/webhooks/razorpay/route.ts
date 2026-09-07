@@ -1,9 +1,10 @@
 import crypto from "crypto";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { buildCustomerAddress } from "@/lib/order";
 import { sendOrderEmails } from "@/lib/email";
 import { markTrialCreditRedeemed } from "@/lib/trialCredit";
+import { createDelhiveryShipmentForPaidOrder } from "@/lib/delhivery";
 
 // This route is the ONLY thing allowed to mark an order as truly paid.
 // Everything else in the checkout flow (the browser's post-payment callback
@@ -119,6 +120,15 @@ export async function POST(request: Request) {
       if (updateError || !updated) {
         throw updateError || new Error("Order update failed");
       }
+
+      // Shipment creation happens after this webhook response is sent. It is
+      // also entirely separate from /api/orders/verify, which drives the
+      // customer's success-page redirect, so Delhivery can never make the
+      // customer wait. The worker checks payment_status again and claims an
+      // idempotency state before calling Delhivery.
+      after(async () => {
+        await createDelhiveryShipmentForPaidOrder(updated.id);
+      });
 
       try {
         await supabase
