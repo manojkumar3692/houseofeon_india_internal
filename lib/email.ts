@@ -401,3 +401,45 @@ export async function sendOrderEmails(rawOrder: OrderEmailInput) {
     return [];
   }
 }
+
+export async function sendDelhiveryFailureEmail({
+  orderNumber,
+  customerName,
+  customerPhone,
+  pincode,
+  paymentType,
+  reason,
+}: {
+  orderNumber: string;
+  customerName?: string | null;
+  customerPhone?: string | null;
+  pincode?: string | null;
+  paymentType?: string | null;
+  reason: string;
+}) {
+  const alertEmail =
+    process.env.DELHIVERY_ALERT_EMAIL || "manoj.officialmail@gmail.com";
+
+  try {
+    return await sendEmail({
+      to: alertEmail,
+      subject: `Action required: Delhivery order not created - ${orderNumber}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#222;">
+          <h2>Delhivery shipment creation failed</h2>
+          <p>The payment is confirmed and the House of Eon order remains paid, but its shipment was not created in Delhivery.</p>
+          <p><b>Order:</b> ${escapeHtml(orderNumber)}</p>
+          <p><b>Customer:</b> ${escapeHtml(customerName || "Not provided")}</p>
+          <p><b>Phone:</b> ${escapeHtml(customerPhone || "Not provided")}</p>
+          <p><b>Pincode:</b> ${escapeHtml(pincode || "Not provided")}</p>
+          <p><b>Payment type:</b> ${escapeHtml(paymentType || "Not provided")}</p>
+          <p><b>Reason:</b> ${escapeHtml(reason)}</p>
+          <p>Please review the order and create or retry the shipment.</p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Delhivery failure alert email failed:", error);
+    return { error };
+  }
+}
