@@ -1,3 +1,9 @@
+@media (min-width: 861px) {
+  :global(.product-detail-hero-modern .product-detail-grid) {
+    align-items: start;
+  }
+}
+
 .priceHero {
   display: flex;
   align-items: baseline;
@@ -870,3 +876,318 @@
       gap: 10px;
     }
   }
+
+/* Modern PDP interaction layer: quick understanding first, delight second. */
+.quickRead {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin: 0 0 18px;
+  padding: 7px;
+  border-radius: 20px;
+  background: #1f1711;
+  color: #fffaf4;
+  box-shadow: 0 16px 40px rgba(31, 23, 17, 0.14);
+}
+
+.quickRead span {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  min-height: 62px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 250, 244, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.quickRead span:nth-child(2) {
+  background: rgba(215, 185, 143, 0.16);
+}
+
+.quickRead b {
+  color: #d7b98f;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.quickRead small {
+  margin-top: 6px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+
+.proofFlash {
+  margin-top: 4px;
+  padding: 15px 17px;
+  border: 1px solid rgba(31, 23, 17, 0.1);
+  border-radius: 18px;
+  background: #f2df51;
+  color: #1f1711;
+  box-shadow: 7px 7px 0 #1f1711;
+  transform: rotate(-0.35deg);
+}
+
+.proofFlash > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #745321;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+.proofFlash > div b {
+  color: #1f1711;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.proofFlash p {
+  margin: 9px 0 7px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.proofFlash > span {
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.scentExperience {
+  position: relative;
+  overflow: hidden;
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(215, 185, 143, 0.28), transparent 35%),
+    #1f1711;
+  color: #fffaf4;
+  box-shadow: 0 24px 60px rgba(31, 23, 17, 0.2);
+}
+
+.scentExperienceHead {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.scentExperienceHead span {
+  color: #d7b98f;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.scentExperienceHead h2 {
+  margin: 6px 0 0;
+  font-size: 25px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.scentExperienceHead > small {
+  color: rgba(255, 250, 244, 0.55);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.scentTimeline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.scentTimeline button {
+  display: grid;
+  min-width: 0;
+  min-height: 76px;
+  align-content: start;
+  padding: 10px;
+  border: 1px solid rgba(255, 250, 244, 0.13);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fffaf4;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.scentTimeline button:active {
+  transform: scale(0.97);
+}
+
+.scentTimeline button.scentTimelineActive {
+  border-color: #d7b98f;
+  background: #d7b98f;
+  color: #1f1711;
+  transform: translateY(-3px);
+}
+
+.scentTimeline i {
+  color: rgba(255, 250, 244, 0.44);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.scentTimelineActive i {
+  color: rgba(31, 23, 17, 0.55);
+}
+
+.scentTimeline b {
+  margin-top: 8px;
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scentTimeline small {
+  margin-top: 2px;
+  color: rgba(255, 250, 244, 0.52);
+  font-size: 8px;
+}
+
+.scentTimelineActive small {
+  color: rgba(31, 23, 17, 0.6);
+}
+
+.scentMoment {
+  position: relative;
+  min-height: 146px;
+  margin-top: 9px;
+  padding: 22px;
+  overflow: hidden;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #fff3dd, #c99045);
+  color: #1f1711;
+  animation: scentMomentIn 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scentMoment[data-moment="heart"] {
+  background: linear-gradient(135deg, #f2dfbd, #af6e4f);
+}
+
+.scentMoment[data-moment="dryDown"] {
+  background: linear-gradient(135deg, #d1aa70, #3e281d);
+  color: #fffaf4;
+}
+
+.scentMoment > span {
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.scentMoment p {
+  position: relative;
+  z-index: 1;
+  max-width: 88%;
+  margin: 10px 0 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.scentMoment > div {
+  position: absolute;
+  right: -16px;
+  bottom: -18px;
+  display: flex;
+  align-items: end;
+  gap: 5px;
+  opacity: 0.28;
+  transform: rotate(-10deg);
+}
+
+.scentMoment > div i {
+  display: block;
+  width: 26px;
+  height: 74px;
+  border: 2px solid currentColor;
+  border-radius: 999px 999px 10px 10px;
+}
+
+.scentMoment > div i:nth-child(2) { height: 104px; }
+.scentMoment > div i:nth-child(3) { height: 88px; }
+
+@keyframes scentMomentIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 480px) {
+  .quickRead {
+    margin-bottom: 15px;
+  }
+
+  .quickRead span {
+    min-height: 58px;
+    padding: 8px;
+  }
+
+  .quickRead small {
+    font-size: 10px;
+  }
+
+  .proofFlash {
+    margin: 5px 5px 18px 0;
+  }
+
+  .scentExperience {
+    margin-top: 18px;
+    padding: 17px;
+    border-radius: 23px;
+  }
+
+  .scentExperienceHead h2 {
+    font-size: 23px;
+  }
+
+  .scentExperienceHead > small {
+    display: none;
+  }
+
+  .scentTimeline button {
+    min-height: 70px;
+    padding: 9px 7px;
+  }
+
+  .scentMoment {
+    min-height: 142px;
+    padding: 19px;
+  }
+
+  .scentMoment p {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proofFlash {
+    transform: none;
+  }
+
+  .scentTimeline button {
+    transition: none;
+  }
+
+  .scentMoment {
+    animation: none;
+  }
+}

@@ -41,6 +41,8 @@ const trustRowItems = [
   "The Compliment Getter",
 ];
 
+type ScentMoment = "opening" | "heart" | "dryDown";
+
 // The per-unit price actually charged for a given quantity of THIS product
 // alone, assuming EON20 (auto-applied at checkout for a single bottle) or
 // the bundle rate (2+) — whichever applies. getUnitPrice() from lib/pricing
@@ -99,6 +101,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   // Card A (1 bottle) is pre-selected by default — Card B (the bundle) is
   // there for anyone who wants it, but isn't pushed on visitors up front.
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
+  const [activeScentMoment, setActiveScentMoment] = useState<ScentMoment>("opening");
 
   const isBundleSelected = selectedQuantity >= BUNDLE_QUANTITY;
   const selectedTotalPrice = getDisplayUnitPrice(selectedQuantity) * selectedQuantity;
@@ -129,6 +132,15 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const hasHighlights = Boolean(product.highlights?.length);
   const hasScentProfile = Boolean(product.scentProfile);
   const hasReviews = Boolean(product.reviews?.length);
+  const featuredReview = product.reviews?.find((review) => review.verified) || product.reviews?.[0];
+  const scentMoments = product.scentProfile
+    ? [
+        { id: "opening" as const, label: "First spray", time: "0–30 min", text: product.scentProfile.opening },
+        { id: "heart" as const, label: "The heart", time: "30 min–3 hrs", text: product.scentProfile.heart },
+        { id: "dryDown" as const, label: "Dry down", time: "5+ hours", text: product.scentProfile.dryDown },
+      ]
+    : [];
+  const activeMoment = scentMoments.find((moment) => moment.id === activeScentMoment);
 
   useEffect(() => {
     trackProductViewed(product.name);
@@ -251,7 +263,7 @@ ${productUrl}`;
 
   return (
     <>
-      <section className="product-detail-hero">
+      <section className="product-detail-hero product-detail-hero-modern">
         <div className="container product-detail-grid">
           <div className="product-detail-visual product-detail-visual-image">
             <div className="detail-glow detail-glow-one" />
@@ -285,6 +297,12 @@ ${productUrl}`;
             </div>
 
             <p className={styles.valueLine}>{valueLine}</p>
+
+            <div className={styles.quickRead} aria-label={`${product.name} at a glance`}>
+              <span><b>Vibe</b><small>{product.notes.slice(0, 2).join(" + ")}</small></span>
+              <span><b>Best for</b><small>{product.slug === "desert-tonka-perfume" ? "Party Wear + Date" : product.occasion?.slice(0, 2).join(" + ") || "Everyday confidence"}</small></span>
+              <span><b>Feels like</b><small>{product.gender === "Women" ? "Modern elegance" : "Quiet confidence"}</small></span>
+            </div>
 
             <p className="lead">{product.description}</p>
 
@@ -328,6 +346,7 @@ ${productUrl}`;
                   !isBundleSelected ? styles.quantityCardActive : ""
                 }`}
                 onClick={() => setSelectedQuantity(1)}
+                aria-pressed={!isBundleSelected}
               >
                 <span className={styles.quantityCardLabel}>1 Bottle</span>
                 <div className={styles.quantityCardPrice}>
@@ -349,6 +368,7 @@ ${productUrl}`;
                   isBundleSelected ? styles.quantityCardActive : ""
                 }`}
                 onClick={() => setSelectedQuantity(BUNDLE_QUANTITY)}
+                aria-pressed={isBundleSelected}
               >
                 <span className={styles.quantityBadge}>
                   BEST VALUE — SAVE {formatINR(BUNDLE_SAVINGS_VS_DISCOUNTED_INR)}
@@ -385,6 +405,14 @@ ${productUrl}`;
                 <button onClick={handleShareProduct}>Share</button>
               </div>
             </div>
+
+            {featuredReview ? (
+              <div className={styles.proofFlash}>
+                <div><Stars rating={featuredReview.rating} /><b>Verified buyer</b></div>
+                <p>“{featuredReview.text}”</p>
+                <span>{featuredReview.name} · {featuredReview.city}</span>
+              </div>
+            ) : null}
 
             {isTrialEligibleProductId(product.id) ? (
               <div className={styles.trialPackBlock}>
@@ -427,6 +455,41 @@ ${productUrl}`;
                 ))}
               </div>
             </div>
+
+            {activeMoment ? (
+              <section className={styles.scentExperience} aria-labelledby="scent-experience-title">
+                <div className={styles.scentExperienceHead}>
+                  <div>
+                    <span>Wear the fragrance</span>
+                    <h2 id="scent-experience-title">Watch the scent evolve.</h2>
+                  </div>
+                  <small>Tap through time</small>
+                </div>
+
+                <div className={styles.scentTimeline} role="tablist" aria-label="Fragrance stages">
+                  {scentMoments.map((moment, index) => (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeScentMoment === moment.id}
+                      className={activeScentMoment === moment.id ? styles.scentTimelineActive : ""}
+                      onClick={() => setActiveScentMoment(moment.id)}
+                      key={moment.id}
+                    >
+                      <i>{String(index + 1).padStart(2, "0")}</i>
+                      <b>{moment.label}</b>
+                      <small>{moment.time}</small>
+                    </button>
+                  ))}
+                </div>
+
+                <div className={styles.scentMoment} data-moment={activeMoment.id} key={activeMoment.id} role="tabpanel">
+                  <span>{activeMoment.label}</span>
+                  <p>{activeMoment.text}</p>
+                  <div aria-hidden="true"><i /><i /><i /></div>
+                </div>
+              </section>
+            ) : null}
           </div>
         </div>
       </section>
