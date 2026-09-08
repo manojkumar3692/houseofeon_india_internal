@@ -4019,6 +4019,239 @@
 
   /* PRODUCT DETAIL IMAGE HERO */
 
+/* Situation-led discovery: one visual system for the hub and every
+   high-intent landing page, keeping search, social and paid traffic aligned. */
+.situation-hub-hero,
+.situation-hero {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(193, 140, 69, 0.25), transparent 30%),
+    radial-gradient(circle at 8% 8%, rgba(255, 214, 159, 0.55), transparent 32%),
+    #f7eee4;
+}
+
+.situation-hub-hero-inner {
+  max-width: 900px;
+  padding-top: 82px;
+  padding-bottom: 72px;
+}
+
+.situation-hub-hero h1,
+.situation-hero h1 {
+  max-width: 900px;
+  margin: 14px 0 18px;
+  font-size: clamp(46px, 7vw, 86px);
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+.situation-hub-hero p,
+.situation-hero > .container > div > p {
+  max-width: 740px;
+  color: #65564b;
+  font-size: clamp(17px, 2vw, 21px);
+  line-height: 1.65;
+}
+
+.situation-hub-section,
+.situation-products-section,
+.situation-next-section {
+  background: #fffaf4;
+}
+
+.situation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.situation-card {
+  min-height: 310px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 30px;
+  border: 1px solid rgba(31, 23, 17, 0.1);
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(48, 29, 12, 0.06);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.situation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px rgba(48, 29, 12, 0.1);
+}
+
+.situation-card-number {
+  margin-left: auto;
+  color: #cbb9a7;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.situation-card h2 {
+  max-width: 520px;
+  margin: 18px 0 10px;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.situation-card p {
+  margin: 0 0 24px;
+  color: #6f6257;
+  line-height: 1.65;
+}
+
+.situation-card b { margin-top: auto; }
+
+.situation-hero { padding: 72px 0; }
+
+.situation-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 42px;
+  align-items: center;
+}
+
+.situation-hero .back-link {
+  display: inline-block;
+  margin-bottom: 34px;
+  color: #6c4528;
+  font-weight: 800;
+}
+
+.situation-answer-card {
+  padding: 30px;
+  border-radius: 30px;
+  background: #1f1711;
+  color: #fffaf4;
+  box-shadow: 0 30px 70px rgba(31, 23, 17, 0.22);
+}
+
+.situation-answer-card > span {
+  color: #d7b98f;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+.situation-answer-card p {
+  margin: 18px 0 24px;
+  color: rgba(255, 250, 244, 0.8);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.situation-answer-card .btn { background: #fffaf4; color: #1f1711; }
+
+.situation-advice-section {
+  background: linear-gradient(135deg, #efe0cf, #fbf7f1 60%);
+}
+
+.situation-advice-grid {
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+  gap: 42px;
+  align-items: start;
+}
+
+.situation-advice-intro { position: sticky; top: 108px; }
+
+.situation-advice-intro h2 {
+  margin: 10px 0 0;
+  font-size: clamp(34px, 4.5vw, 58px);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.situation-advice-list { display: grid; gap: 16px; }
+
+.situation-advice-list article {
+  padding: 26px;
+  border: 1px solid rgba(31, 23, 17, 0.08);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.situation-advice-list article > span {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: #1f1711;
+  color: #fffaf4;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.situation-advice-list h3 {
+  margin: 16px 0 10px;
+  font-size: 25px;
+  line-height: 1.1;
+}
+
+.situation-advice-list p {
+  margin: 0;
+  color: #6f6257;
+  line-height: 1.7;
+}
+
+.situation-proof-section { padding-top: 12px; background: #fffaf4; }
+
+.situation-proof-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 38px;
+  border-radius: 32px;
+  background: #1f1711;
+  color: #fffaf4;
+}
+
+.situation-proof-card h2 {
+  margin: 8px 0 10px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.situation-proof-card p { max-width: 710px; margin: 0; color: rgba(255,250,244,.72); line-height: 1.6; }
+.situation-proof-card .btn { flex: 0 0 auto; background: #d7b98f; color: #1f1711; }
+
+.situation-next-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.situation-next-links a {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid #eadfce;
+  border-radius: 18px;
+  background: #fff;
+  font-weight: 800;
+}
+
+@media (max-width: 850px) {
+  .situation-grid,
+  .situation-hero-grid,
+  .situation-advice-grid,
+  .situation-next-links { grid-template-columns: 1fr; }
+  .situation-hub-hero-inner,
+  .situation-hero { padding-top: 52px; padding-bottom: 48px; }
+  .situation-card { min-height: 0; padding: 24px; }
+  .situation-advice-intro { position: static; }
+  .situation-proof-card { align-items: flex-start; flex-direction: column; padding: 28px; }
+}
+
 .product-detail-visual-image {
     overflow: hidden;
   }

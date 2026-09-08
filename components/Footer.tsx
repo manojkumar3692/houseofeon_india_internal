@@ -57,6 +57,7 @@ export default function Footer() {
           <b>Shop</b>
 
           <Link href="/products">All perfumes</Link>
+          <Link href="/perfume-for">Perfume by situation</Link>
           <Link href="/long-lasting-perfume-for-men-india">
             Best perfume for men
           </Link>

@@ -139,11 +139,8 @@ export default function HomePage() {
               <Link href="/products" className="btn">
                 Shop perfumes
               </Link>
-              <Link
-                href="/long-lasting-perfume-for-men-india"
-                className="btn secondary"
-              >
-                Best perfume guide
+              <Link href="/perfume-for" className="btn secondary">
+                Find perfume by situation
               </Link>
             </div>
 
@@ -309,10 +306,10 @@ export default function HomePage() {
             </div>
 
             <div className="occasion-list">
-              <Link href="/products">Daily wear perfumes</Link>
-              <Link href="/products">Office perfumes</Link>
-              <Link href="/products">Party perfumes</Link>
-              <Link href="/products">Gift perfumes</Link>
+              <Link href="/perfume-for/humid-weather">For humid weather</Link>
+              <Link href="/perfume-for/what-to-wear-to-office">For the office</Link>
+              <Link href="/perfume-for/first-date">For a first date</Link>
+              <Link href="/perfume-for/indian-wedding-men">For an Indian wedding</Link>
             </div>
           </div>
         </div>
@@ -375,6 +372,9 @@ export default function HomePage() {
             </Link>
             <Link href="/best-perfume-for-women-in-india" className="btn secondary">
               Best perfume for women guide
+            </Link>
+            <Link href="/perfume-for" className="btn secondary">
+              Shop by situation
             </Link>
           </div>
         </div>
