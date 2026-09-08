@@ -83,6 +83,7 @@ export default function Header() {
 
         <nav className="navlinks desktop-nav" aria-label="Main navigation">
           <Link href="/products">Perfumes</Link>
+          <Link href="/perfume-for">By situation</Link>
           <Link href="/long-lasting-perfume-for-men-india">Men</Link>
           <Link href="/best-perfume-for-women-in-india">Women</Link>
           <Link
@@ -135,10 +136,11 @@ export default function Header() {
       >
         <div className="container mobile-menu-inner">
           <Link href="/products" onClick={() => setMenuOpen(false)}>Perfumes <span>01</span></Link>
-          <Link href="/long-lasting-perfume-for-men-india" onClick={() => setMenuOpen(false)}>Men <span>02</span></Link>
-          <Link href="/best-perfume-for-women-in-india" onClick={() => setMenuOpen(false)}>Women <span>03</span></Link>
-          <Link href="/pages/diwali-perfume" onClick={() => setMenuOpen(false)}>Diwali Gifts <span>04</span></Link>
-          <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>05</span></Link>
+          <Link href="/perfume-for" onClick={() => setMenuOpen(false)}>Shop by situation <span>02</span></Link>
+          <Link href="/long-lasting-perfume-for-men-india" onClick={() => setMenuOpen(false)}>Men <span>03</span></Link>
+          <Link href="/best-perfume-for-women-in-india" onClick={() => setMenuOpen(false)}>Women <span>04</span></Link>
+          <Link href="/pages/diwali-perfume" onClick={() => setMenuOpen(false)}>Diwali Gifts <span>05</span></Link>
+          <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>06</span></Link>
         </div>
       </nav>
     </header>

@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
           "/scent-fix",
           "/scent-swipe",
           "/guides",
+          "/perfume-for",
         ],
         disallow: [
           "/cart",
