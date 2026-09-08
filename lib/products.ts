@@ -58,6 +58,27 @@ export type Product = {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string[];
+  rootsEdition?: {
+    chapter: string;
+    region: string;
+    tamilName: string;
+    meaning: string;
+    element: "water" | "heat";
+    originalName: string;
+    originalSlug: string;
+    culturalStory: string;
+    weather: string;
+    relatedProductSlug: string;
+    scentGuide: {
+      feel: Array<{
+        label: string;
+        value: string;
+        explanation: string;
+      }>;
+      dayNight: string;
+      mood: string;
+    };
+  };
 };
 
 export const products: Product[] = [
@@ -629,6 +650,116 @@ export const products: Product[] = [
       "luxury perfume India",
       "House of Eon Silent Gold",
     ],
+  },
+  {
+    id: "alai",
+    slug: "alai-tamil-nadu-perfume",
+    name: "ALAI",
+    shortName: "ALAI / அலை",
+    tagline: "Fresh Mind. Endless Horizons.",
+    gender: "Unisex",
+    size: "50ml",
+    concentration: "Extrait de Parfum",
+    price: 1249,
+    description:
+      "A lucid aquatic fragrance shaped by coastal air, citrus light and clean woods — the Tamil Nadu cultural edition of Arctic Wave.",
+    longDescription:
+      "The coast never stays still. Wind crosses salt air, water returns, and the horizon keeps going. ALAI holds that movement close to the skin: fresh, lucid and quietly expansive.",
+    notes: ["Citrus Light", "Marine Air", "Salt Water", "Clean Woods"],
+    mood: ["Clear", "Fresh", "Restless", "Free"],
+    occasion: ["Daytime", "Humid Weather", "Office", "Travel", "Open Air"],
+    image: "/products/alai-1.png",
+    gallery: [
+      "/products/alai-1.png",
+      "/products/alai-2.png",
+      "/products/alai-3.png",
+      "/products/alai-4.png",
+      "/products/alai-5.png",
+    ],
+    valueLine: "A cool coastal presence for heat, movement and open horizons.",
+    highlights: [
+      { title: "Coastal clarity", text: "Marine air and citrus light feel open, clean and alive." },
+      { title: "Made for movement", text: "A fresh presence for humid days, work, travel and open air." },
+      { title: "Cultural edition", text: "The Arctic Wave formulation interpreted through Tamil Nadu's relationship with the sea." },
+    ],
+    scentProfile: {
+      opening: "Citrus light breaks across a cool marine current.",
+      heart: "Salt-air freshness moves with a clean, spacious rhythm.",
+      dryDown: "Pale woods leave a calm, precise trail on skin.",
+      performance: "Fresh and present for warm days, humidity and everyday movement. Performance varies by skin, weather and sprays.",
+    },
+    rootsEdition: {
+      chapter: "01", region: "Tamil Nadu", tamilName: "அலை", meaning: "Wave", element: "water",
+      originalName: "Arctic Wave", originalSlug: "arctic-wave-perfume",
+      culturalStory: "The coast never stays still. Wind moves. Water returns. The horizon keeps going. ALAI captures that movement.",
+      weather: "Heat · humidity · open air", relatedProductSlug: "veppam-tamil-nadu-perfume",
+      scentGuide: {
+        feel: [
+          { label: "First impression", value: "Bright & cooling", explanation: "A crisp citrus-and-sea-air opening that feels instantly clean." },
+          { label: "On your skin", value: "Airy, not heavy", explanation: "Fresh and spacious rather than sweet, dense or syrupy." },
+          { label: "People notice", value: "A clear personal trail", explanation: "Noticeable when someone is near you, without filling the whole room." },
+        ],
+        dayNight: "Day into dusk", mood: "Clear · uplifting · free",
+      },
+    },
+    seoTitle: "ALAI Perfume / அலை | House of Eon ROOTS Tamil Nadu Edition",
+    seoDescription: "Discover ALAI, House of Eon ROOTS / 01 Tamil Nadu: a fresh coastal cultural edition of Arctic Wave with marine air, citrus and clean woods.",
+    seoKeywords: ["ALAI perfume", "Tamil Nadu inspired perfume", "House of Eon Roots", "Indian niche perfume"],
+  },
+  {
+    id: "veppam",
+    slug: "veppam-tamil-nadu-perfume",
+    name: "VEPPAM",
+    shortName: "VEPPAM / வெப்பம்",
+    tagline: "Warmth in Every Breath.",
+    gender: "Unisex",
+    size: "50ml",
+    concentration: "Extrait de Parfum",
+    price: 1249,
+    description:
+      "An amber-tonka fragrance shaped by warm air, red earth and dry woods — the Tamil Nadu cultural edition of Desert Tonka.",
+    longDescription:
+      "Afternoon settles over red earth. Warm air slows, amber light deepens, and the ground releases the day. VEPPAM turns that held heat into quiet magnetism.",
+    notes: ["Amber Light", "Tonka", "Warm Spice", "Dry Woods"],
+    mood: ["Grounded", "Deep", "Warm", "Magnetic"],
+    occasion: ["Evening", "Date Night", "Celebrations", "Cooler Air", "Slow Nights"],
+    image: "/products/veppam-1.png",
+    gallery: [
+      "/products/veppam-1.png",
+      "/products/veppam-2.png",
+      "/products/veppam-3.png",
+      "/products/veppam-4.png",
+      "/products/veppam-5.png",
+    ],
+    valueLine: "Amber warmth and grounded depth for evenings that linger.",
+    highlights: [
+      { title: "Held heat", text: "Tonka and amber carry the warmth of sun-baked earth into evening." },
+      { title: "Quiet magnetism", text: "Deep, smooth and present without turning loud." },
+      { title: "Cultural edition", text: "The Desert Tonka formulation interpreted through Tamil Nadu's heat and material landscape." },
+    ],
+    scentProfile: {
+      opening: "Warm spice rises like air above sun-held earth.",
+      heart: "Tonka and amber deepen into smooth, enveloping warmth.",
+      dryDown: "Dry woods and a soft sweetness stay close and magnetic.",
+      performance: "Built for evenings, slower occasions and cooler air. Performance varies by skin, weather and sprays.",
+    },
+    rootsEdition: {
+      chapter: "01", region: "Tamil Nadu", tamilName: "வெப்பம்", meaning: "Warmth / Heat", element: "heat",
+      originalName: "Desert Tonka", originalSlug: "desert-tonka-perfume",
+      culturalStory: "Afternoon settles over red earth. Warm air slows and amber light deepens. VEPPAM holds that warmth close.",
+      weather: "Warm evenings · cooler air", relatedProductSlug: "alai-tamil-nadu-perfume",
+      scentGuide: {
+        feel: [
+          { label: "First impression", value: "Warm & rich", explanation: "Amber and spice arrive with the feeling of late-afternoon sun." },
+          { label: "On your skin", value: "Smooth, gently sweet", explanation: "Tonka softens into a creamy warmth rather than sugary sweetness." },
+          { label: "People notice", value: "Confident presence", explanation: "Carries clearly around you and leaves a warm impression as you move." },
+        ],
+        dayNight: "Dusk into night", mood: "Grounded · deep · magnetic",
+      },
+    },
+    seoTitle: "VEPPAM Perfume / வெப்பம் | House of Eon ROOTS Tamil Nadu Edition",
+    seoDescription: "Discover VEPPAM, House of Eon ROOTS / 01 Tamil Nadu: a warm cultural edition of Desert Tonka with amber, tonka and dry woods.",
+    seoKeywords: ["VEPPAM perfume", "Tamil Nadu inspired perfume", "House of Eon Roots", "Indian niche perfume"],
   },
 ];
 

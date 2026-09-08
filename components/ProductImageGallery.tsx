@@ -19,6 +19,8 @@ export default function ProductImageGallery({ product }: { product: Product }) {
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const [zoomOpen, setZoomOpen] = useState(false);
   const userInteractedRef = useRef(false);
+  const touchStartRef = useRef<number | null>(null);
+  const suppressZoomRef = useRef(false);
 
   const visibleImages = images.filter((image) => !failedImages.includes(image));
   const activeImage = visibleImages[activeIndex] || product.image;
@@ -27,6 +29,8 @@ export default function ProductImageGallery({ product }: { product: Product }) {
     if (zoomOpen) return;
     if (userInteractedRef.current) return;
     if (visibleImages.length <= 1) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(max-width: 860px)").matches) return;
   
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % visibleImages.length);
@@ -48,6 +52,21 @@ export default function ProductImageGallery({ product }: { product: Product }) {
   function selectImage(index: number) {
     userInteractedRef.current = true;
     setActiveIndex(index);
+  }
+
+  function handleTouchEnd(clientX: number) {
+    if (touchStartRef.current === null) return;
+    const distance = clientX - touchStartRef.current;
+    touchStartRef.current = null;
+    if (Math.abs(distance) < 42 || visibleImages.length <= 1) return;
+
+    suppressZoomRef.current = true;
+    userInteractedRef.current = true;
+    setActiveIndex((current) =>
+      distance < 0
+        ? (current + 1) % visibleImages.length
+        : (current - 1 + visibleImages.length) % visibleImages.length
+    );
   }
 
   if (!activeImage) {
@@ -75,14 +94,22 @@ export default function ProductImageGallery({ product }: { product: Product }) {
           <button
             type="button"
             className={styles.imageButton}
-            onClick={() => setZoomOpen(true)}
+            onClick={() => {
+              if (suppressZoomRef.current) {
+                suppressZoomRef.current = false;
+                return;
+              }
+              setZoomOpen(true);
+            }}
+            onTouchStart={(event) => { touchStartRef.current = event.touches[0]?.clientX ?? null; }}
+            onTouchEnd={(event) => handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
             aria-label={`View ${product.name} image larger`}
           >
             <Image
               src={activeImage}
               alt={`${product.name} perfume by House of Eon`}
               fill
-              priority
+              loading="eager"
               className={styles.mainImage}
               sizes="(max-width: 860px) 94vw, 520px"
               onError={() => handleImageError(activeImage)}

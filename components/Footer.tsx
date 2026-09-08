@@ -16,8 +16,10 @@ export default function Footer() {
   // button that matters most. Hide only the floating bubble here; the
   // plain WhatsApp support link further down in the footer still works for
   // anyone who deliberately scrolls down looking for it.
-  const isCheckout =
-    pathname?.startsWith("/checkout") || pathname?.startsWith("/trial-pack");
+  const suppressFloatingSupport =
+    pathname?.startsWith("/checkout") ||
+    pathname?.startsWith("/trial-pack") ||
+    pathname?.startsWith("/roots");
 
   // Same reasoning as Header: /scent-fix is a standalone ad landing page
   // with its own dark design system and no site chrome.
@@ -90,7 +92,7 @@ export default function Footer() {
         <span>Made in India · Premium perfumes</span>
       </div>
 
-      {!isCheckout ? (
+      {!suppressFloatingSupport ? (
         <a
           className="whatsapp"
           href={whatsappUrl}

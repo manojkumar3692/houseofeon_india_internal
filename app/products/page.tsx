@@ -5,6 +5,8 @@ import { products } from "@/lib/products";
 import { SITE_URL } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
+const coreProducts = products.filter((product) => !product.rootsEdition);
+const rootsProducts = products.filter((product) => product.rootsEdition);
 
 export const metadata: Metadata = {
   title: "Shop Long Lasting Perfumes for Men & Women in India | House of Eon",
@@ -92,7 +94,25 @@ export default function ProductsPage() {
           </div>
 
           <div className="grid products-grid">
-            {products.map((product) => (
+            {coreProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section products-list-section">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <div className="eyebrow">House of Eon ROOTS / 01</div>
+              <h2 className="section-title">Tamil Nadu — The Sea. The Heat.</h2>
+              <p className="muted">Two cultural editions. One collectible chapter.</p>
+            </div>
+            <Link href="/roots" className="text-link">Enter the exhibition →</Link>
+          </div>
+          <div className="grid products-grid">
+            {rootsProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

@@ -132,6 +132,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const hasHighlights = Boolean(product.highlights?.length);
   const hasScentProfile = Boolean(product.scentProfile);
   const hasReviews = Boolean(product.reviews?.length);
+  const rootsEdition = product.rootsEdition;
   const featuredReview = product.reviews?.find((review) => review.verified) || product.reviews?.[0];
   const scentMoments = product.scentProfile
     ? [
@@ -273,17 +274,22 @@ ${productUrl}`;
           </div>
 
           <div className="product-detail-copy">
-            <Link href="/products" className="back-link">
-              ← Back to perfumes
+            <Link href={rootsEdition ? "/roots" : "/products"} className="back-link">
+              ← {rootsEdition ? "Back to ROOTS / 01" : "Back to perfumes"}
             </Link>
 
-            <div className="eyebrow">House of Eon Perfume</div>
+            <div className="eyebrow">
+              {rootsEdition ? `House of Eon · ROOTS / ${rootsEdition.chapter}` : "House of Eon Perfume"}
+            </div>
 
             <span className="pill">
               {product.gender} · {product.size}
             </span>
 
-            <h1>{product.name}</h1>
+            <h1>
+              {rootsEdition ? <small className={styles.rootsTamilName} lang="ta">{rootsEdition.tamilName}</small> : null}
+              {product.name}
+            </h1>
 
             {product.tagline ? (
               <p className="product-detail-tagline">{product.tagline}</p>
@@ -493,6 +499,56 @@ ${productUrl}`;
           </div>
         </div>
       </section>
+
+      {rootsEdition ? (
+        <section className={`${styles.rootsContext} ${styles[`roots_${rootsEdition.element}`]}`}>
+          <div className="container">
+            <header>
+              <span>ROOTS / {rootsEdition.chapter} · {rootsEdition.region}</span>
+              <h2>{rootsEdition.tamilName}<small>{rootsEdition.meaning}</small></h2>
+            </header>
+            <div className={styles.rootsContextGrid}>
+              <div>
+                <span>CULTURAL STORY</span>
+                <p>{rootsEdition.culturalStory}</p>
+              </div>
+              <div>
+                <span>FORMULATION</span>
+                <p>
+                  {product.name} is a cultural edition of{" "}
+                  <Link href={`/products/${rootsEdition.originalSlug}`}>{rootsEdition.originalName}</Link>.
+                  The House of Eon formulation is preserved; ROOTS gives it a new cultural frame, story and collectible identity.
+                </p>
+              </div>
+            </div>
+            <div className={styles.rootsPdpIndex} aria-label="How this perfume feels and wears">
+              {rootsEdition.scentGuide.feel.map((item, index) => (
+                <div className={styles.rootsFeelCard} key={item.label}>
+                  <i>0{index + 1}</i>
+                  <span>{item.label}</span>
+                  <b>{item.value}</b>
+                  <p>{item.explanation}</p>
+                </div>
+              ))}
+              <dl>
+                <div><dt>BEST TIME</dt><dd>{rootsEdition.scentGuide.dayNight}</dd></div>
+                <div><dt>WEATHER</dt><dd>{rootsEdition.weather}</dd></div>
+                <div><dt>MOOD</dt><dd>{rootsEdition.scentGuide.mood}</dd></div>
+              </dl>
+            </div>
+            <div className={styles.rootsRelated}>
+              <div><span>COMPLETE ROOTS / {rootsEdition.chapter}</span><h3>The Tamil Duo</h3><p>ALAI + VEPPAM · The Sea. The Heat.</p></div>
+              <button type="button" onClick={() => {
+                const otherId = product.id === "alai" ? "veppam" : "alai";
+                if (!lines.some((line) => line.productId === product.id)) addItem(product.id);
+                if (!lines.some((line) => line.productId === otherId)) addItem(otherId);
+                showToast("The Tamil Duo was added to your cart");
+              }}>Add both — {formatINR(BUNDLE_TOTAL_INR)}</button>
+              <Link href={`/products/${rootsEdition.relatedProductSlug}`}>Meet the other element →</Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {product.videoUrl ? (
         <section className={`section ${styles.videoSection}`}>

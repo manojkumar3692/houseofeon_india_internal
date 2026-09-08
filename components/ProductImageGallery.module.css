@@ -336,6 +336,31 @@
     .dots {
       margin-top: 10px;
     }
+
+    .dots button,
+    .dots button.active {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      background: transparent;
+    }
+
+    .dots button::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 18px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(31, 23, 17, 0.22);
+      transform: translate(-50%, -50%);
+    }
+
+    .dots button.active::after {
+      width: 30px;
+      background: #1f1711;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

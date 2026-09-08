@@ -126,6 +126,7 @@ export default function PerfumeAssistant() {
   const isHidden =
     pathname.startsWith("/checkout") ||
     pathname.startsWith("/trial-pack") ||
+    pathname.startsWith("/roots") ||
     pathname.startsWith("/admin") ||
     pageType === "product" ||
     pageType === "cart";

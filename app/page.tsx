@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
 };
 
-const bestSellers = products;
+const bestSellers = products.filter((product) => !product.rootsEdition);
 
 const productSchema = {
   "@context": "https://schema.org",
@@ -245,6 +245,19 @@ export default function HomePage() {
 
     <ProductCarousel products={bestSellers} />
   </div>
+      </section>
+
+      <section className="home-roots-teaser" aria-labelledby="home-roots-title">
+        <div className="home-roots-atmosphere home-roots-water" aria-hidden="true" />
+        <div className="home-roots-atmosphere home-roots-heat" aria-hidden="true" />
+        <div className="home-roots-content">
+          <span>HOUSE OF EON PRESENTS</span>
+          <p>ROOTS / 01</p>
+          <h2 id="home-roots-title">TAMIL NADU</h2>
+          <h3>THE SEA. THE HEAT.</h3>
+          <p>Two scents. One land.</p>
+          <Link href="/roots">Enter ROOTS <b>→</b></Link>
+        </div>
       </section>
 
       <section className="section home-why">

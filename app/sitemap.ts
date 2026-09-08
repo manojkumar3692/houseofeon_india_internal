@@ -21,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${siteUrl}/roots`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.95,
+    },
+    {
       url: `${siteUrl}/pages/diwali-perfume`,
       lastModified: new Date(),
       changeFrequency: "weekly",

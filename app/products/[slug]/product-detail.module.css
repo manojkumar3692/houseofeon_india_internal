@@ -1191,3 +1191,120 @@
     animation: none;
   }
 }
+.rootsTamilName {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: .48em;
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.rootsContext {
+  padding: clamp(76px, 10vw, 140px) 0;
+  color: #f6f1e8;
+  background: #14252c;
+}
+
+.roots_heat {
+  background: #2b1b14;
+}
+
+.rootsContext header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.28);
+  padding-bottom: 30px;
+  margin-bottom: 50px;
+}
+
+.rootsContext header > span,
+.rootsContextGrid span,
+.rootsRelated span {
+  font-size: 10px;
+  letter-spacing: .19em;
+}
+
+.rootsContext header h2 {
+  font-family: Georgia, serif;
+  font-size: clamp(54px, 8vw, 100px);
+  font-weight: 400;
+  line-height: .8;
+  margin: 0;
+  text-align: right;
+}
+
+.rootsContext header h2 small {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: .16em;
+  margin-top: 20px;
+  text-transform: uppercase;
+}
+
+.rootsContextGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(30px, 8vw, 120px);
+}
+
+.rootsContextGrid p {
+  font-family: Georgia, serif;
+  font-size: clamp(19px, 2vw, 26px);
+  line-height: 1.65;
+  color: rgba(255,255,255,.78);
+}
+
+.rootsContextGrid a { text-decoration: underline; text-underline-offset: 4px; }
+
+.rootsPdpIndex {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,.22);
+  border-top: 1px solid rgba(255,255,255,.28);
+  border-bottom: 1px solid rgba(255,255,255,.28);
+  margin-top: 64px;
+}
+
+.rootsFeelCard {
+  background: #14252c;
+  padding: 30px;
+  min-height: 220px;
+  text-align: left;
+}
+.roots_heat .rootsFeelCard { background: #2b1b14; }
+.rootsFeelCard i {
+  display: block;
+  font-style: normal;
+  font-size: 9px;
+  opacity: .55;
+  margin-bottom: 28px;
+}
+.rootsFeelCard span { display:block; font-size:9px; letter-spacing:.14em; text-transform:uppercase; }
+.rootsFeelCard b { display:block; font-family:Georgia,serif; font-size:24px; font-weight:400; margin:10px 0; }
+.rootsFeelCard p { color:rgba(255,255,255,.65); font-size:13px; line-height:1.55; margin:0; }
+.rootsPdpIndex dl { grid-column:1/-1; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin:0; padding:28px 30px; background:#14252c; }
+.roots_heat .rootsPdpIndex dl { background:#2b1b14; }
+.rootsPdpIndex dl div { display:grid; grid-template-columns:85px 1fr; border-bottom:1px solid rgba(255,255,255,.16); padding-bottom:10px; }
+.rootsPdpIndex dt { font-size:8px; letter-spacing:.16em; }
+.rootsPdpIndex dd { margin:0; font-family:Georgia,serif; }
+.rootsRelated { display:grid; grid-template-columns:1fr auto; align-items:center; gap:16px; padding-top:56px; }
+.rootsRelated h3 { font-family:Georgia,serif; font-size:38px; font-weight:400; margin:10px 0 4px; }
+.rootsRelated p { margin:0; color:rgba(255,255,255,.65); }
+.rootsRelated button { grid-row:1/3; grid-column:2; background:#f6f1e8; color:#17130f; border:0; padding:16px 21px; font-weight:700; cursor:pointer; }
+.rootsRelated > a { grid-column:2; text-align:center; font-size:11px; text-decoration:underline; text-underline-offset:4px; }
+
+@media (max-width: 760px) {
+  .rootsContext header { align-items:flex-start; flex-direction:column; gap:36px; }
+  .rootsContext header h2 { text-align:left; }
+  .rootsContextGrid { grid-template-columns:1fr; }
+  .rootsPdpIndex { grid-template-columns:1fr; }
+  .rootsFeelCard { min-height:0; padding:26px 22px; }
+  .rootsFeelCard i { margin-bottom:18px; }
+  .rootsPdpIndex dl { grid-template-columns:1fr; padding:28px 22px; }
+  .rootsRelated { grid-template-columns:1fr; }
+  .rootsRelated button,.rootsRelated > a { grid-column:1; grid-row:auto; width:100%; }
+}
