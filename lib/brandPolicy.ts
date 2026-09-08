@@ -24,11 +24,11 @@ export const BRAND_POLICIES: Record<BrandPolicyTopic, string> = {
   concentration:
     "Most House of Eon fragrances are Extrait de Parfum (the strongest, most concentrated form of perfume); a couple are Eau de Parfum. The exact concentration for each fragrance is shown on its product page. Extrait de Parfum generally has more oil concentration and lasts longer than Eau de Parfum or Eau de Toilette.",
   shipping:
-    "Delivery is nationwide across India, typically 2-3 working days, with free shipping. We don't do real-time pincode-level ETA lookups yet — for a specific delivery estimate to your area, WhatsApp support can help.",
+    "Delivery is nationwide across India, typically 3-4 working days, with free shipping. We don't do real-time pincode-level ETA lookups yet — for a specific delivery estimate to your area, WhatsApp support can help.",
   payments:
     "Checkout supports full prepaid payment, and on eligible orders, a partial-COD option (pay a small token amount online, the rest in cash on delivery) — eligibility is shown at checkout, not guaranteed for every order.",
   returns:
-    "Bottles cannot be returned once opened, for hygiene reasons — this applies to every fragrance, no exceptions. If you're unsure about a scent, ask before ordering rather than counting on a return.",
+    "Defective or damaged products must be reported within 3 calendar days of delivery and may be replaced or exchanged after review. Returns and refunds are not offered for change of mind, fragrance preference, or an opened product that is not defective or damaged. Return shipping is not free; contact WhatsApp support for approval and instructions before sending anything back.",
   cod: "Full cash-on-delivery isn't offered — but a partial-COD option exists on eligible orders (small token paid online, rest paid in cash at the door). Eligibility shows at checkout.",
   offers:
     "Current offers are read live from the site's coupon configuration, not guessed — see get_current_offer.",

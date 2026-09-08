@@ -100,7 +100,7 @@ export default function TrustClose() {
           </h2>
 
           <div className={styles.s12Card}>
-            <b>2-3 working days</b>
+            <b>3-4 working days</b>
             Delivered nationwide, tracked door to door. Pay a small amount
             online and the rest in cash on delivery, on eligible orders.
           </div>

@@ -79,6 +79,10 @@ export default function Footer() {
             WhatsApp support
           </a>
 
+          <Link href="/pages/return-refund-policy">
+            Return &amp; replacement policy
+          </Link>
+
           <p className="footer-mini-text">
             Shipping tracking will be shared after dispatch.
           </p>

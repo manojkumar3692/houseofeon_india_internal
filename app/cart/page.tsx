@@ -281,7 +281,7 @@ export default function CartPage() {
 
                   <div>
                     <span>Estimated delivery</span>
-                    <b>2–3 working days</b>
+                    <b>3–4 working days</b>
                   </div>
                 </div>
 

@@ -925,7 +925,7 @@ export default function CheckoutPage() {
 
             <div className="checkout-payment-assurance" aria-label="Checkout assurances">
               <span>Free shipping</span>
-              <span>Delivery in 2–3 working days</span>
+              <span>Delivery in 3–4 working days</span>
               <span>Secured by Razorpay</span>
             </div>
 
@@ -1045,7 +1045,7 @@ export default function CheckoutPage() {
 
               <div>
                 <span>Estimated delivery</span>
-                <b>2–3 working days</b>
+                <b>3–4 working days</b>
               </div>
 
               <div>

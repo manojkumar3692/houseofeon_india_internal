@@ -480,7 +480,7 @@ export default function TrialPackPage() {
 
             <div className="trial-page-hero-trust" aria-label="Delivery and payment benefits">
               <span>Free shipping</span>
-              <span>2–3 working days</span>
+              <span>3–4 working days</span>
               <span>UPI · Cards · Net banking</span>
             </div>
           </div>
