@@ -35,6 +35,7 @@ import {
   getDeviceType,
   getUtmParams,
 } from "@/lib/checkoutSession";
+import { useInventory } from "@/components/InventoryContext";
 
 type CustomerForm = {
   name: string;
@@ -51,6 +52,7 @@ const PAYMENT_HELP_URL =
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { loaded: inventoryLoaded, getAvailability, refresh: refreshInventory } = useInventory();
 
   const {
     lines,
@@ -260,6 +262,10 @@ export default function CheckoutPage() {
   }
 
   const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0);
+  const hasUnavailableItems = inventoryLoaded && lines.some((line) => {
+    const stock = getAvailability(line.productId, "50ml");
+    return !stock.available || line.quantity > stock.maxQuantity;
+  });
 
   const analyticsItems = useMemo(() => {
     return lines
@@ -487,6 +493,20 @@ export default function CheckoutPage() {
     setPaymentRecovery(null);
     setRescueTrigger(null);
     paymentRecoveryActiveRef.current = false;
+    const freshAvailability = await refreshInventory();
+
+    const freshHasUnavailableItems = lines.some((line) => {
+      const stock = freshAvailability.find(
+        (item) => item.productId === line.productId && item.size === "50ml"
+      );
+      const effectiveStock = stock || getAvailability(line.productId, "50ml");
+      return !effectiveStock.available || line.quantity > effectiveStock.maxQuantity;
+    });
+
+    if (freshHasUnavailableItems) {
+      setError("One or more perfumes are unavailable in the requested quantity. Please update your cart.");
+      return;
+    }
 
     if (!lines.length) {
       setError("Cart is empty.");
@@ -536,6 +556,18 @@ export default function CheckoutPage() {
         trackPaymentFailed(createData.error || "Could not create order");
         throw new Error(createData.error || "Could not create order");
       }
+
+      const releaseReservation = () => {
+        if (!createData.inventoryReservationKey) return;
+        void fetch("/api/inventory/reservations/release", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reservationKey: createData.inventoryReservationKey,
+          }),
+          keepalive: true,
+        });
+      };
 
       const razorpay = new RazorpayConstructor({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
@@ -619,6 +651,7 @@ export default function CheckoutPage() {
         },
         modal: {
           ondismiss: () => {
+            releaseReservation();
             captureCheckoutSession("razorpay_dismissed", {
               lastActiveField: "razorpay_modal",
             });
@@ -634,6 +667,7 @@ export default function CheckoutPage() {
       });
 
       razorpay.on("payment.failed", (response) => {
+        releaseReservation();
         const description =
           response?.error?.description ||
           response?.error?.reason ||
@@ -972,7 +1006,7 @@ export default function CheckoutPage() {
               <button
                 ref={payButtonRef}
                 className="btn"
-                disabled={loading || !razorpayReady}
+                disabled={loading || !razorpayReady || hasUnavailableItems}
                 type="submit"
               >
                 {loading

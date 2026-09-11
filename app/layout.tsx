@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
+import { InventoryProvider } from "@/components/InventoryContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
@@ -57,16 +58,18 @@ export default function RootLayout({
       <MicrosoftClarity />
         <AnalyticsScripts />
 
-        <CartProvider>
-          <Header />
-          {children}
-          <Footer />
+        <InventoryProvider>
+          <CartProvider>
+            <Header />
+            {children}
+            <Footer />
           {/* EON Concierge — self-gates by pathname inside the component
               (hidden on /checkout and /admin); lazy-loaded via
               ConciergeLoader so its bundle isn't part of the critical
               initial page render. See components/PerfumeAssistant.tsx */}
-          <ConciergeLoader />
-        </CartProvider>
+            <ConciergeLoader />
+          </CartProvider>
+        </InventoryProvider>
       </body>
     </html>
   );

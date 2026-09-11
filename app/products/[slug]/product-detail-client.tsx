@@ -31,6 +31,7 @@ import {
   isTrialEligibleProductId,
 } from "@/lib/trialPack";
 import { trackTrialPackPdpClicked } from "@/lib/analytics";
+import { useInventory } from "@/components/InventoryContext";
 
 const paymentMethods = ["UPI", "Visa", "Mastercard", "RuPay"];
 
@@ -94,6 +95,8 @@ function Stars({ rating = 5 }: { rating?: number }) {
 export default function ProductDetailClient({ product }: { product: Product }) {
   const router = useRouter();
   const { addItem, updateQuantity, lines } = useCart();
+  const { getAvailability } = useInventory();
+  const stock = getAvailability(product.id, "50ml");
 
   const [toast, setToast] = useState<string | null>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -160,6 +163,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   // was already in the cart, so re-clicking Add to Cart / Buy Now with a
   // card selected always lands on the expected quantity.
   function setCartQuantityTo(quantity: number) {
+    if (!stock.available || quantity > stock.maxQuantity) return false;
     const existingLine = lines.find((line) => line.productId === product.id);
 
     if (existingLine) {
@@ -167,10 +171,14 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     } else {
       addItem(product.id, quantity);
     }
+    return true;
   }
 
   function handleAddToCart() {
-    setCartQuantityTo(selectedQuantity);
+    if (!setCartQuantityTo(selectedQuantity)) {
+      showToast("This perfume is temporarily unavailable in that quantity.");
+      return;
+    }
     trackProductAdd(selectedQuantity);
     trackAddToCartClarity(product.name);
     showToast(
@@ -181,7 +189,10 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   }
 
   function handleBuyNow() {
-    setCartQuantityTo(selectedQuantity);
+    if (!setCartQuantityTo(selectedQuantity)) {
+      showToast("This perfume is temporarily unavailable in that quantity.");
+      return;
+    }
     trackProductAdd(selectedQuantity);
     trackAddToCartClarity(product.name);
     router.push("/checkout");
@@ -391,12 +402,12 @@ ${productUrl}`;
             <UrgencyStrip productId={product.id} productName={product.name} />
 
             <div className={`${styles.productCtaBlock} detail-actions`}>
-              <button className={styles.buyNowButton} onClick={handleBuyNow}>
-                Buy now — {formatINR(selectedTotalPrice)}
+              <button className={styles.buyNowButton} onClick={handleBuyNow} disabled={!stock.available || selectedQuantity > stock.maxQuantity}>
+                {stock.available ? `Buy now — ${formatINR(selectedTotalPrice)}` : "Temporarily unavailable"}
               </button>
 
-              <button className={styles.addCartButton} onClick={handleAddToCart}>
-                Add to cart
+              <button className={styles.addCartButton} onClick={handleAddToCart} disabled={!stock.available || selectedQuantity > stock.maxQuantity}>
+                {stock.available ? "Add to cart" : "Out of stock"}
               </button>
 
               <div className={styles.secondaryActions}>

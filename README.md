@@ -84,6 +84,21 @@ For the Scent Finder quiz's lead capture, run `supabase/migration-quiz-leads.sql
 
 The Scent Swipe game (`/scent-swipe`) reuses the same `quiz_leads` table. Run `supabase/migration-quiz-leads-source.sql` afterwards to add a `source` column (`quiz` vs `swipe`) so leads from each funnel can be told apart in the admin dashboard.
 
+## Inventory enforcement
+
+Inventory is owned by the shared operations database, not duplicated in this
+storefront. Apply `supabase/migrations/010_storefront_inventory.sql` from the
+`hoe-whatsapp-cloud-api-starter` project first. Keep
+`INVENTORY_ENFORCEMENT_ENABLED=false` for the initial deployment; this lets the
+availability endpoint and UI deploy without blocking existing purchases.
+
+After verifying the operations `/inventory` counts and both 8ML/50ML checkout
+flows, set the flag to `true` and redeploy. The store then disables unavailable
+Discovery Set scents and 50ML bottles, rechecks carts on checkout, and atomically
+reserves stock for 15 minutes before opening Razorpay. Failed/dismissed payments
+release their reservation; captured payments convert it into the existing paid
+order stock deduction.
+
 ## Razorpay setup
 
 1. Create Razorpay account.

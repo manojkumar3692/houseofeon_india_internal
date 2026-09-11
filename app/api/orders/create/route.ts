@@ -12,6 +12,11 @@ import {
   isPartialCodEligible,
   getEffectiveTokenAmountInPaise,
 } from "@/lib/codToken";
+import { randomUUID } from "crypto";
+import {
+  releaseInventoryReservation,
+  reserveInventory,
+} from "@/lib/inventoryServer";
 
 const schema = z.object({
   customer: z.object({
@@ -40,6 +45,8 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  let reservationKey: string | null = null;
+
   try {
     const payload = schema.parse(await request.json());
 
@@ -133,6 +140,14 @@ export async function POST(request: Request) {
     }
 
     const orderNumber = createOrderNumber();
+    const supabase = getSupabaseAdmin();
+
+    reservationKey = randomUUID();
+    const inventoryReserved = await reserveInventory(
+      reservationKey,
+      orderCalc.items as unknown as Record<string, unknown>[]
+    );
+    if (!inventoryReserved) reservationKey = null;
 
     const razorpay = new Razorpay({
       key_id: keyId,
@@ -154,8 +169,6 @@ export async function POST(request: Request) {
         balanceDueInPaise: String(balanceDueInPaise),
       },
     });
-
-    const supabase = getSupabaseAdmin();
 
     const { error } = await supabase.from("orders").insert({
       order_number: orderNumber,
@@ -183,6 +196,7 @@ export async function POST(request: Request) {
       payment_status: "pending",
       razorpay_order_id: razorpayOrder.id,
       shipping_status: "pending",
+      inventory_reservation_key: reservationKey,
     });
 
     if (error) throw error;
@@ -226,8 +240,12 @@ export async function POST(request: Request) {
       balanceDue: balanceDueInPaise / 100,
       balanceDueInPaise,
       currency: "INR",
+      inventoryReservationKey: reservationKey,
     });
   } catch (error) {
+    if (reservationKey) {
+      await releaseInventoryReservation(reservationKey);
+    }
     console.error(error);
 
     return NextResponse.json(
