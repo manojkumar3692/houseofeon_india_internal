@@ -33,6 +33,7 @@ import {
   getDeviceType,
   getUtmParams,
 } from "@/lib/checkoutSession";
+import { useInventory } from "@/components/InventoryContext";
 
 const SCENT_GUIDANCE: Record<string, string> = {
   "desert-tonka": "Warm · Sweet · Evening",
@@ -83,6 +84,11 @@ const EMPTY_FORM: CustomerForm = {
 export default function TrialPackPage() {
   const router = useRouter();
   const eligibleProducts = useMemo(() => getTrialEligibleProducts(), []);
+  const { loaded: inventoryLoaded, getAvailability, refresh: refreshInventory } = useInventory();
+  const availableProducts = useMemo(
+    () => eligibleProducts.filter((product) => getAvailability(product.id, "8ml").available),
+    [eligibleProducts, getAvailability]
+  );
 
   const [selected, setSelected] = useState<string[]>([]);
   const [selectionRestored, setSelectionRestored] = useState(false);
@@ -128,6 +134,13 @@ export default function TrialPackPage() {
   }, [selected, selectionRestored]);
 
   useEffect(() => {
+    if (!inventoryLoaded) return;
+    setSelected((current) =>
+      current.filter((id) => getAvailability(id, "8ml").available)
+    );
+  }, [inventoryLoaded, getAvailability]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.Razorpay) {
       setRazorpayReady(true);
@@ -147,6 +160,7 @@ export default function TrialPackPage() {
   }
 
   function toggleScent(productId: string) {
+    if (!getAvailability(productId, "8ml").available) return;
     setSelected((current) => {
       if (current.includes(productId)) {
         setCompletedRef.current = false;
@@ -224,7 +238,11 @@ export default function TrialPackPage() {
   }, [selected.length]);
 
   function chooseBalancedTrio() {
-    const trio = eligibleProducts.slice(0, TRIAL_PICK_COUNT);
+    const trio = availableProducts.slice(0, TRIAL_PICK_COUNT);
+    if (trio.length < TRIAL_PICK_COUNT) {
+      setError("The Discovery Set is temporarily unavailable because fewer than three scents are in stock.");
+      return;
+    }
     setSelected(trio.map((product) => product.id));
     if (!builderStartedRef.current) {
       builderStartedRef.current = true;
@@ -280,9 +298,22 @@ export default function TrialPackPage() {
     event.preventDefault();
     setError("");
     setPaymentRecovery(false);
+    const freshAvailability = await refreshInventory();
 
     if (selected.length !== TRIAL_PICK_COUNT) {
       setError(`Pick ${TRIAL_PICK_COUNT} scents to continue.`);
+      return;
+    }
+
+    const unavailableSelection = selected.find((id) => {
+      const stock = freshAvailability.find(
+        (item) => item.productId === id && item.size === "8ml"
+      );
+      return stock ? !stock.available : !getAvailability(id, "8ml").available;
+    });
+    if (unavailableSelection) {
+      setSelected((current) => current.filter((id) => id !== unavailableSelection));
+      setError("One selected scent just became unavailable. Please choose another scent.");
       return;
     }
 
@@ -329,6 +360,18 @@ export default function TrialPackPage() {
         trackPaymentFailed(createData.error || "Could not create trial pack order");
         throw new Error(createData.error || "Could not create trial pack order");
       }
+
+      const releaseReservation = () => {
+        if (!createData.inventoryReservationKey) return;
+        void fetch("/api/inventory/reservations/release", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reservationKey: createData.inventoryReservationKey,
+          }),
+          keepalive: true,
+        });
+      };
 
       trackAddPaymentInfo({
         items: selectedItems,
@@ -400,6 +443,7 @@ export default function TrialPackPage() {
         },
         modal: {
           ondismiss: () => {
+            releaseReservation();
             captureCheckoutSession("razorpay_dismissed", {
               paymentMethod: "full",
               paymentFailedReason: "customer_closed_razorpay_modal_trial_pack",
@@ -417,6 +461,7 @@ export default function TrialPackPage() {
       captureCheckoutSession("razorpay_opened", { paymentMethod: "full" });
 
       razorpay.on("payment.failed", (response: any) => {
+        releaseReservation();
         const description =
           response?.error?.description ||
           response?.error?.reason ||
@@ -584,7 +629,9 @@ export default function TrialPackPage() {
             <div className="trial-pack-grid">
               {eligibleProducts.map((product, productIndex) => {
                 const isSelected = selected.includes(product.id);
-                const isDisabled = !isSelected && remaining === 0;
+                const stock = getAvailability(product.id, "8ml");
+                const isOutOfStock = inventoryLoaded && !stock.available;
+                const isDisabled = isOutOfStock || (!isSelected && remaining === 0);
                 const selectedIndex = selected.indexOf(product.id);
 
                 return (
@@ -598,7 +645,7 @@ export default function TrialPackPage() {
                     disabled={isDisabled}
                     aria-pressed={isSelected}
                     data-scent-id={product.id}
-                    aria-label={`${product.name}. ${SCENT_GUIDANCE[product.id] || product.notes.slice(0, 3).join(" · ")}. ${isSelected ? `Selected as number ${selectedIndex + 1}. Tap to remove.` : isDisabled ? "Three already selected." : "Tap to add."}`}
+                    aria-label={`${product.name}. ${SCENT_GUIDANCE[product.id] || product.notes.slice(0, 3).join(" · ")}. ${isOutOfStock ? "Temporarily unavailable." : isSelected ? `Selected as number ${selectedIndex + 1}. Tap to remove.` : isDisabled ? "Three already selected." : "Tap to add."}`}
                   >
                     <span className="trial-pack-scent-image">
                       <Image
@@ -614,6 +661,7 @@ export default function TrialPackPage() {
                     <span className="trial-pack-scent-content">
                       <span className="trial-pack-scent-order">0{productIndex + 1}</span>
                       <span className="trial-pack-scent-name">{product.name}</span>
+                      {isOutOfStock ? <span className="trial-pack-scent-notes">Temporarily unavailable</span> : null}
                       <span className="trial-pack-scent-notes">
                         {SCENT_GUIDANCE[product.id] || product.notes.slice(0, 3).join(" · ")}
                       </span>

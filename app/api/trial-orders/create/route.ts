@@ -11,6 +11,11 @@ import {
   isTrialEligibleProductId,
 } from "@/lib/trialPack";
 import { getProductById } from "@/lib/products";
+import { randomUUID } from "crypto";
+import {
+  releaseInventoryReservation,
+  reserveInventory,
+} from "@/lib/inventoryServer";
 
 // Deliberately its own route rather than folding into /api/orders/create —
 // that route's coupon/bundle-quantity math doesn't apply here (fixed price,
@@ -38,6 +43,8 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  let reservationKey: string | null = null;
+
   try {
     const payload = schema.parse(await request.json());
 
@@ -59,12 +66,28 @@ export async function POST(request: Request) {
 
     const amountInPaise = getTrialPackAmountInPaise();
     const scentNames = scentProducts.map((p) => p!.name).join(", ");
+    const orderItems = [
+      {
+        productId: "trial-pack",
+        name: `Trial Pack — ${scentNames}`,
+        slug: "trial-pack",
+        size: `${TRIAL_PICK_COUNT} x ${TRIAL_VIAL_SIZE_ML}ml`,
+        price: TRIAL_PACK_PRICE_INR,
+        quantity: 1,
+        lineTotal: TRIAL_PACK_PRICE_INR,
+      },
+    ];
 
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
     if (!keyId || !keySecret) throw new Error("Missing Razorpay credentials");
 
     const orderNumber = createOrderNumber();
+    const supabase = getSupabaseAdmin();
+
+    reservationKey = randomUUID();
+    const inventoryReserved = await reserveInventory(reservationKey, orderItems);
+    if (!inventoryReserved) reservationKey = null;
 
     const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
     const razorpayOrder = await razorpay.orders.create({
@@ -73,8 +96,6 @@ export async function POST(request: Request) {
       receipt: orderNumber,
       notes: { orderNumber, orderType: "trial_pack", scents: scentNames },
     });
-
-    const supabase = getSupabaseAdmin();
 
     const { error } = await supabase.from("orders").insert({
       order_number: orderNumber,
@@ -88,17 +109,7 @@ export async function POST(request: Request) {
       customer_state: payload.customer.state,
       customer_pincode: payload.customer.pincode,
 
-      items: [
-        {
-          productId: "trial-pack",
-          name: `Trial Pack — ${scentNames}`,
-          slug: "trial-pack",
-          size: `${TRIAL_PICK_COUNT} x ${TRIAL_VIAL_SIZE_ML}ml`,
-          price: TRIAL_PACK_PRICE_INR,
-          quantity: 1,
-          lineTotal: TRIAL_PACK_PRICE_INR,
-        },
-      ],
+      items: orderItems,
       trial_selected_scents: uniqueScents,
 
       subtotal_in_paise: amountInPaise,
@@ -114,6 +125,7 @@ export async function POST(request: Request) {
       payment_status: "pending",
       razorpay_order_id: razorpayOrder.id,
       shipping_status: "pending",
+      inventory_reservation_key: reservationKey,
     });
 
     if (error) throw error;
@@ -138,8 +150,12 @@ export async function POST(request: Request) {
       razorpayOrderId: razorpayOrder.id,
       amount: amountInPaise,
       currency: "INR",
+      inventoryReservationKey: reservationKey,
     });
   } catch (error) {
+    if (reservationKey) {
+      await releaseInventoryReservation(reservationKey);
+    }
     console.error(error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Trial pack order creation failed" },

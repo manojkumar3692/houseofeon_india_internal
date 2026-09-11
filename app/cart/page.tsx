@@ -6,8 +6,10 @@ import { useCart } from "@/components/CartContext";
 import { getProductById } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import { getUnitPrice } from "@/lib/pricing";
+import { useInventory } from "@/components/InventoryContext";
 
 export default function CartPage() {
+  const { loaded: inventoryLoaded, getAvailability } = useInventory();
   const {
     lines,
     updateQuantity,
@@ -25,6 +27,12 @@ export default function CartPage() {
   const [couponMessage, setCouponMessage] = useState("");
 
   const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0);
+  const unavailableLines = inventoryLoaded
+    ? lines.filter((line) => {
+        const stock = getAvailability(line.productId, "50ml");
+        return !stock.available || line.quantity > stock.maxQuantity;
+      })
+    : [];
 
   async function handleApplyCoupon() {
     const result = await applyCoupon(couponInput);
@@ -126,6 +134,9 @@ export default function CartPage() {
                           </span>
 
                           <h3>{product.name}</h3>
+                          {unavailableLines.some((item) => item.productId === line.productId) ? (
+                            <p style={{ color: "#991b1b", fontWeight: 700 }}>Unavailable in the requested quantity. Remove it or reduce the quantity.</p>
+                          ) : null}
                           <p className="muted">{product.description}</p>
 
                           <div className="cart-item-notes">
@@ -296,9 +307,11 @@ export default function CartPage() {
                   </div>
                 ) : null}
 
-                <Link className="btn cart-checkout-btn" href="/checkout">
-                  Checkout securely
-                </Link>
+                {unavailableLines.length ? (
+                  <span className="btn cart-checkout-btn" aria-disabled="true">Update unavailable items</span>
+                ) : (
+                  <Link className="btn cart-checkout-btn" href="/checkout">Checkout securely</Link>
+                )}
 
                 <div className="cart-trust-list">
                   <div>
@@ -330,7 +343,7 @@ export default function CartPage() {
             </span>
           </div>
 
-          <Link href="/checkout">Checkout</Link>
+          {unavailableLines.length ? <span>Update cart</span> : <Link href="/checkout">Checkout</Link>}
         </div>
       ) : null}
     </>

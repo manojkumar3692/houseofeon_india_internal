@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./PerfumeAssistant.module.css";
 import { useCart } from "@/components/CartContext";
+import { useInventory } from "@/components/InventoryContext";
 import { getProductBySlug } from "@/lib/products";
 import { formatINR } from "@/lib/money";
 import type { ProductCardData, ComparisonEntry, OrderStatusData } from "@/lib/assistantTools";
@@ -116,6 +117,7 @@ function derivePageType(pathname: string): PageType {
 export default function PerfumeAssistant() {
   const pathname = usePathname() || "";
   const cart = useCart();
+  const inventory = useInventory();
 
   const pageType = derivePageType(pathname);
 
@@ -213,6 +215,12 @@ export default function PerfumeAssistant() {
   }
 
   function handleAddToCart(productId: string, quantity: number, productName: string) {
+    const stock = inventory.getAvailability(productId, "50ml");
+    if (!stock.available || quantity > stock.maxQuantity) {
+      setAddedNote(`${productName} is temporarily unavailable`);
+      window.setTimeout(() => setAddedNote(null), 3500);
+      return;
+    }
     cart.addItem(productId, quantity);
     markConciergeEngaged([productName]);
     trackAddToCartFromAI(productName, quantity);
@@ -288,9 +296,15 @@ export default function PerfumeAssistant() {
       if (Array.isArray(data.clientActions)) {
         for (const action of data.clientActions) {
           if (action.type === "add_to_cart") {
-            cart.addItem(action.productId, action.quantity);
-            markConciergeEngaged([action.productName]);
-            trackAddToCartFromAI(action.productName, action.quantity);
+            const stock = inventory.getAvailability(action.productId, "50ml");
+            if (stock.available && action.quantity <= stock.maxQuantity) {
+              cart.addItem(action.productId, action.quantity);
+              markConciergeEngaged([action.productName]);
+              trackAddToCartFromAI(action.productName, action.quantity);
+            } else {
+              setAddedNote(`${action.productName} is temporarily unavailable`);
+              window.setTimeout(() => setAddedNote(null), 3500);
+            }
           }
         }
       }

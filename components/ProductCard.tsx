@@ -8,11 +8,15 @@ import { useCart } from "./CartContext";
 import { trackAddToCart } from "@/lib/analytics";
 import { trackAddToCartClarity } from "@/lib/clarity";
 import { BASE_PRICE_INR, EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
+import { useInventory } from "./InventoryContext";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { getAvailability } = useInventory();
+  const stock = getAvailability(product.id, "50ml");
 
   function handleAddToCart() {
+    if (!stock.available) return;
     addItem(product.id);
 
     trackAddToCart({
@@ -78,8 +82,8 @@ export default function ProductCard({ product }: { product: Product }) {
             View
           </Link>
 
-          <button className="btn" onClick={handleAddToCart}>
-            Add to cart
+          <button className="btn" onClick={handleAddToCart} disabled={!stock.available}>
+            {stock.available ? "Add to cart" : "Temporarily unavailable"}
           </button>
         </div>
       </div>
