@@ -255,6 +255,19 @@ export default function DiwaliPerfumePage() {
         </div>
       </section>
 
+      <section className={styles.corporateCallout} aria-labelledby="diwali-corporate-title">
+        <div className={styles.shell}>
+          <div className={styles.corporateInner}>
+            <div>
+              <p className={styles.kicker}>A thoughtful Diwali, together</p>
+              <h2 id="diwali-corporate-title">Gifting for your team?</h2>
+              <p>Make employee and client thank-yous personal with perfume Discovery Sets. Share your quantity, budget and delivery date for a tailored proposal.</p>
+            </div>
+            <Link href="/corporate-gifting#enquire" className={styles.primaryCta} data-diwali-cta="corporate_gifting">Request a corporate quote →</Link>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.howSection}>
         <div className={styles.shell}>
           <div className={styles.sectionIntro}>

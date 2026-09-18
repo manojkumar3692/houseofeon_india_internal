@@ -120,3 +120,28 @@ Visit `/admin`, enter `ADMIN_PASSWORD`, and manage orders.
 ## Edit products
 
 Edit `lib/products.ts`.
+
+
+## Corporate gifting enquiries
+
+`/corporate-gifting` presents the three × 8ml Discovery Set for corporate gifting.
+The form posts to `/api/corporate-gifting`, validates the brief on the server,
+and sends it to **orders@houseofeon.in** using Resend. The buyer's email is
+set as Reply-To. This recipient is fixed independently of `OFFICE_EMAIL`.
+
+The deployment needs `RESEND_API_KEY` and a verified sender in `EMAIL_FROM`.
+Missing configuration or provider failure returns an error, never a success
+confirmation. Retries of the same brief use a Resend idempotency key. Enquiries
+are delivered by email; they are not payment orders or stored in the orders table.
+
+Gift box visuals are presentation concepts. Bulk prices, packaging, minimum
+quantities and delivery promises remain subject to the team's quotation.
+
+Run the isolated email-handler checks with Node 20 or newer:
+
+```sh
+node --test tests/corporate-gifting.test.cjs
+```
+
+These checks mock the email provider and do not send real emails. Confirm actual
+inbox delivery after deployment using a clearly labelled test enquiry.

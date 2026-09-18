@@ -5,3 +5,11 @@
 .guideSection{padding:112px 0;background:#17110e;color:#fffaf1}.guideGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:46px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.16)}.guideCard{min-height:210px;padding:28px;background:#17110e;display:flex;flex-direction:column;align-items:flex-start}.guideCard:last-child{grid-column:1/-1}.guideCard>span{color:#ed8a4b;font-size:11px;letter-spacing:.14em}.guideCard h3{max-width:480px;margin:28px 0;font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.12;font-weight:400}.guideCard b{margin-top:auto;font-size:13px;color:rgba(255,250,241,.62)}
 @media(max-width:620px){.guideSection{padding:78px 0}.guideGrid{grid-template-columns:1fr}.guideCard:last-child{grid-column:auto}.guideCard{min-height:180px}}
 .page{--saffron:#a83d12}.hero .kicker,.giftSection .kicker,.guideSection .kicker{color:#ff9b5c}
+
+/* Dedicated route for team and client gifting, alongside the retail offer. */
+.corporateCallout { padding: 20px 0 60px; }
+.corporateInner { display:flex; align-items:center; justify-content:space-between; gap:40px; padding:36px 40px; border:1px solid #c8a979; background:linear-gradient(120deg,#fbf4e7,#efe0c7); border-radius:20px; color:#30271f; }
+.corporateInner h2 { font-family:Georgia,serif; font-size:clamp(30px,3vw,42px); font-weight:400; margin:10px 0 14px; letter-spacing:-.03em; }
+.corporateInner p:not(.kicker) { max-width:570px; font-size:14px; line-height:1.8; margin:0; color:#71604a; }
+.corporateInner > a { flex-shrink:0; }
+@media(max-width:850px) { .corporateInner { flex-direction:column; align-items:flex-start; gap:24px; padding:28px 24px; } .corporateCallout { padding-bottom:35px; } }

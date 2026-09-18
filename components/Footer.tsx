@@ -17,7 +17,8 @@ export default function Footer() {
   // plain WhatsApp support link further down in the footer still works for
   // anyone who deliberately scrolls down looking for it.
   const isCheckout =
-    pathname?.startsWith("/checkout") || pathname?.startsWith("/trial-pack");
+    pathname?.startsWith("/checkout") || pathname?.startsWith("/trial-pack") ||
+    pathname === "/corporate-gifting";
 
   // Same reasoning as Header: /scent-fix is a standalone ad landing page
   // with its own dark design system and no site chrome.
@@ -66,6 +67,7 @@ export default function Footer() {
           </Link>
           <Link href="/scent-fix">Find your scent</Link>
           <Link href="/pages/diwali-perfume">Diwali perfume gifts</Link>
+          <Link href="/corporate-gifting">Corporate gifting</Link>
           <Link href="/scent-swipe">Play &amp; win 20%</Link>
           <Link href="/guides">Perfume guides</Link>
           <Link href="/cart">Cart</Link>

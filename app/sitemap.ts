@@ -8,6 +8,7 @@ const siteUrl = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
+    { url: `${siteUrl}/corporate-gifting`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     {
       url: siteUrl,
       lastModified: new Date(),
