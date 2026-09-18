@@ -93,7 +93,7 @@ export default function Header() {
           >
             Diwali
           </Link>
-          <Link href="/track-order">Track</Link>
+          <Link href="/corporate-gifting" aria-current={pathname === "/corporate-gifting" ? "page" : undefined}>Corporate gifts</Link>
           <Link
             href="/trial-pack"
             className="nav-trial-link"
@@ -140,7 +140,8 @@ export default function Header() {
           <Link href="/long-lasting-perfume-for-men-india" onClick={() => setMenuOpen(false)}>Men <span>03</span></Link>
           <Link href="/best-perfume-for-women-in-india" onClick={() => setMenuOpen(false)}>Women <span>04</span></Link>
           <Link href="/pages/diwali-perfume" onClick={() => setMenuOpen(false)}>Diwali Gifts <span>05</span></Link>
-          <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>06</span></Link>
+          <Link href="/corporate-gifting" onClick={() => setMenuOpen(false)}>Corporate Gifting <span>06</span></Link>
+          <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>07</span></Link>
         </div>
       </nav>
     </header>
