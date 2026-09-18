@@ -21,7 +21,7 @@ export default function Footer() {
 
   // Same reasoning as Header: /scent-fix is a standalone ad landing page
   // with its own dark design system and no site chrome.
-  if (pathname?.startsWith("/scent-fix")) return null;
+  if (pathname === "/" || pathname?.startsWith("/products/") || pathname?.startsWith("/scent-fix")) return null;
 
   return (
     <footer className="footer brand-footer">

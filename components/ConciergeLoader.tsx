@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 
 // Keeps the concierge's JS (chat UI, cart wiring, speech APIs) out of the
 // critical initial bundle — `ssr: false` means it isn't rendered on the
@@ -18,5 +19,7 @@ const PerfumeAssistant = dynamic(() => import("@/components/PerfumeAssistant"), 
 });
 
 export default function ConciergeLoader() {
+  const pathname = usePathname();
+  if (pathname === "/" || pathname?.startsWith("/products/")) return null;
   return <PerfumeAssistant />;
 }

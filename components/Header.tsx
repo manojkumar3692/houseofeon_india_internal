@@ -28,7 +28,7 @@ export default function Header() {
   // /scent-fix is a dedicated Meta-ad landing page — its own dark design
   // system, deliberately no site nav so cold traffic can't click away
   // from the one thing the ad promised before the payoff lands.
-  if (pathname?.startsWith("/scent-fix")) return null;
+  if (pathname === "/" || pathname?.startsWith("/products/") || pathname?.startsWith("/scent-fix")) return null;
 
   // The Discovery Set is primarily a paid-traffic landing page. Keep the
   // visitor focused on choosing and checking out while retaining a direct

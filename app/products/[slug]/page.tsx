@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ProductDetailClient from "./product-detail-client";
+import ProductDetailClient from "@/components/immersive/ImmersiveProduct";
 import ProductViewTracker from "@/components/ProductViewTracker";
 import { getProductBySlug, products } from "@/lib/products";
 import { SITE_URL } from "@/lib/seo";
@@ -32,7 +32,9 @@ export async function generateMetadata({
       description: product.seoDescription,
       url: `${siteUrl}/products/${product.slug}`,
       type: "website",
+      images: [{ url: `${siteUrl}${product.image}`, alt: product.name }],
     },
+    twitter: { card: "summary_large_image", title: product.seoTitle, description: product.seoDescription, images: [`${siteUrl}${product.image}`] },
   };
 }
 
@@ -81,7 +83,6 @@ export default async function ProductPage({
       "@type": "Offer",
       priceCurrency: "INR",
       price: product.price,
-      availability: "https://schema.org/InStock",
       url: `${siteUrl}/products/${product.slug}`,
     },
   };
