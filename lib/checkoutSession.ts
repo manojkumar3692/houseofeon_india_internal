@@ -4,7 +4,7 @@
 // UI and silently no-ops on failure, since this is background telemetry,
 // not something the actual purchase flow should ever depend on.
 
-import { getCampaignAttribution } from "@/lib/campaignAttribution";
+import { captureVisitorAttribution } from "@/lib/visitorAttribution";
 
 const SESSION_STORAGE_KEY = "houseofeon_checkout_session_key";
 
@@ -79,13 +79,25 @@ export function getUtmParams(): Pick<
 > {
   if (typeof window === "undefined") return {};
 
-  const params = new URLSearchParams(window.location.search);
-  const campaign = getCampaignAttribution();
+  const campaign = captureVisitorAttribution();
 
   return {
-    utmSource: params.get("utm_source") || campaign?.source || undefined,
-    utmMedium: params.get("utm_medium") || campaign?.medium || undefined,
-    utmCampaign: params.get("utm_campaign") || campaign?.campaign || undefined,
+    utmSource: campaign.utmSource,
+    utmMedium: campaign.utmMedium,
+    utmCampaign: campaign.utmCampaign,
+  };
+}
+
+function getCheckoutAttributionFields(): CheckoutSessionFields {
+  const attribution = captureVisitorAttribution();
+  if (!Object.values(attribution).some(Boolean)) return {};
+  // Empty strings clear obsolete values when a different observed campaign
+  // omits a parameter. Undefined would leave the previous database value intact.
+  return {
+    utmSource: attribution.utmSource || "",
+    utmMedium: attribution.utmMedium || "",
+    utmCampaign: attribution.utmCampaign || "",
+    referrer: attribution.referrer || "",
   };
 }
 
@@ -105,7 +117,12 @@ export function captureCheckoutSession(
     fetch("/api/checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionKey, stage, fields }),
+      // Repeat the observed source on later saves as well: the first page-view
+      // request can fail while a later field save succeeds.
+      body: JSON.stringify({
+        sessionKey, stage,
+        fields: { ...fields, ...getCheckoutAttributionFields() },
+      }),
       keepalive: true,
     }).catch(() => {
       // Silent — background telemetry only.
@@ -126,7 +143,10 @@ export function captureCheckoutSessionBeacon(fields?: CheckoutSessionFields) {
   if (!sessionKey) return;
 
   try {
-    const blob = new Blob([JSON.stringify({ sessionKey, fields })], {
+    const blob = new Blob([JSON.stringify({
+      sessionKey,
+      fields: { ...fields, ...getCheckoutAttributionFields() },
+    })], {
       type: "application/json",
     });
     navigator.sendBeacon("/api/checkout-session", blob);

@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
+import VisitorAttributionTracker from "@/components/VisitorAttributionTracker";
 import ConciergeLoader from "@/components/ConciergeLoader";
 import { SITE_URL } from "@/lib/seo";
 
@@ -57,6 +58,7 @@ export default function RootLayout({
       />
       <MicrosoftClarity />
         <AnalyticsScripts />
+        <VisitorAttributionTracker />
 
         <InventoryProvider>
           <CartProvider>

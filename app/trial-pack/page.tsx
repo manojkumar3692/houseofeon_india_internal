@@ -29,6 +29,7 @@ import {
 } from "@/lib/analytics";
 import {
   captureCheckoutSession,
+  captureCheckoutSessionBeacon,
   getCheckoutSessionKey,
   getDeviceType,
   getUtmParams,
@@ -103,6 +104,44 @@ export default function TrialPackPage() {
   const setCompletedRef = useRef(false);
   const formStartedRef = useRef(false);
   const phoneLeadFiredRef = useRef(false);
+  const formRef = useRef(form);
+  const lastActiveFieldRef = useRef<keyof CustomerForm | "">("");
+  const formEditedRef = useRef(false);
+
+  // Save pauses in typing too, including incomplete fields before any blur.
+  useEffect(() => {
+    if (!formEditedRef.current) return;
+    const timer = window.setTimeout(() => {
+      captureCheckoutSession(undefined, {
+        ...formRef.current,
+        paymentMethod: "full",
+        lastActiveField: lastActiveFieldRef.current || undefined,
+      });
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [form]);
+
+  useEffect(() => {
+    function saveSnapshot() {
+      if (!formEditedRef.current) return;
+      captureCheckoutSessionBeacon({
+        ...formRef.current,
+        paymentMethod: "full",
+        lastActiveField: lastActiveFieldRef.current || undefined,
+      });
+    }
+    function handleVisibilityChange() {
+      if (document.visibilityState === "hidden") saveSnapshot();
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", saveSnapshot);
+    return () => {
+      // Client-side navigation can unmount this page without a pagehide event.
+      saveSnapshot();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", saveSnapshot);
+    };
+  }, []);
 
   useEffect(() => {
     trackTrialPackViewed();
@@ -156,7 +195,18 @@ export default function TrialPackPage() {
   }, []);
 
   function update<K extends keyof CustomerForm>(key: K, value: CustomerForm[K]) {
-    setForm((current) => ({ ...current, [key]: value }));
+    // Update immediately so a pagehide in the same turn sees the last keystroke.
+    formRef.current = { ...formRef.current, [key]: value };
+    lastActiveFieldRef.current = key;
+    formEditedRef.current = true;
+    setForm(formRef.current);
+  }
+
+  function handleFieldBlur(key: keyof CustomerForm, value: string) {
+    lastActiveFieldRef.current = key;
+    // Include deliberate clearing, but do not save untouched empty fields.
+    if (!formEditedRef.current && !value) return;
+    captureCheckoutSession(undefined, { [key]: value, lastActiveField: key });
   }
 
   function toggleScent(productId: string) {
@@ -276,19 +326,26 @@ export default function TrialPackPage() {
   }
 
   function handlePhoneBlur() {
-    const digits = form.phone.replace(/[^0-9]/g, "");
-    if (digits.length < 10 || phoneLeadFiredRef.current) return;
-    phoneLeadFiredRef.current = true;
+    const current = formRef.current;
+    const digits = current.phone.replace(/[^0-9]/g, "");
+    if (digits.length < 10) {
+      handleFieldBlur("phone", current.phone);
+      return;
+    }
+    lastActiveFieldRef.current = "phone";
     captureCheckoutSession("phone_captured", {
-      name: form.name || undefined,
-      phone: form.phone,
-      email: form.email || undefined,
+      name: current.name,
+      phone: current.phone,
+      email: current.email,
       lastActiveField: "phone",
     });
+    // Save corrected numbers every time; emit the marketing Lead only once.
+    if (phoneLeadFiredRef.current) return;
+    phoneLeadFiredRef.current = true;
     void trackCheckoutLead({
-      name: form.name || undefined,
-      phone: form.phone,
-      email: form.email || undefined,
+      name: current.name || undefined,
+      phone: current.phone,
+      email: current.email || undefined,
       items: selectedItems,
       value: TRIAL_PACK_PRICE_INR,
     });
@@ -715,20 +772,20 @@ export default function TrialPackPage() {
                 </div>
 
                 <div className="two">
-                  <input className="input" required autoComplete="name" placeholder="Full name" aria-label="Full name" value={form.name} onChange={(e) => update("name", e.target.value)} />
+                  <input className="input" required autoComplete="name" placeholder="Full name" aria-label="Full name" value={form.name} onChange={(e) => update("name", e.target.value)} onBlur={(e) => handleFieldBlur("name", e.target.value)} />
                   <input className="input" required type="tel" inputMode="tel" autoComplete="tel" minLength={10} placeholder="Phone" aria-label="Phone" value={form.phone} onChange={(e) => update("phone", e.target.value)} onBlur={handlePhoneBlur} />
                 </div>
 
-                <input className="input" type="email" inputMode="email" autoComplete="email" placeholder="Email for confirmation (optional)" aria-label="Email for confirmation (optional)" value={form.email} onChange={(e) => update("email", e.target.value)} />
+                <input className="input" type="email" inputMode="email" autoComplete="email" placeholder="Email for confirmation (optional)" aria-label="Email for confirmation (optional)" value={form.email} onChange={(e) => update("email", e.target.value)} onBlur={(e) => handleFieldBlur("email", e.target.value)} />
 
-                <textarea className="textarea" required autoComplete="street-address" placeholder="Full delivery address" aria-label="Full delivery address" value={form.address} onChange={(e) => update("address", e.target.value)} />
+                <textarea className="textarea" required autoComplete="street-address" placeholder="Full delivery address" aria-label="Full delivery address" value={form.address} onChange={(e) => update("address", e.target.value)} onBlur={(e) => handleFieldBlur("address", e.target.value)} />
 
                 <div className="two">
-                  <input className="input" required autoComplete="address-level2" placeholder="City" aria-label="City" value={form.city} onChange={(e) => update("city", e.target.value)} />
-                  <input className="input" required autoComplete="address-level1" placeholder="State" aria-label="State" value={form.state} onChange={(e) => update("state", e.target.value)} />
+                  <input className="input" required autoComplete="address-level2" placeholder="City" aria-label="City" value={form.city} onChange={(e) => update("city", e.target.value)} onBlur={(e) => handleFieldBlur("city", e.target.value)} />
+                  <input className="input" required autoComplete="address-level1" placeholder="State" aria-label="State" value={form.state} onChange={(e) => update("state", e.target.value)} onBlur={(e) => handleFieldBlur("state", e.target.value)} />
                 </div>
 
-                <input className="input" required type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="postal-code" maxLength={6} placeholder="Pincode" aria-label="Pincode" value={form.pincode} onChange={(e) => update("pincode", e.target.value.replace(/[^0-9]/g, ""))} />
+                <input className="input" required type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="postal-code" maxLength={6} placeholder="Pincode" aria-label="Pincode" value={form.pincode} onChange={(e) => update("pincode", e.target.value.replace(/[^0-9]/g, ""))} onBlur={(e) => handleFieldBlur("pincode", e.target.value)} />
 
                 {error && !paymentRecovery ? <div className="notice">{error}</div> : null}
 
