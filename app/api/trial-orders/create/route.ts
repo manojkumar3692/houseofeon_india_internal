@@ -12,7 +12,6 @@ import {
 } from "@/lib/trialPack";
 import { getProductById } from "@/lib/products";
 import { randomUUID } from "crypto";
-import { saveTrialMetaContext } from "@/lib/metaConversions";
 import {
   releaseInventoryReservation,
   reserveInventory,
@@ -130,8 +129,6 @@ export async function POST(request: Request) {
     });
 
     if (error) throw error;
-
-    await saveTrialMetaContext(orderNumber, request);
 
     if (payload.sessionKey) {
       try {

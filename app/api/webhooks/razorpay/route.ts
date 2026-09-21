@@ -5,7 +5,6 @@ import { buildCustomerAddress } from "@/lib/order";
 import { sendOrderEmails } from "@/lib/email";
 import { markTrialCreditRedeemed } from "@/lib/trialCredit";
 import { createDelhiveryShipmentForPaidOrder } from "@/lib/delhivery";
-import { sendTrialMetaPurchase } from "@/lib/metaConversions";
 
 // This route is the ONLY thing allowed to mark an order as truly paid.
 // Everything else in the checkout flow (the browser's post-payment callback
@@ -182,17 +181,6 @@ export async function POST(request: Request) {
           console.error("Email failed after webhook capture:", emailError);
         }
       }
-
-      // Independent of Razorpay's acknowledgement and the first-capture guard.
-      // The scheduled retry endpoint recovers failed/interrupted deliveries.
-      // Meta downtime must never cause Razorpay to disable payment webhooks.
-      after(async () => {
-        try {
-          await sendTrialMetaPurchase(updated, request.url);
-        } catch {
-          console.error("Meta purchase delivery pending retry", updated.order_number);
-        }
-      });
 
       return NextResponse.json({ ok: true });
     }

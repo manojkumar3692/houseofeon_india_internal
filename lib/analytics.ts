@@ -5,7 +5,6 @@ import {
   getConciergeVariant,
 } from "@/lib/assistantSession";
 import { getCampaignEventParams } from "@/lib/campaignAttribution";
-import { metaPurchaseEventId } from "@/lib/metaPurchaseId";
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
@@ -40,15 +39,11 @@ export function trackGAEvent(eventName: string, params?: Record<string, any>) {
   window.gtag("event", eventName, params || {});
 }
 
-export function trackMetaEvent(eventName: string, params?: Record<string, any>, eventId?: string) {
+export function trackMetaEvent(eventName: string, params?: Record<string, any>) {
   if (typeof window === "undefined") return;
   if (!window.fbq) return;
 
-  if (eventId) {
-    window.fbq("track", eventName, params || {}, { eventID: eventId });
-  } else {
-    window.fbq("track", eventName, params || {});
-  }
+  window.fbq("track", eventName, params || {});
 }
 
 export function trackViewContent(product: {
@@ -277,7 +272,7 @@ export function trackPurchase({
 
     order_id: orderId,
     ...getCampaignEventParams(),
-  }, metaPurchaseEventId(orderId));
+  });
 }
 
 export function trackPaymentFailed(reason?: string) {
