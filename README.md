@@ -84,6 +84,12 @@ For the Scent Finder quiz's lead capture, run `supabase/migration-quiz-leads.sql
 
 The Scent Swipe game (`/scent-swipe`) reuses the same `quiz_leads` table. Run `supabase/migration-quiz-leads-source.sql` afterwards to add a `source` column (`quiz` vs `swipe`) so leads from each funnel can be told apart in the admin dashboard.
 
+## Meta purchase tracking
+
+For optional server-side trial-pack purchase tracking, see
+[Meta purchase tracking setup](docs/meta-purchase-tracking.md). Apply its
+isolated migration and configure the retry scheduler before enabling it.
+
 ## Inventory enforcement
 
 Inventory is owned by the shared operations database, not duplicated in this
