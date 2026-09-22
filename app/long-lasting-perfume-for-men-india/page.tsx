@@ -118,7 +118,6 @@ const itemListSchema = {
         "@type": "Offer",
         priceCurrency: "INR",
         price: product.price,
-        availability: "https://schema.org/InStock",
         url: `${siteUrl}/products/${product.slug}`,
       },
     },

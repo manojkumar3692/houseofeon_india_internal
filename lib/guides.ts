@@ -1,3 +1,4 @@
+import { discoveryGuides } from "@/lib/discoveryGuides";
 // Long-tail SEO content — genuinely useful buying/usage guides rather than
 // thin keyword-stuffed pages. Each targets a specific, realistic search
 // intent that a head term like "perfume for men India" can't compete for,
@@ -21,6 +22,7 @@ export type Guide = {
 };
 
 export const guides: Guide[] = [
+  ...discoveryGuides,
   {
     slug: "extrait-de-parfum-vs-eau-de-parfum",
     title: "Extrait de Parfum vs Eau de Parfum: What's the Real Difference?",

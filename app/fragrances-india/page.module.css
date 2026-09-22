@@ -1,0 +1,12 @@
+.page h1 { max-width: 850px; }
+.page p { max-width: 850px; line-height: 1.75; }
+.tableWrap { overflow-x: auto; margin: 28px 0; border: 1px solid #ddd4c8; border-radius: 12px; }
+.tableWrap table { border-collapse: collapse; width: 100%; min-width: 700px; text-align: left; }
+.tableWrap caption { padding: 16px; text-align: left; font-weight: 600; background: #f4eee5; }
+.tableWrap th, .tableWrap td { padding: 18px; border-bottom: 1px solid #e8e1d8; vertical-align: top; }
+.tableWrap small { display: block; margin-top: 8px; font-weight: 400; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 28px; }
+.cards article { padding: 28px; border: 1px solid #ddd4c8; border-radius: 12px; }
+.cards h3 { margin: 0; font-size: 23px; line-height: 1.4; }
+.links { display: flex; flex-wrap: wrap; gap: 24px; }
+@media (max-width: 700px) { .cards { grid-template-columns: 1fr; } .cards article { padding: 22px; } }

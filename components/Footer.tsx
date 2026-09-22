@@ -58,6 +58,7 @@ export default function Footer() {
           <b>Shop</b>
 
           <Link href="/products">All perfumes</Link>
+          <Link href="/fragrances-india">Compare fragrances in India</Link>
           <Link href="/perfume-for">Perfume by situation</Link>
           <Link href="/long-lasting-perfume-for-men-india">
             Best perfume for men
@@ -76,6 +77,9 @@ export default function Footer() {
 
         <div>
           <b>Support</b>
+          <Link href="/about">About House of Eon</Link>
+          <Link href="/contact">Contact us</Link>
+          <Link href="/shipping">Shipping &amp; delivery</Link>
 
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
             WhatsApp support

@@ -1,33 +1,15 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 
-const siteUrl = SITE_URL;
-
 export default function robots(): MetadataRoute.Robots {
+  // Explicit search agents inherit the same exclusions as all other crawlers.
+  // Training preferences are independent of search eligibility.
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: [
-          "/",
-          "/products",
-          "/long-lasting-perfume-for-men-india",
-          "/best-perfume-for-women-in-india",
-          "/scent-fix",
-          "/scent-swipe",
-          "/guides",
-          "/perfume-for",
-        ],
-        disallow: [
-          "/cart",
-          "/checkout",
-          "/success",
-          "/track-order",
-          "/admin",
-          "/api",
-        ],
-      },
-    ],
-    sitemap: `${siteUrl}/sitemap.xml`,
+    rules: ["*", "OAI-SearchBot", "PerplexityBot", "Claude-SearchBot"].map((userAgent) => ({
+      userAgent,
+      allow: "/",
+      disallow: ["/cart", "/checkout", "/success", "/track-order", "/admin", "/api/"],
+    })),
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }
