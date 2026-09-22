@@ -1,3 +1,4 @@
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailClient from "./product-detail-client";
@@ -94,7 +95,7 @@ export default async function ProductPage({
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: product.price,
+      price: getCatalogOffer(product.price).price,
       ...(inStock === undefined ? {} : { availability: `https://schema.org/${inStock ? "InStock" : "OutOfStock"}` }),
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@id": `${siteUrl}/#organization` },

@@ -75,6 +75,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   return [
-    ...["/fragrances-india", "/about", "/contact", "/shipping", "/pages/return-refund-policy"].map((path) => ({ url: `${siteUrl}${path}` })),
+    ...["/perfumes-under-1000", "/fragrances-india", "/about", "/contact", "/shipping", "/pages/return-refund-policy"].map((path) => ({ url: `${siteUrl}${path}` })),
     ...staticPages, ...productPages, ...guidePages, ...situationPages];
 }

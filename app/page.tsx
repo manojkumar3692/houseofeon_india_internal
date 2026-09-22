@@ -1,3 +1,4 @@
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
@@ -63,7 +64,7 @@ const productSchema = {
       offers: {
         "@type": "Offer",
         priceCurrency: "INR",
-        price: product.price,
+        price: getCatalogOffer(product.price).price,
         url: `${siteUrl}/products/${product.slug}`,
       },
     },
