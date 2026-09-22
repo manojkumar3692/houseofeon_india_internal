@@ -2,6 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Script from "next/script";
+import { captureVisitorAttribution } from "@/lib/visitorAttribution";
+import { getAIReferralSource } from "@/lib/aiReferral";
+
+let aiReferralReported = false;
+function reportAIReferral() {
+  if (aiReferralReported || !window.gtag || window.location.hostname !== "www.houseofeon.in") return;
+  const attribution = captureVisitorAttribution();
+  const source = getAIReferralSource(attribution.referrer, attribution.utmSource);
+  if (!source) return;
+  aiReferralReported = true;
+  window.gtag("event", "ai_referral_landing", { ai_source: source, landing_path: window.location.pathname });
+}
 
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
@@ -72,7 +84,7 @@ export default function AnalyticsScripts() {
             src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
             strategy="afterInteractive"
           />
-          <Script id="google-analytics" strategy="afterInteractive">
+          <Script id="google-analytics" strategy="afterInteractive" onReady={reportAIReferral}>
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}

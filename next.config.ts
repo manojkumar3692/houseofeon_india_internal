@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {},
+  async headers() {
+    return ["/admin/:path*", "/checkout/:path*", "/cart/:path*", "/success/:path*", "/track-order/:path*", "/api/:path*"].map((source) => ({
+      source, headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+    }));
+  },
 
   // houseofeon.in used to run a different (Shopify-style) storefront with a
   // different product lineup (Riva, Zyro, Nexi, a day-night duo combo) under
@@ -89,16 +94,11 @@ const nextConfig: NextConfig = {
         destination: "/products/rank-perfume",
         permanent: true,
       },
-      // No dedicated About/Contact/Privacy/Terms/Shipping pages exist yet on
-      // the current site, so these fall back to the homepage rather than a
-      // 404 — see the note to the user about building real policy pages,
-      // since that's a separate (and for an Indian e-commerce store,
-      // genuinely important) gap from this redirect cleanup.
-      { source: "/pages/about-us", destination: "/", permanent: true },
-      { source: "/pages/contact-us", destination: "/", permanent: true },
+      { source: "/pages/about-us", destination: "/about", permanent: true },
+      { source: "/pages/contact-us", destination: "/contact", permanent: true },
       { source: "/pages/privacy-policy", destination: "/", permanent: true },
       { source: "/pages/tnc", destination: "/", permanent: true },
-      { source: "/pages/shipping-policy", destination: "/", permanent: true },
+      { source: "/pages/shipping-policy", destination: "/shipping", permanent: true },
       { source: "/auth/login", destination: "/", permanent: true },
     ];
   },

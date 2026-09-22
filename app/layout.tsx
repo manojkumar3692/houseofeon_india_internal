@@ -8,7 +8,7 @@ import MicrosoftClarity from "@/components/MicrosoftClarity";
 import AnalyticsScripts from "@/components/AnalyticsScripts";
 import VisitorAttributionTracker from "@/components/VisitorAttributionTracker";
 import ConciergeLoader from "@/components/ConciergeLoader";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, jsonLd } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   description:
     "Shop premium long-lasting perfumes from House of Eon. Luxury fragrance crafted for daily confidence.",
   metadataBase: new URL(siteUrl),
+  robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION } : undefined,
+  },
 };
 
 // Sitewide brand entity signal for Google (helps establish House of Eon as
@@ -26,6 +31,8 @@ export const metadata: Metadata = {
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${siteUrl}/#organization`,
+  description: "House of Eon is an Indian perfume brand selling fragrances for men, women and unisex wear online in India.",
   name: brandName,
   url: siteUrl,
   sameAs: [
@@ -54,8 +61,12 @@ export default function RootLayout({
       <body>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(organizationSchema) }}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({
+        "@context": "https://schema.org", "@type": "WebSite", "@id": `${siteUrl}/#website`,
+        url: siteUrl, name: "House of Eon", publisher: { "@id": `${siteUrl}/#organization` }, inLanguage: "en-IN",
+      }) }} />
       <MicrosoftClarity />
         <AnalyticsScripts />
         <VisitorAttributionTracker />

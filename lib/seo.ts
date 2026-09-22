@@ -10,3 +10,7 @@
 // hardcoding it here means a misconfigured env var can never break SEO
 // metadata again.
 export const SITE_URL = "https://www.houseofeon.in";
+
+export function jsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
