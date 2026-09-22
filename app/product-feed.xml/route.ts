@@ -1,3 +1,4 @@
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import { products } from "@/lib/products";
 import { getCatalogAvailability } from "@/lib/catalogAvailability";
 
@@ -40,6 +41,7 @@ export async function GET() {
   }
   const items = products
     .map((product) => {
+      const offer = getCatalogOffer(product.price);
       return `
     <item>
       <g:id>${escapeXml(product.id)}</g:id>
@@ -48,7 +50,8 @@ export async function GET() {
       <link>${siteUrl}/products/${product.slug}</link>
       <g:image_link>${siteUrl}${product.image}</g:image_link>
       <g:availability>${availability[product.id] ? "in stock" : "out of stock"}</g:availability>
-      <g:price>${product.price}.00 INR</g:price>
+      <g:price>${product.price.toFixed(2)} INR</g:price>
+      ${offer.onSale ? `<g:sale_price>${offer.price.toFixed(2)} INR</g:sale_price>` : ""}
       <g:brand>${escapeXml(brandName)}</g:brand>
       <g:condition>new</g:condition>
       <g:size>${escapeXml(product.size)}</g:size>

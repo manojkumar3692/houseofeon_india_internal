@@ -10,7 +10,7 @@ const robots = await get('/robots.txt');
 for (const agent of ['OAI-SearchBot', 'PerplexityBot', 'Claude-SearchBot']) assert.ok(robots.includes(agent));
 const sitemap = await get('/sitemap.xml');
 assert.ok(!sitemap.includes('localhost'));
-const paths = ['/fragrances-india', '/about', '/contact', '/shipping',
+const paths = ['/perfumes-under-1000', '/fragrances-india', '/about', '/contact', '/shipping',
   '/guides/everyday-perfume-under-1500-india', '/guides/office-perfume-men-india-not-too-strong',
   '/guides/unisex-perfume-hot-humid-weather-india', '/guides/first-date-perfume-india',
   '/guides/buy-perfume-online-india-checklist', '/products/arctic-wave-perfume'];
@@ -31,7 +31,7 @@ for (const path of paths) {
   }
 }
 const feed = await get('/product-feed.xml');
-assert.ok(!feed.includes('g:sale_price'), 'No coupon-only sale price');
+assert.equal((feed.match(/<g:sale_price>999.00 INR<\/g:sale_price>/g) || []).length, 6, 'Public EON20 offer matches checkout');
 assert.equal((feed.match(/<item>/g) || []).length, 6);
 for (const path of ['/cart', '/checkout', '/admin', '/track-order']) {
   const response = await fetch(`${base}${path}`);

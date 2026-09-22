@@ -1,3 +1,4 @@
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { products } from "@/lib/products";
@@ -31,19 +32,19 @@ export default function FragrancesIndiaPage() {
     </div></section>
     <section className="section"><div className="container">
       <div className="eyebrow">Compare the collection</div><h2>One table. Every fragrance.</h2>
-      <p>Current catalogue prices before any eligible coupon. These are our own products, shown in catalogue order, not an independent ranking of Indian brands.</p>
+      <p>Single-bottle prices with public code EON20, automatically applied at checkout while active. These are our own products, shown in catalogue order, not an independent ranking of Indian brands.</p>
       <div className={styles.tableWrap} role="region" aria-label="Fragrance comparison" tabIndex={0}>
         <table><caption>House of Eon perfume notes, sizes and prices</caption><thead><tr><th scope="col">Fragrance</th><th scope="col">Notes</th><th scope="col">Occasions</th><th scope="col">Bottle</th><th scope="col">Price</th></tr></thead>
           <tbody>{products.map((product) => <tr key={product.id}>
             <th scope="row"><Link href={`/products/${product.slug}`}>{product.name}</Link><small>{product.gender}</small></th>
             <td>{product.notes.join(", ")}</td><td>{product.occasion.join(", ")}</td>
-            <td>{product.size}<small>{product.concentration}</small></td><td>₹{product.price.toLocaleString("en-IN")}</td>
+            <td>{product.size}<small>{product.concentration}</small></td><td>₹{getCatalogOffer(product.price).price.toLocaleString("en-IN")}{getCatalogOffer(product.price).onSale && <small>Regular ₹{product.price.toLocaleString("en-IN")} · EON20</small>}</td>
           </tr>)}</tbody>
         </table>
       </div>
       <p>Wear varies with skin, weather and application. We do not claim a fixed wear time or an independently tested “best in India” ranking.</p>
     </div></section>
-    <section className="section"><div className="container"><h2>Choose for your day</h2><div className={styles.cards}>
+    <section className="section"><div className="container"><h2>Choose for your day</h2><p><Link href="/perfumes-under-1000">Explore perfumes under ₹1,000 with EON20 →</Link></p><div className={styles.cards}>
       {discoveryGuides.map((guide) => <article key={guide.slug}><h3><Link href={`/guides/${guide.slug}`}>{guide.title}</Link></h3><p>{guide.heroSubtitle}</p><Link className="text-link" href={`/guides/${guide.slug}`}>Read the guide →</Link></article>)}
       <article><h3>Explore more of the collection</h3><p>Compare choices for daily wear and learn how concentration and application affect your experience.</p><p><Link href="/long-lasting-perfume-for-men-india">Perfumes for men</Link></p><p><Link href="/best-perfume-for-women-in-india">Perfumes for women</Link></p><Link href="/guides/extrait-de-parfum-vs-eau-de-parfum">Understand fragrance concentration</Link></article>
     </div></div></section>
