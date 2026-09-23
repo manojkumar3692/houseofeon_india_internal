@@ -43,7 +43,7 @@ const trustRowItems = [
 type ScentMoment = "opening" | "heart" | "dryDown";
 
 // The per-unit price actually charged for a given quantity of THIS product
-// alone, using its default displayed price (Arctic excludes manual EON20) or
+// alone, using its default displayed price (excludes manual EON20) or
 // the bundle rate (2+) — whichever applies. getUnitPrice() from lib/pricing
 // only encodes the bundle rule, not EON20, so it under-reports the real
 // price for a single bottle; this keeps every price shown on this page
@@ -336,7 +336,7 @@ ${productUrl}`;
                     : (product.mrp ?? product.price)
                 )}
               </span>
-              <span className={styles.priceHeroBadge}>{isBundleSelected ? "BUNDLE PRICE" : product.id === "arctic-wave" ? "SALE PRICE" : "20% OFF WITH EON20"}</span>
+              <span className={styles.priceHeroBadge}>{isBundleSelected ? "BUNDLE PRICE" : "SALE PRICE"}</span>
               <span className={styles.priceHeroShipBadge}>
                 <ShippingIcon />
                 Free Shipping
@@ -706,7 +706,7 @@ ${productUrl}`;
     <b>{formatINR(selectedTotalPrice)}</b>
     <span>
       {product.shortName} ·{" "}
-      {isBundleSelected ? "2 bottles" : product.id === "arctic-wave" ? "Sale price" : "EON20 active"} · Free Shipping
+      {isBundleSelected ? "2 bottles" : "Sale price"} · Free Shipping
     </span>
   </div>
 

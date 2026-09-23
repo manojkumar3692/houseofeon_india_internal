@@ -39,7 +39,7 @@ function reader(data = stocks,error=null) {
 }
 test('catalog paginates all 50ml products with real stock and no staging or payment configuration',async()=>{
   const first = await reader().listCatalog({cursor:null,limit:1});
-  assert.equal(first.items[0].productId,'a'); assert.equal(first.items[0].priceMinor,124900);
+  assert.equal(first.items[0].productId,'a'); assert.equal(first.items[0].priceMinor,99900);
   assert.equal(first.items[0].availableToSell,4); assert.equal(first.nextCursor,'1');
   const second = await reader().listCatalog({cursor:first.nextCursor,limit:1});
   assert.equal(second.items[0].productId,'b'); assert.equal(second.nextCursor,null);

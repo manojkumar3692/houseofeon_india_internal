@@ -1,17 +1,7 @@
-// Default pricing for products without a per-product sale. Product.price is
-// the pre-coupon selling price; Product.mrp is the optional original price.
-// Arctic Wave has its own approved sale price in lib/products.ts.
-
-// Base list price — what checkout charges for a single unit before any
-// coupon code. Other products retain this base; Arctic Wave has a per-product sale.
-export const BASE_PRICE_INR = 1249;
-
-// What a single unit costs once the EON20 launch-offer coupon (20% off,
-// capped at ₹1000 discount — see lib/coupons.ts) is applied. This is
-// auto-applied for every cart at checkout (see app/checkout/page.tsx), so
-// in practice this is the real price a single-bottle buyer pays.
-// 1249 * 0.8 = 999.2 -> rounds to 999.
-export const EON20_DISCOUNTED_PRICE_INR = 999;
+// Approved price for all six 50ml perfumes. Original/MRP remains1249.
+export const BASE_PRICE_INR = 999;
+// Manual EON20 entry: round the discount to INR200, then999-200=799.
+export const EON20_DISCOUNTED_PRICE_INR = 799;
 export const EON20_PERCENT_OFF = 20;
 
 // Quantity-break bundle: buying 2+ perfumes total in the same cart — any
@@ -23,11 +13,9 @@ export const BUNDLE_QUANTITY = 2;
 export const BUNDLE_UNIT_PRICE_INR = 799;
 export const BUNDLE_TOTAL_INR = BUNDLE_UNIT_PRICE_INR * BUNDLE_QUANTITY; // 1598
 
-// What the "BEST VALUE — SAVE ₹X" badge advertises: the bundle total
-// compared against buying the same quantity at the already-EON20-discounted
-// single-unit price (999 x 2 = 1998), not the raw list price.
+// Bundle equals two explicitly coupon-discounted singles; no additional saving.
 export const BUNDLE_SAVINGS_VS_DISCOUNTED_INR =
-  EON20_DISCOUNTED_PRICE_INR * BUNDLE_QUANTITY - BUNDLE_TOTAL_INR; // 400
+  EON20_DISCOUNTED_PRICE_INR * BUNDLE_QUANTITY - BUNDLE_TOTAL_INR;
 
 export function isBundleQuantity(quantity: number): boolean {
   return quantity >= BUNDLE_QUANTITY;

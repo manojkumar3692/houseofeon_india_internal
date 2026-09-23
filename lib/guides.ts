@@ -200,7 +200,7 @@ export const guides: Guide[] = [
     eyebrow: "Gifting Guide",
     heroTitle: "The best perfume gifts under ₹1500, picked honestly.",
     heroSubtitle:
-      "House of Eon perfumes are ₹999 with EON20 applied, with Arctic Wave at ₹799 — under budget on its own, or paired as a 2-bottle gift set at ₹1,598. Here's which one fits which person.",
+      "House of Eon perfumes are ₹999 each, or ₹799 when you enter EON20 — under budget on its own, or paired as a 2-bottle gift set at ₹1,598. Here's which one fits which person.",
     sections: [
       {
         heading: "For him — confident and evening-ready",
@@ -237,7 +237,7 @@ export const guides: Guide[] = [
       {
         question: "What's the best perfume gift under ₹1500 in India?",
         answer:
-          "It depends on the recipient — Desert Tonka or RANK for men, SYRA for women, and Silent Gold if you want a unisex option that works either way. All are ₹999 individually with EON20 applied.",
+          "It depends on the recipient — Desert Tonka or RANK for men, SYRA for women, and Silent Gold if you want a unisex option that works either way. All are ₹999 individually, or ₹799 when you enter EON20.",
       },
       {
         question: "Is a ₹999 perfume actually good quality?",

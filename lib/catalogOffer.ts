@@ -6,11 +6,10 @@ export function getCouponOffer(basePrice: number) {
   return { basePrice, price, onSale: price < basePrice };
 }
 
-// Arctic has a separate sale price; its coupon requires explicit entry.
-// Other products retain their existing display and automatic coupon behavior.
-export function getCatalogOffer(basePrice: number, productId?: string) {
-  return productId === "arctic-wave" ? { basePrice, price: basePrice, onSale: true } : getCouponOffer(basePrice);
+// All six 50 ml perfumes display their selling price before a manual coupon.
+export function getCatalogOffer(basePrice: number, _productId?: string) {
+  return { basePrice, price: basePrice, onSale: true };
 }
 export function requiresExplicitCoupon(lines: { productId: string }[]) {
-  return lines.some(line => line.productId === "arctic-wave");
+  return lines.length > 0;
 }

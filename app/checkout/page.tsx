@@ -430,8 +430,7 @@ export default function CheckoutPage() {
     });
   }, [lines.length, finalTotal, analyticsItems]);
 
-  // EON20 auto-apply now lives in CartContext itself (so it also works on
-  // /cart, not just here) — nothing needed on this page anymore.
+  // Optional EON20 is entered on /cart and carried here by CartContext.
 
   // Captures a last-known-state beacon the instant the tab is backgrounded
   // or closed — sendBeacon (unlike a normal fetch) reliably survives the
