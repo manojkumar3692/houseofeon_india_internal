@@ -52,6 +52,14 @@ export async function resolveTrialCredit({
   }
 
   const normalized = normalizeCouponCode(code);
+  const notFound = {
+    ...INVALID,
+    error: "We couldn’t find that Trial Pack order. Check the order number in your confirmation and try again.",
+  };
+  const unavailable = {
+    ...INVALID,
+    error: "We couldn’t check your Trial Pack credit right now. Please try again.",
+  };
 
   try {
     const supabase = getSupabaseAdmin();
@@ -62,9 +70,12 @@ export async function resolveTrialCredit({
       .eq("order_type", "trial_pack")
       .single();
 
-    if (error || !trialOrder) return INVALID;
+    if (error && error.code !== "PGRST116") return unavailable;
+    if (!trialOrder) return notFound;
 
-    if (trialOrder.payment_status !== "paid") return INVALID;
+    if (trialOrder.payment_status !== "paid") {
+      return { ...INVALID, error: "Payment for this Trial Pack isn’t confirmed yet. Credit is available after payment is confirmed." };
+    }
 
     if (trialOrder.trial_credit_redeemed_at) {
       return { ...INVALID, error: "This trial pack credit has already been used." };
@@ -76,14 +87,14 @@ export async function resolveTrialCredit({
     if (normalizePhone(trialOrder.customer_phone || "") !== normalizePhone(phone)) {
       return {
         ...INVALID,
-        error: "This trial pack credit is linked to a different phone number.",
+        error: "This phone number doesn’t match your Trial Pack order. Enter the number you used when buying the Trial Pack.",
       };
     }
 
     const ageInDays =
       (Date.now() - new Date(trialOrder.created_at).getTime()) / (1000 * 60 * 60 * 24);
     if (ageInDays > TRIAL_CREDIT_EXPIRY_DAYS) {
-      return { ...INVALID, error: "This trial pack credit has expired." };
+      return { ...INVALID, error: "This Trial Pack credit has expired. Credits are valid for 30 days from the Trial Pack order date." };
     }
 
     const virtualCoupon: Coupon = {
@@ -97,7 +108,7 @@ export async function resolveTrialCredit({
     return applyCouponMath(virtualCoupon, subtotal, hasBundleLine) as CouponResolution;
   } catch (err) {
     console.error("resolveTrialCredit error:", err);
-    return INVALID;
+    return { ...INVALID, error: "We couldn’t check your Trial Pack credit right now. Please try again." };
   }
 }
 

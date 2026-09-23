@@ -5349,34 +5349,74 @@
   border: 1px solid rgba(31, 23, 17, 0.07);
 }
 
+.checkout-credit-box h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
 .checkout-credit-box label {
   display: block;
   font-size: 12.5px;
   font-weight: 700;
   color: #1f1711;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .checkout-credit-sublabel {
   margin: 0 0 8px;
-  font-size: 11.5px;
+  font-size: 13px;
+  line-height: 1.5;
   color: #706458;
 }
 
-.checkout-credit-row {
-  display: flex;
-  gap: 8px;
+.checkout-credit-field {
+  margin-top: 16px;
 }
 
-.checkout-credit-row .input {
-  flex: 1;
+.checkout-credit-field .input {
+  width: 100%;
   min-width: 0;
 }
 
+.checkout-credit-field .input[aria-invalid="true"] {
+  border-color: #a32620;
+}
+
+.checkout-credit-help,
+.checkout-credit-terms,
 .checkout-credit-message {
   margin: 8px 0 0;
   font-size: 12px;
+  line-height: 1.5;
   color: #706458;
+}
+
+.checkout-credit-terms { margin: 16px 0 12px; }
+.checkout-credit-apply { width: 100%; }
+.checkout-credit-error {
+  margin: 6px 0 0;
+  color: #a32620;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.checkout-credit-feedback {
+  padding: 12px;
+  margin-top: 12px;
+  border: 1px solid #e2b6b2;
+  border-radius: 8px;
+  background: #fff3f1;
+}
+.checkout-credit-success {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #a4cbb3;
+  border-radius: 8px;
+  background: #eff8f2;
+  color: #176f3b;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 /* TRIAL PACK "HOW IT WORKS" **/
