@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Product } from "@/lib/products";
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import { formatINR } from "@/lib/money";
 import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
@@ -17,12 +18,9 @@ import {
   trackAddToCartClarity,
 } from "@/lib/clarity";
 import {
-  BASE_PRICE_INR,
-  EON20_DISCOUNTED_PRICE_INR,
   BUNDLE_QUANTITY,
   BUNDLE_UNIT_PRICE_INR,
   BUNDLE_TOTAL_INR,
-  BUNDLE_SAVINGS_VS_DISCOUNTED_INR,
 } from "@/lib/pricing";
 import {
   TRIAL_PACK_PRICE_INR,
@@ -51,10 +49,10 @@ type ScentMoment = "opening" | "heart" | "dryDown";
 // price for a single bottle; this keeps every price shown on this page
 // (hero, cards, sticky bar, analytics) in agreement with what checkout
 // will actually charge.
-function getDisplayUnitPrice(quantity: number): number {
+function getDisplayUnitPrice(quantity: number, product: Product): number {
   return quantity >= BUNDLE_QUANTITY
     ? BUNDLE_UNIT_PRICE_INR
-    : EON20_DISCOUNTED_PRICE_INR;
+    : getCatalogOffer(product.price).price;
 }
 
 // Small inline vector icon (no emoji) so the "Free Shipping" badges render
@@ -107,7 +105,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
   const [activeScentMoment, setActiveScentMoment] = useState<ScentMoment>("opening");
 
   const isBundleSelected = selectedQuantity >= BUNDLE_QUANTITY;
-  const selectedTotalPrice = getDisplayUnitPrice(selectedQuantity) * selectedQuantity;
+  const selectedTotalPrice = getDisplayUnitPrice(selectedQuantity, product) * selectedQuantity;
 
   useEffect(() => {
     return () => {
@@ -153,7 +151,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: getDisplayUnitPrice(quantity),
+      price: getDisplayUnitPrice(quantity, product),
       quantity,
     });
   }
@@ -329,16 +327,16 @@ ${productUrl}`;
               <span className={styles.priceHeroMain}>
                 {isBundleSelected
                   ? formatINR(BUNDLE_TOTAL_INR)
-                  : formatINR(EON20_DISCOUNTED_PRICE_INR)}
+                  : formatINR(getCatalogOffer(product.price).price)}
               </span>
               <span className={styles.priceHeroStrike}>
                 {formatINR(
                   isBundleSelected
-                    ? BASE_PRICE_INR * selectedQuantity
-                    : BASE_PRICE_INR
+                    ? (product.mrp ?? product.price) * selectedQuantity
+                    : (product.mrp ?? product.price)
                 )}
               </span>
-              <span className={styles.priceHeroBadge}>20% OFF</span>
+              <span className={styles.priceHeroBadge}>{isBundleSelected ? "BUNDLE PRICE" : "20% OFF WITH EON20"}</span>
               <span className={styles.priceHeroShipBadge}>
                 <ShippingIcon />
                 Free Shipping
@@ -346,7 +344,7 @@ ${productUrl}`;
               <span className={styles.priceHeroSub}>
                 {isBundleSelected
                   ? `${formatINR(BUNDLE_UNIT_PRICE_INR)} each · works with any 2 perfumes`
-                  : "with EON20 applied at checkout"}
+                  : `${formatINR(product.price)} before coupons · ${formatINR(getCatalogOffer(product.price).price)} with EON20`}
               </span>
             </div>
 
@@ -361,8 +359,8 @@ ${productUrl}`;
               >
                 <span className={styles.quantityCardLabel}>1 Bottle</span>
                 <div className={styles.quantityCardPrice}>
-                  <b>{formatINR(EON20_DISCOUNTED_PRICE_INR)}</b>
-                  <span>{formatINR(BASE_PRICE_INR)}</span>
+                  <b>{formatINR(getCatalogOffer(product.price).price)}</b>
+                  <span>{formatINR((product.mrp ?? product.price))}</span>
                 </div>
                 <span className={styles.shippingBadge}>
                   <ShippingIcon />
@@ -382,7 +380,9 @@ ${productUrl}`;
                 aria-pressed={isBundleSelected}
               >
                 <span className={styles.quantityBadge}>
-                  BEST VALUE — SAVE {formatINR(BUNDLE_SAVINGS_VS_DISCOUNTED_INR)}
+                  {getCatalogOffer(product.price).price * 2 > BUNDLE_TOTAL_INR
+                    ? `SAVE ${formatINR(getCatalogOffer(product.price).price * 2 - BUNDLE_TOTAL_INR)}`
+                    : "2-BOTTLE PRICE"}
                 </span>
                 <span className={styles.quantityCardLabel}>2 Bottles</span>
                 <div className={styles.quantityCardPrice}>

@@ -287,7 +287,7 @@ export default function CartPage() {
 
                   <div>
                     <span>Shipping</span>
-                    <b>Calculated after order</b>
+                    <b>Free · ₹0</b>
                   </div>
 
                   <div>

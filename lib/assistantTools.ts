@@ -2,7 +2,7 @@ import { products, Product } from "@/lib/products";
 import { getProductTaxonomy } from "@/lib/productTaxonomy";
 import { getBrandPolicy } from "@/lib/brandPolicy";
 import { coupons } from "@/lib/coupons";
-import { EON20_DISCOUNTED_PRICE_INR, BASE_PRICE_INR } from "@/lib/pricing";
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 // ---------------------------------------------------------------------------
@@ -85,8 +85,8 @@ function toProductCard(product: Product): ProductCardData {
     slug: product.slug,
     name: product.name,
     tagline: product.tagline,
-    price: EON20_DISCOUNTED_PRICE_INR,
-    mrp: BASE_PRICE_INR,
+    price: getCatalogOffer(product.price).price,
+    mrp: (product.mrp ?? product.price),
     image: product.image,
     productUrl: `/products/${product.slug}`,
     gender: product.gender,
@@ -114,8 +114,8 @@ function fullProductDetail(product: Product) {
     gender: product.gender,
     size: product.size,
     concentration: product.concentration,
-    price: EON20_DISCOUNTED_PRICE_INR,
-    mrp: BASE_PRICE_INR,
+    price: getCatalogOffer(product.price).price,
+    mrp: (product.mrp ?? product.price),
     tagline: product.tagline,
     description: product.description,
     notes: product.notes,
@@ -412,7 +412,7 @@ export async function executeAssistantTool(
         .map((line) => {
           const product = products.find((p) => p.id === line.productId);
           if (!product) return null;
-          return { productId: product.id, name: product.name, quantity: line.quantity, price: EON20_DISCOUNTED_PRICE_INR };
+          return { productId: product.id, name: product.name, quantity: line.quantity, price: getCatalogOffer(product.price).price };
         })
         .filter(Boolean);
 

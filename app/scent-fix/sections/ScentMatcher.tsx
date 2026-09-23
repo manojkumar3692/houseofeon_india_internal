@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
 import { formatINR } from "@/lib/money";
-import { EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import { TRIAL_PACK_PRICE_INR, isTrialEligibleProductId } from "@/lib/trialPack";
 import {
   trackAddToCart,
@@ -124,7 +124,7 @@ export default function ScentMatcher({
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: EON20_DISCOUNTED_PRICE_INR,
+      price: getCatalogOffer(product.price).price,
       quantity: 1,
     });
     router.push("/checkout");
@@ -182,7 +182,7 @@ export default function ScentMatcher({
               <div className={styles.s9Tag}>{getProductTagLine(product)}</div>
 
               <div className={styles.s9Price}>
-                {formatINR(EON20_DISCOUNTED_PRICE_INR)}
+                {formatINR(getCatalogOffer(product.price).price)}
               </div>
               <div className={styles.s9Facts}>
                 30–35% fragrance oil · 50 ml · {product.concentration}
@@ -204,7 +204,7 @@ export default function ScentMatcher({
                 className={styles.s9Cta}
                 onClick={handleGetProduct}
               >
-                Get {product.name} — {formatINR(EON20_DISCOUNTED_PRICE_INR)} →
+                Get {product.name} — {formatINR(getCatalogOffer(product.price).price)} →
               </button>
 
               {feeling && feeling.productIds.length > 1 ? (

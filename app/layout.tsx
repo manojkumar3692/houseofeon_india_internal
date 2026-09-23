@@ -9,6 +9,7 @@ import AnalyticsScripts from "@/components/AnalyticsScripts";
 import VisitorAttributionTracker from "@/components/VisitorAttributionTracker";
 import ConciergeLoader from "@/components/ConciergeLoader";
 import { SITE_URL, jsonLd } from "@/lib/seo";
+import { fragmentBootstrap } from '@/lib/negotiation/browserBootstrap';
 
 const siteUrl = SITE_URL;
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
@@ -58,6 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head><script dangerouslySetInnerHTML={{ __html: fragmentBootstrap(process.env.NEGOTIATION_PUBLIC_KEY) }} /></head>
       <body>
       <script
         type="application/ld+json"

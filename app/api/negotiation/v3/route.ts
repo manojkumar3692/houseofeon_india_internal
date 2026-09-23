@@ -1,7 +1,10 @@
 import { createConnectorHandler } from '@/lib/negotiation/vendor/handler.mjs';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
-import { listCatalog, unavailable } from '@/lib/negotiation/readOnly';
+import { listCatalog } from '@/lib/negotiation/readOnly';
 import { connectorConfig } from '@/lib/negotiation/config';
+import { getContext, createCheckout } from '@/lib/negotiation/checkout';
+import { reconcile } from '@/lib/negotiation/payments';
+import { checkoutEnabled } from '@/lib/negotiation/security';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,14 +17,12 @@ export async function POST(request: Request) {
   const { workspaceId, installationId, secret } = config;
   return createConnectorHandler({
     workspaceId, installationId, secret, listCatalog,
-    getContext: async () => unavailable(), reconcile: async () => unavailable(),
-    requirements: ['Read-only connection: negotiated checkout is not available.'],
+    getContext, reconcile,
+    requirements: ['Arctic Wave 50ml, one bottle, prepaid pilot only. Approve product cost, floor and delivery expense in EON. Private testers only.'],
     capabilities: async () => ({ businessModels: ['physical_goods'], catalog: true, inventory: true,
-      economics: false, sales: false, shipping: 'none', checkout: false, reconciliation: false, events: false }),
-    // The existing public checkout recomputes retail/bundle pricing. Never send
-    // an approved quote there or claim an enforceable checkout until the shared
-    // inventory transaction and Razorpay expiry/recovery path are verified.
-    createCheckout: async () => unavailable(),
+      // economics means signed context support, not knowledge/approval of cost.
+      economics: true, sales: false, shipping: 'flat', checkout: checkoutEnabled(), reconciliation: true, events: true }),
+    createCheckout,
     claimNonce: async (nonce, expires) => {
       const { data, error } = await getSupabaseAdmin().rpc('claim_negotiation_nonce', {
         p_installation_id: installationId, p_nonce: nonce, p_expires_at: expires.toISOString(),

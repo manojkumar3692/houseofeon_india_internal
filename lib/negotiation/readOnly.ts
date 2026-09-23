@@ -1,6 +1,9 @@
 import 'server-only';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { products } from '@/lib/products';
+import { storeTerms } from './facts';
+import { PILOT_PRODUCT } from './facts';
+import { pilotPricing } from './pricing';
 
 export function unavailable(): never {
   throw Object.assign(new Error('Unavailable'), { code: 'UNSUPPORTED' });
@@ -16,6 +19,7 @@ export async function listCatalog({ cursor, limit }: { cursor: string | null; li
   const { data, error } = await getSupabaseAdmin().rpc('get_storefront_inventory_availability');
   if (error || !Array.isArray(data)) throw new Error('Inventory source unavailable');
   const asOf = new Date().toISOString();
+  const pilot = await pilotPricing();
   const items = catalog.slice(offset, offset + limit).map(p => {
     const rows = data.filter(r => r.product_key === p.id && String(r.size).toLowerCase() === '50ml');
     if (rows.length !== 1) throw new Error('Inventory mapping unavailable');
@@ -24,10 +28,21 @@ export async function listCatalog({ cursor, limit }: { cursor: string | null; li
         typeof row.available !== 'boolean' || typeof row.storefront_enabled !== 'boolean' ||
         !Number.isSafeInteger(p.price * 100) || p.price <= 0) throw new Error('Invalid catalog facts');
     return { productId: p.id, variantId: `${p.id}:50ml`, sku: `${p.id}:50ml`, name: p.name,
-      currency: 'INR', priceMinor: p.price * 100,
+      currency: 'INR', priceMinor: p.id === PILOT_PRODUCT ? pilot.sellingMinor : p.price * 100,
+      pricing: p.id === PILOT_PRODUCT ? pilot : { regularMinor: (p.mrp ?? p.price) * 100, sellingMinor: p.price * 100,
+        taxBasis: 'inclusive', source: 'lib/products.ts: checkout product.price (pre-coupon)' },
       availableToSell: row.available && row.storefront_enabled ? row.available_stock : 0,
       fulfillmentType: 'physical', updatedAt: asOf };
   });
   const next = offset + items.length;
-  return { items, nextCursor: next < catalog.length ? String(next) : null };
+  return { items, storeTerms: storeTerms(), nextCursor: next < catalog.length ? String(next) : null };
+}
+
+export async function availableStock(productId: string) {
+  const { data, error } = await getSupabaseAdmin().rpc('get_storefront_inventory_availability');
+  if (error || !Array.isArray(data)) throw Error('Inventory unavailable');
+  const rows = data.filter(r => r.product_key === productId && r.size === '50ml');
+  if (rows.length !== 1 || !Number.isSafeInteger(rows[0].available_stock) || rows[0].available_stock < 0 ||
+      typeof rows[0].available !== 'boolean' || typeof rows[0].storefront_enabled !== 'boolean') throw Error('Inventory mapping unavailable');
+  return rows[0].available && rows[0].storefront_enabled ? rows[0].available_stock as number : 0;
 }

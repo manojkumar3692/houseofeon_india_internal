@@ -30,6 +30,8 @@ const stocks = catalog.map(p=>({product_key:p.id,size:'50ml',available_stock:4,a
 function reader(data = stocks,error=null) {
   return load('lib/negotiation/readOnly.ts',{
     '@/lib/products':{products:catalog},
+    './facts':{storeTerms:()=>({shipping:{mode:'free',customerChargeMinor:0},promotions:{status:'known',offers:[]}}),PILOT_PRODUCT:'arctic-wave'},
+    './pricing':{pilotPricing:async()=>({regularMinor:124900,sellingMinor:99900,taxBasis:'inclusive',source:'database'})},
     '@/lib/supabaseAdmin':{getSupabaseAdmin:()=>({rpc:async name=>{
       assert.equal(name,'get_storefront_inventory_availability'); return {data,error};
     }})}
@@ -51,11 +53,14 @@ test('catalog never fabricates missing inventory and respects manual disable',as
   assert.equal(result.items[0].availableToSell,0);
   for(const cursor of ['bad','-1','01','9007199254740992']) await assert.rejects(reader().listCatalog({cursor,limit:50}));
 });
-test('production route advertises only read access and blocks all commercial operations',async()=>{
+test('production route keeps identity and wires signed commercial operations behind checkout switch',async()=>{
   let options;
   const {POST}=load('app/api/negotiation/v3/route.ts',{
     '@/lib/negotiation/config':{connectorConfig},
     '@/lib/negotiation/readOnly':reader(),
+    '@/lib/negotiation/checkout':{getContext:async()=>({}),createCheckout:async()=>({})},
+    '@/lib/negotiation/payments':{reconcile:async()=>({})},
+    '@/lib/negotiation/security':{checkoutEnabled:()=>false},
     '@/lib/negotiation/vendor/handler.mjs':{createConnectorHandler:opts=>{options=opts;return async()=>Response.json({ok:true});}},
     '@/lib/supabaseAdmin':{getSupabaseAdmin:()=>({rpc:async(name,args)=>{
       assert.equal(name,'claim_negotiation_nonce');assert.equal(args.p_installation_id,base.NEGOTIATION_INSTALLATION_ID);
@@ -64,12 +69,17 @@ test('production route advertises only read access and blocks all commercial ope
   },base);
   assert.equal((await POST({})).status,200);
   const caps=await options.capabilities();
-  for(const key of ['checkout','economics','events','reconciliation','sales']) assert.equal(caps[key],false);
+  for(const key of ['checkout','sales']) assert.equal(caps[key],false);
+  assert.equal(caps.economics,true);
   assert.equal(caps.catalog,true); assert.equal(caps.inventory,true);
-  for(const fn of ['getContext','createCheckout','reconcile']) await assert.rejects(options[fn](),{code:'UNSUPPORTED'});
+  assert.equal(caps.events,true); assert.equal(caps.reconciliation,true);
+  for(const fn of ['getContext','createCheckout','reconcile']) assert.equal(typeof options[fn],'function');
   assert.equal(await options.claimNonce('test',new Date()),true);
 });
-test('event dispatch stays off regardless of environment flags',async()=>{
-  const {POST}=load('app/api/negotiation/events/route.ts',{},base);
-  assert.equal((await POST()).status,422);
+test('event worker rejects unauthenticated browsers',async()=>{
+  const {POST}=load('app/api/negotiation/events/route.ts',{
+    '@/lib/adminAuth':{assertAdmin:()=>{throw Error('Unauthorized')}},
+    '@/lib/supabaseAdmin':{}, '@/lib/negotiation/security':{}, '@/lib/negotiation/payments':{}
+  },base);
+  assert.equal((await POST({})).status,401);
 });
