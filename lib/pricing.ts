@@ -1,11 +1,9 @@
-// Shared 2026 catalog-wide pricing model. Every perfume shares the same
-// base price, the same EON20 launch-offer math, and the same 2-bottle
-// bundle rate — so these are kept as one shared source of truth rather
-// than per-product fields. If pricing is ever meant to diverge between
-// products, this file (and every place that imports it) needs revisiting.
+// Default pricing for products without a per-product sale. Product.price is
+// the pre-coupon selling price; Product.mrp is the optional original price.
+// Arctic Wave has its own approved sale price in lib/products.ts.
 
 // Base list price — what checkout charges for a single unit before any
-// coupon code. Matches product.price in lib/products.ts for every product.
+// coupon code. Other products retain this base; Arctic Wave has a per-product sale.
 export const BASE_PRICE_INR = 1249;
 
 // What a single unit costs once the EON20 launch-offer coupon (20% off,

@@ -1,5 +1,9 @@
 # Read-only merchant onboarding
 
+Historical rollout notes. The current Arctic Wave pilot implementation and
+deployment checklist are in [EON-PRIVATE-PILOT.md](EON-PRIVATE-PILOT.md).
+Do not use the read-only capability descriptions below for the new release.
+
 This replaces the earlier staging-first onboarding. The merchant keeps its
 existing hosting and Supabase database. No new database, payment test account,
 staging domain or widget is needed to connect catalog and stock.

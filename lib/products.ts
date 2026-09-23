@@ -200,7 +200,8 @@ export const products: Product[] = [
     gender: "Men",
     size: "50ml",
     concentration: "Extrait de Parfum",
-    price: 1249,
+    price: 999,
+    mrp: 1249,
     description:
       "A cool, fresh and clean perfume inspired by icy waves, crisp air and effortless confidence.",
     longDescription:

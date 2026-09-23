@@ -200,7 +200,7 @@ export const guides: Guide[] = [
     eyebrow: "Gifting Guide",
     heroTitle: "The best perfume gifts under ₹1500, picked honestly.",
     heroSubtitle:
-      "Every House of Eon perfume comes in at ₹999 with EON20 applied — under budget on its own, or paired as a 2-bottle gift set at ₹1,598. Here's which one fits which person.",
+      "House of Eon perfumes are ₹999 with EON20 applied, with Arctic Wave at ₹799 — under budget on its own, or paired as a 2-bottle gift set at ₹1,598. Here's which one fits which person.",
     sections: [
       {
         heading: "For him — confident and evening-ready",

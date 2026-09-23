@@ -6,6 +6,7 @@ import ProductViewTracker from "@/components/ProductViewTracker";
 import { getProductBySlug, products } from "@/lib/products";
 import { getCatalogAvailability } from "@/lib/catalogAvailability";
 import { SITE_URL, jsonLd } from "@/lib/seo";
+import EonPilotWidget from '@/components/EonPilotWidget';
 
 const siteUrl = SITE_URL;
 export const dynamic = "force-dynamic";
@@ -140,6 +141,9 @@ export default async function ProductPage({
       />
       <ProductViewTracker product={product} />
       <ProductDetailClient product={product} />
+      {product.id === 'arctic-wave' && process.env.NEGOTIATION_WIDGET_ENABLED === 'true' &&
+        /^[a-f0-9-]{36}$/i.test(process.env.NEGOTIATION_PUBLIC_KEY || '') &&
+        <EonPilotWidget key={product.id} publicKey={process.env.NEGOTIATION_PUBLIC_KEY!} />}
     </>
   );
 }

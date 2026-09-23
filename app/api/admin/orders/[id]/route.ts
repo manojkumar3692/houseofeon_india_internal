@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { assertAdmin } from "@/lib/adminAuth";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { cancelCheckout } from '@/lib/negotiation/payments';
 
 const schema = z.object({
   shipping_status: z.enum(["pending", "packed", "shipped", "delivered", "cancelled"]).optional(),
@@ -23,6 +24,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
+    }
+
+    if (payload.shipping_status === 'cancelled') {
+      const { data: existing, error: readError } = await supabase.from('orders').select('*').eq('id', id).single();
+      if (readError) throw readError;
+      if (existing.negotiation_quote_id) await cancelCheckout(existing.negotiation_quote_id);
     }
 
     const { data, error } = await supabase

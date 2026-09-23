@@ -5,6 +5,7 @@ import { buildCustomerAddress } from "@/lib/order";
 import { sendOrderEmails } from "@/lib/email";
 import { markTrialCreditRedeemed } from "@/lib/trialCredit";
 import { createDelhiveryShipmentForPaidOrder } from "@/lib/delhivery";
+import { processNegotiationWebhook } from '@/lib/negotiation/payments';
 
 // This route is the ONLY thing allowed to mark an order as truly paid.
 // Everything else in the checkout flow (the browser's post-payment callback
@@ -70,6 +71,9 @@ export async function POST(request: Request) {
   const supabase = getSupabaseAdmin();
 
   try {
+    // Provider signature was verified above. Negotiated payments reconcile
+    // exact amounts through their bound payment link before touching orders.
+    if (await processNegotiationWebhook(body)) return NextResponse.json({ ok: true });
     if (event === "payment.captured") {
       const entity = body?.payload?.payment?.entity as RazorpayPaymentEntity;
       if (!entity?.order_id) {

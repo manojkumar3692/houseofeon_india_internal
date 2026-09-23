@@ -1,0 +1,60 @@
+# Files changed for the Arctic Wave pilot
+
+Pricing, connector/widget/checkout, payment reporting, migration, documentation
+and tests. No environment credentials or deployment settings were changed.
+
+- `.env.example`
+- `app/admin/page.tsx`
+- `app/api/admin/orders/[id]/route.ts`
+- `app/api/negotiation/checkout/[id]/route.ts`
+- `app/api/negotiation/events/route.ts`
+- `app/api/negotiation/v3/route.ts`
+- `app/api/negotiation/widget/route.ts`
+- `app/api/webhooks/razorpay/route.ts`
+- `app/cart/page.tsx`
+- `app/checkout/negotiated/[id]/page.tsx`
+- `app/checkout/negotiated/[id]/view.tsx`
+- `app/layout.tsx`
+- `app/products/[slug]/page.tsx`
+- `app/products/[slug]/product-detail-client.tsx`
+- `app/scent-fix/sections/ScentMatcher.tsx`
+- `components/EonPilotWidget.tsx`
+- `components/HeroProductShowcase.tsx`
+- `components/ProductCard.tsx`
+- `components/ProductCarousel.tsx`
+- `components/ProductViewTracker.tsx`
+- `components/SwipeGame.tsx`
+- `docs/EON-CHANGED-FILES.md`
+- `docs/EON-PRIVATE-PILOT.md`
+- `docs/NEGOTIATION-READ-ONLY.md`
+- `lib/assistantTools.ts`
+- `lib/delhivery.ts`
+- `lib/guides.ts`
+- `lib/negotiation/browserBootstrap.ts`
+- `lib/negotiation/checkout.ts`
+- `lib/negotiation/facts.ts`
+- `lib/negotiation/payments.ts`
+- `lib/negotiation/pricing.ts`
+- `lib/negotiation/readOnly.ts`
+- `lib/negotiation/security.ts`
+- `lib/negotiation/vendor/catalog-facts.mjs`
+- `lib/negotiation/vendor/checkout-url.mjs`
+- `lib/negotiation/vendor/contract.mjs`
+- `lib/negotiation/vendor/handler.mjs`
+- `lib/negotiation/vendor/promotion-validation.mjs`
+- `lib/pricing.ts`
+- `lib/products.ts`
+- `lib/situations.ts`
+- `package-lock.json`
+- `package.json`
+- `supabase/migration-negotiation-checkout.sql`
+- `tests/fixtures/008_inventory.sql`
+- `tests/fixtures/010_storefront_inventory.sql`
+- `tests/negotiation-browser.test.cjs`
+- `tests/negotiation-checkout.test.cjs`
+- `tests/negotiation-contract.test.mjs`
+- `tests/negotiation-database.test.mjs`
+- `tests/negotiation-facts.test.cjs`
+- `tests/negotiation-loader.cjs`
+- `tests/negotiation-payments.test.cjs`
+- `tests/negotiation-read-only.test.cjs`

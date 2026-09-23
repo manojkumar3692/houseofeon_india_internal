@@ -253,6 +253,7 @@ export async function createDelhiveryShipmentForPaidOrder(orderId: string) {
   }
 
   const order = found as PaidOrder;
+  if (found.negotiation_quote_id && (found.negotiation_state !== 'paid' || found.shipping_status === 'cancelled')) return;
   if (order.payment_status !== "paid" || order.delhivery_status === "created") {
     return;
   }
