@@ -16,6 +16,12 @@ type Link = {
 };
 type Payment = { id: string; order_id: string; amount: number; currency: string; status: string; amount_refunded: number };
 
+// Leave a minute for the provider request beyond its documented 15-minute minimum.
+export const PAYMENT_START_WINDOW_MS = 16 * 60 * 1000;
+export function paymentFailure(code: string, message: string) {
+  return Object.assign(new Error(message), { checkoutCode: code });
+}
+
 async function provider<T>(path: string, body?: unknown): Promise<T> {
   const { RAZORPAY_KEY_ID: key, RAZORPAY_KEY_SECRET: secret } = process.env;
   if (!key || !secret) throw Error('Payment provider not configured');
@@ -24,8 +30,19 @@ async function provider<T>(path: string, body?: unknown): Promise<T> {
     headers: { Authorization: `Basic ${Buffer.from(`${key}:${secret}`).toString('base64')}`, 'Content-Type': 'application/json' },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(10000),
   });
-  if (!response.ok) throw Object.assign(Error('Payment provider unavailable; retry to recover the existing checkout'),
-    { definiteRejection: response.status === 400 || response.status === 422 });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    const description = typeof payload?.error?.description === 'string' ? payload.error.description : '';
+    const duplicate = /reference.?id.*(already|exist|attempt)|already.*reference/i.test(description);
+    const expiry = /(?:timestamp|expir|close_by).*(?:15|minute|future)/i.test(description);
+    const code = duplicate ? 'PAYMENT_RECOVERY' : expiry ? 'PAYMENT_WINDOW' : 'PAYMENT_PROVIDER';
+    // Do not log provider descriptions: they can contain submitted customer data.
+    console.error('Negotiated payment provider rejected request', { status: response.status, code });
+    throw Object.assign(paymentFailure(code, expiry
+      ? 'This offer has too little time left to start payment. Please request a fresh offer.'
+      : 'Payment could not be opened. Please check the checkout status before trying again.'),
+      { definiteRejection: !duplicate && (response.status === 400 || response.status === 422) });
+  }
   return response.json();
 }
 
@@ -63,6 +80,10 @@ export async function beginPayment(id: string, customer: Customer) {
   customerSchema.parse(customer);
   let c = await checkoutRecord(id);
   if (c.quote.cart.destination?.postalCode !== customer.pincode || c.quote.cart.destination.country !== 'IN') throw Error('Use the postcode from the approved offer');
+  if (c.state !== 'pending') throw paymentFailure('CHECKOUT_CLOSED', 'This checkout is closed. Please return to Arctic Wave for a fresh offer.');
+  if (c.provider_state === 'unstarted' && Date.parse(c.expires_at) - Date.now() <= PAYMENT_START_WINDOW_MS) {
+    throw paymentFailure('PAYMENT_WINDOW', 'This offer has too little time left to start payment. Please request a fresh offer.');
+  }
   const claim = await rpc('prepare_negotiation_payment', {
     p_id: id, p_installation: c.installation_id, p_customer: customer,
   });

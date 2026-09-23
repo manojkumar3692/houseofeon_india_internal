@@ -85,7 +85,7 @@ function toProductCard(product: Product): ProductCardData {
     slug: product.slug,
     name: product.name,
     tagline: product.tagline,
-    price: getCatalogOffer(product.price).price,
+    price: getCatalogOffer(product.price, product.id).price,
     mrp: (product.mrp ?? product.price),
     image: product.image,
     productUrl: `/products/${product.slug}`,
@@ -114,7 +114,7 @@ function fullProductDetail(product: Product) {
     gender: product.gender,
     size: product.size,
     concentration: product.concentration,
-    price: getCatalogOffer(product.price).price,
+    price: getCatalogOffer(product.price, product.id).price,
     mrp: (product.mrp ?? product.price),
     tagline: product.tagline,
     description: product.description,
@@ -412,7 +412,7 @@ export async function executeAssistantTool(
         .map((line) => {
           const product = products.find((p) => p.id === line.productId);
           if (!product) return null;
-          return { productId: product.id, name: product.name, quantity: line.quantity, price: getCatalogOffer(product.price).price };
+          return { productId: product.id, name: product.name, quantity: line.quantity, price: getCatalogOffer(product.price, product.id).price };
         })
         .filter(Boolean);
 

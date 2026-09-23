@@ -64,7 +64,7 @@ const productSchema = {
       offers: {
         "@type": "Offer",
         priceCurrency: "INR",
-        price: getCatalogOffer(product.price).price,
+        price: getCatalogOffer(product.price, product.id).price,
         url: `${siteUrl}/products/${product.slug}`,
       },
     },

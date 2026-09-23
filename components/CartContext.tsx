@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import { getProductById } from "@/lib/products";
+import { requiresExplicitCoupon } from "@/lib/catalogOffer";
 import { formatINR } from "@/lib/money";
 import { getLineTotal, cartHasBundleLine } from "@/lib/pricing";
 
@@ -47,6 +48,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 const STORAGE_KEY = "houseofeon_cart";
 const COUPON_STORAGE_KEY = "houseofeon_coupon";
+const EXPLICIT_COUPON_KEY = "houseofeon_explicit_coupon";
 
 function cleanCartLines(value: unknown): CartLine[] {
   if (!Array.isArray(value)) return [];
@@ -79,6 +81,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponExplicit, setCouponExplicit] = useState(false);
+  const explicitRequired = requiresExplicitCoupon(lines);
 
   const count = useMemo(() => {
     return lines.reduce((sum, line) => sum + line.quantity, 0);
@@ -97,7 +101,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const hasBundleLine = useMemo(() => cartHasBundleLine(lines), [lines]);
 
-  const finalTotal = Math.max(0, total - couponDiscount);
+  const activeDiscount = explicitRequired && !couponExplicit ? 0 : couponDiscount;
+  const finalTotal = Math.max(0, total - activeDiscount);
 
   useEffect(() => {
     try {
@@ -114,6 +119,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const savedCoupon = localStorage.getItem(COUPON_STORAGE_KEY);
       if (savedCoupon) {
         setCouponCode(normalizeCouponInput(savedCoupon));
+        setCouponExplicit(localStorage.getItem(EXPLICIT_COUPON_KEY) === normalizeCouponInput(savedCoupon));
       }
     } catch {
       setLines([]);
@@ -130,6 +136,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (lines.length === 0) {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(COUPON_STORAGE_KEY);
+      localStorage.removeItem(EXPLICIT_COUPON_KEY);
       setCouponCode("");
       setCouponDiscount(0);
       return;
@@ -143,12 +150,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     if (!couponCode) {
       localStorage.removeItem(COUPON_STORAGE_KEY);
+      localStorage.removeItem(EXPLICIT_COUPON_KEY);
       setCouponDiscount(0);
       return;
     }
 
     localStorage.setItem(COUPON_STORAGE_KEY, couponCode);
-  }, [couponCode, loaded]);
+    if (couponExplicit) localStorage.setItem(EXPLICIT_COUPON_KEY, couponCode);
+    else localStorage.removeItem(EXPLICIT_COUPON_KEY);
+  }, [couponCode, couponExplicit, loaded]);
 
   // Bundle pricing (2+ perfumes total, any mix of products) is a bigger
   // automatic discount and is deliberately mutually exclusive with coupon
@@ -162,6 +172,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCouponDiscount(0);
   }, [hasBundleLine, couponCode, loaded]);
 
+  // Discard old automatic coupons when entering an Arctic cart, including
+  // legacy persisted coupons whose origin was never recorded.
+  useEffect(() => {
+    if (loaded && explicitRequired && couponCode && !couponExplicit) {
+      setCouponCode(""); setCouponDiscount(0);
+    }
+  }, [loaded, explicitRequired, couponCode, couponExplicit]);
+
   // Auto-apply the EON20 launch offer whenever the cart is eligible for it:
   // non-empty, not already getting the (better) bundle rate, and no coupon
   // already applied. This lives here — not just on the checkout page — so
@@ -173,7 +191,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     if (lines.length === 0 || total <= 0) return;
-    if (hasBundleLine || couponCode) return;
+    if (hasBundleLine || couponCode || explicitRequired) return;
 
     let cancelled = false;
 
@@ -193,6 +211,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (cancelled) return;
         if (!response.ok || !data.valid) return;
 
+        setCouponExplicit(false);
         setCouponCode(String(data.code || "EON20"));
         setCouponDiscount(Number(data.discount || 0));
       } catch {
@@ -206,12 +225,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [loaded, lines.length, total, hasBundleLine, couponCode]);
+  }, [loaded, lines.length, total, hasBundleLine, couponCode, explicitRequired]);
 
   // Recalculate coupon discount when cart total changes.
   useEffect(() => {
     if (!loaded) return;
-    if (!couponCode) return;
+    if (!couponCode || (explicitRequired && !couponExplicit)) return;
     if (hasBundleLine) return;
     if (total <= 0) {
       setCouponCode("");
@@ -259,7 +278,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [total, couponCode, loaded, hasBundleLine]);
+  }, [total, couponCode, loaded, hasBundleLine, explicitRequired, couponExplicit]);
 
   const value = useMemo<CartContextValue>(() => {
     return {
@@ -269,8 +288,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       count,
       hasBundleLine,
 
-      couponCode,
-      couponDiscount,
+      couponCode: explicitRequired && !couponExplicit ? "" : couponCode,
+      couponDiscount: activeDiscount,
       finalTotal,
 
       addItem(productId, quantity = 1) {
@@ -325,6 +344,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setCouponDiscount(0);
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(COUPON_STORAGE_KEY);
+      localStorage.removeItem(EXPLICIT_COUPON_KEY);
       },
 
       async applyCoupon(code, phone) {
@@ -387,6 +407,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           const discount = Number(data.discount || 0);
           const appliedCode = String(data.code || cleanCode);
 
+          setCouponExplicit(true);
           setCouponCode(appliedCode);
           setCouponDiscount(discount);
 
@@ -408,9 +429,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       },
 
       removeCoupon() {
+        setCouponExplicit(false);
         setCouponCode("");
         setCouponDiscount(0);
         localStorage.removeItem(COUPON_STORAGE_KEY);
+      localStorage.removeItem(EXPLICIT_COUPON_KEY);
       },
     };
   }, [
@@ -422,6 +445,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     couponCode,
     couponDiscount,
     finalTotal,
+    couponExplicit, explicitRequired, activeDiscount,
   ]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

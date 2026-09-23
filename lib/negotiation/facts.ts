@@ -26,7 +26,7 @@ export function storeTerms() {
     shipping: { mode: 'free', customerChargeMinor: 0 },
     promotions: { status: 'known', offers: coupon?.active ? [{
       code: coupon.code,
-      description: `${coupon.value}% off perfume cart subtotal; discount rounded to nearest whole INR (Math.round), capped at INR ${coupon.maxDiscount ?? 'subtotal'}. Minimum INR ${coupon.minSubtotal ?? 0}. Auto-applied to eligible single-bottle carts. Excludes 2+ bottle bundle pricing, trial sets and negotiated offers. One code per order; no stacking with other codes or trial credit. No expiry is configured.`,
+      description: `${coupon.value}% off perfume cart subtotal; discount rounded to nearest whole INR (Math.round), capped at INR ${coupon.maxDiscount ?? 'subtotal'}. Minimum INR ${coupon.minSubtotal ?? 0}. For Arctic Wave, shopper must explicitly enter EON20; it is not automatically applied. Other eligible products retain their existing automatic coupon behavior. Excludes 2+ bottle bundle pricing, trial sets and negotiated offers. One code per order; no stacking with other codes or trial credit. No expiry is configured.`,
       combinesWithNegotiation: 'no', expiresAt: null,
     }] : [] },
   };

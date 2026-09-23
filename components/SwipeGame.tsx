@@ -459,7 +459,7 @@ export default function SwipeGame() {
               <span className={styles.matchTagline}>{primaryMatch.tagline}</span>
               <h3>{primaryMatch.name}</h3>
               <div className={styles.matchPriceRow}>
-                <b>{formatINR(getCatalogOffer(primaryMatch.price).price)}</b>
+                <b>{formatINR(getCatalogOffer(primaryMatch.price, primaryMatch.id).price)}</b>
                 <span className={styles.matchMrp}>{formatINR((primaryMatch.mrp ?? primaryMatch.price))}</span>
               </div>
 

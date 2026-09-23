@@ -94,7 +94,7 @@ export default function HeroProductShowcase({
           <span>
             {activeProduct.gender} · {activeProduct.size}
           </span>
-          <b>{formatINR(getCatalogOffer(activeProduct.price).price)}</b>
+          <b>{formatINR(getCatalogOffer(activeProduct.price, activeProduct.id).price)}</b>
         </div>
       </Link>
 

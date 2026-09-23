@@ -38,7 +38,7 @@ export default function FragrancesIndiaPage() {
           <tbody>{products.map((product) => <tr key={product.id}>
             <th scope="row"><Link href={`/products/${product.slug}`}>{product.name}</Link><small>{product.gender}</small></th>
             <td>{product.notes.join(", ")}</td><td>{product.occasion.join(", ")}</td>
-            <td>{product.size}<small>{product.concentration}</small></td><td>₹{getCatalogOffer(product.price).price.toLocaleString("en-IN")}{getCatalogOffer(product.price).onSale && <small>Regular ₹{product.price.toLocaleString("en-IN")} · EON20</small>}</td>
+            <td>{product.size}<small>{product.concentration}</small></td><td>₹{getCatalogOffer(product.price, product.id).price.toLocaleString("en-IN")}{getCatalogOffer(product.price, product.id).onSale && <small>Regular ₹{product.price.toLocaleString("en-IN")} · EON20</small>}</td>
           </tr>)}</tbody>
         </table>
       </div>

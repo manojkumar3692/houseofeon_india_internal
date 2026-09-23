@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Product } from "@/lib/products";
-import { getCatalogOffer } from "@/lib/catalogOffer";
+import { getCatalogOffer, getCouponOffer } from "@/lib/catalogOffer";
 import { formatINR } from "@/lib/money";
 import { useCart } from "@/components/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
@@ -43,7 +43,7 @@ const trustRowItems = [
 type ScentMoment = "opening" | "heart" | "dryDown";
 
 // The per-unit price actually charged for a given quantity of THIS product
-// alone, assuming EON20 (auto-applied at checkout for a single bottle) or
+// alone, using its default displayed price (Arctic excludes manual EON20) or
 // the bundle rate (2+) — whichever applies. getUnitPrice() from lib/pricing
 // only encodes the bundle rule, not EON20, so it under-reports the real
 // price for a single bottle; this keeps every price shown on this page
@@ -52,7 +52,7 @@ type ScentMoment = "opening" | "heart" | "dryDown";
 function getDisplayUnitPrice(quantity: number, product: Product): number {
   return quantity >= BUNDLE_QUANTITY
     ? BUNDLE_UNIT_PRICE_INR
-    : getCatalogOffer(product.price).price;
+    : getCatalogOffer(product.price, product.id).price;
 }
 
 // Small inline vector icon (no emoji) so the "Free Shipping" badges render
@@ -327,7 +327,7 @@ ${productUrl}`;
               <span className={styles.priceHeroMain}>
                 {isBundleSelected
                   ? formatINR(BUNDLE_TOTAL_INR)
-                  : formatINR(getCatalogOffer(product.price).price)}
+                  : formatINR(getCatalogOffer(product.price, product.id).price)}
               </span>
               <span className={styles.priceHeroStrike}>
                 {formatINR(
@@ -336,7 +336,7 @@ ${productUrl}`;
                     : (product.mrp ?? product.price)
                 )}
               </span>
-              <span className={styles.priceHeroBadge}>{isBundleSelected ? "BUNDLE PRICE" : "20% OFF WITH EON20"}</span>
+              <span className={styles.priceHeroBadge}>{isBundleSelected ? "BUNDLE PRICE" : product.id === "arctic-wave" ? "SALE PRICE" : "20% OFF WITH EON20"}</span>
               <span className={styles.priceHeroShipBadge}>
                 <ShippingIcon />
                 Free Shipping
@@ -344,7 +344,7 @@ ${productUrl}`;
               <span className={styles.priceHeroSub}>
                 {isBundleSelected
                   ? `${formatINR(BUNDLE_UNIT_PRICE_INR)} each · works with any 2 perfumes`
-                  : `${formatINR(product.price)} before coupons · ${formatINR(getCatalogOffer(product.price).price)} with EON20`}
+                  : `${formatINR(product.price)} before coupons · ${formatINR(getCouponOffer(product.price).price)} with EON20`}
               </span>
             </div>
 
@@ -359,7 +359,7 @@ ${productUrl}`;
               >
                 <span className={styles.quantityCardLabel}>1 Bottle</span>
                 <div className={styles.quantityCardPrice}>
-                  <b>{formatINR(getCatalogOffer(product.price).price)}</b>
+                  <b>{formatINR(getCatalogOffer(product.price, product.id).price)}</b>
                   <span>{formatINR((product.mrp ?? product.price))}</span>
                 </div>
                 <span className={styles.shippingBadge}>
@@ -380,8 +380,8 @@ ${productUrl}`;
                 aria-pressed={isBundleSelected}
               >
                 <span className={styles.quantityBadge}>
-                  {getCatalogOffer(product.price).price * 2 > BUNDLE_TOTAL_INR
-                    ? `SAVE ${formatINR(getCatalogOffer(product.price).price * 2 - BUNDLE_TOTAL_INR)}`
+                  {getCatalogOffer(product.price, product.id).price * 2 > BUNDLE_TOTAL_INR
+                    ? `SAVE ${formatINR(getCatalogOffer(product.price, product.id).price * 2 - BUNDLE_TOTAL_INR)}`
                     : "2-BOTTLE PRICE"}
                 </span>
                 <span className={styles.quantityCardLabel}>2 Bottles</span>
@@ -706,7 +706,7 @@ ${productUrl}`;
     <b>{formatINR(selectedTotalPrice)}</b>
     <span>
       {product.shortName} ·{" "}
-      {isBundleSelected ? "2 bottles" : "EON20 active"} · Free Shipping
+      {isBundleSelected ? "2 bottles" : product.id === "arctic-wave" ? "Sale price" : "EON20 active"} · Free Shipping
     </span>
   </div>
 
