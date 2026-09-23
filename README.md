@@ -2,6 +2,9 @@
 
 A lean perfume checkout website built with Next.js, Supabase, Razorpay, Resend email, admin orders, and SEO pages.
 
+The disabled, staging-only negotiation connector and its outstanding checkout
+requirements are documented in [the v3 rollout guide](docs/NEGOTIATION-V3-ROLLOUT.md).
+
 ## What this includes
 
 - Home page
