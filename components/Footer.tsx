@@ -80,6 +80,7 @@ export default function Footer() {
           <b>Support</b>
           <Link href="/about">About House of Eon</Link>
           <Link href="/contact">Contact us</Link>
+          <Link href="/agent">AI assistant integrations</Link>
           <Link href="/shipping">Shipping &amp; delivery</Link>
 
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
