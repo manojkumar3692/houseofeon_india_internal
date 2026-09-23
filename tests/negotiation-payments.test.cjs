@@ -39,7 +39,7 @@ function harness() {
     assert.equal(options.redirect,'error');assert.equal(options.cache,'no-store');
     if(options.method==='POST'&&url.endsWith('/payment_links')){
       createCount++;const body=JSON.parse(options.body);bodies.push(body);
-      if(rejectCreate)return Response.json({error:'Unsupported expiry'},{status:400});
+      if(rejectCreate)return Response.json({error:{description:rejectCreate}},{status:400});
       link={id:'plink_test',short_url:'https://rzp.io/test',status:'created',amount_paid:0,...body};
       if(failAfterCreate)throw Error('Network response lost');
       return Response.json(link);
@@ -51,7 +51,7 @@ function harness() {
     throw Error('Unexpected provider call');
   }});
   return {api:load('lib/negotiation/payments.ts'),c,customer,bodies,sent,events,get count(){return createCount},get link(){return link},
-    timeout(){failAfterCreate=true;},reject(){rejectCreate=true;},failEvents(v){sendFails=v;},pause(){enabled=false;},refund(value){partialRefund=value;}};
+    timeout(){failAfterCreate=true;},reject(description="timestamp must be atleast 15 minutes in future"){rejectCreate=description;},failEvents(v){sendFails=v;},pause(){enabled=false;},refund(value){partialRefund=value;}};
 }
 test('provider checkout uses exact approved total, expiry, no coupon or partial payment; retries reuse link',async()=>{
   const h=harness();
@@ -104,4 +104,22 @@ test('payment mismatch never becomes paid; cancellation confirms provider shutdo
   await assert.rejects(h.api.reconcile(h.c.id));assert.equal(h.c.state,'pending');assert.equal(h.sent.length,0);
   Object.assign(h.link,{status:'created',amount_paid:0});await h.api.cancelCheckout(h.c.id);
   assert.equal(h.link.status,'cancelled');assert.equal(h.c.state,'cancelled');assert.equal(h.sent[0].event.type,'checkout.cancelled');
+});
+
+test('short payment window rejects before reserving an order or calling provider; ready link still recovers',async()=>{
+  const h=harness();h.c.expires_at=new Date(Date.now()+899000).toISOString();
+  await assert.rejects(h.api.beginPayment(h.c.id,h.customer),e=>e.checkoutCode==='PAYMENT_WINDOW');
+  assert.equal(h.count,0);assert.equal(h.c.provider_state,'unstarted');assert.equal(h.c.order_id,null);
+  assert.equal(h.c.state,'pending');
+  const ready=harness();await ready.api.beginPayment(ready.c.id,ready.customer);
+  ready.c.expires_at=new Date(Date.now()+600000).toISOString();ready.link.expire_by=Math.floor(Date.parse(ready.c.expires_at)/1000);
+  assert.equal((await ready.api.beginPayment(ready.c.id,ready.customer)).paymentUrl,'https://rzp.io/test');
+  assert.equal(ready.count,1);
+});
+
+test('duplicate provider reference is recoverable and never treated as safe cancellation',async()=>{
+  const h=harness();h.reject('payment link creation with reference ID already attempted');
+  await assert.rejects(h.api.beginPayment(h.c.id,h.customer),e=>e.checkoutCode==='PAYMENT_RECOVERY');
+  assert.equal(h.c.state,'pending');assert.equal(h.c.provider_state,'creating');assert.equal(h.sent.length,0);
+  await assert.rejects(h.api.beginPayment(h.c.id,h.customer));assert.equal(h.count,1);
 });

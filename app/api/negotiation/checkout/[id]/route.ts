@@ -1,6 +1,6 @@
 import { authorizeCheckout, checkoutEnabled } from '@/lib/negotiation/security';
 import { checkoutRecord, customerSchema } from '@/lib/negotiation/checkout';
-import { beginPayment, cancelCheckout, reconcile } from '@/lib/negotiation/payments';
+import { beginPayment, cancelCheckout, reconcile, PAYMENT_START_WINDOW_MS } from '@/lib/negotiation/payments';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,6 +15,7 @@ export async function GET(request: Request, { params }: Params) {
     const c = await checkoutRecord(id);
     return json({ name: c.items[0].name, quantity: c.quote.cart.lines[0].quantity,
       itemMinor: c.quote.amountMinor, shippingMinor: c.quote.shippingMinor, currency: c.quote.currency,
+      paymentStartUntil: new Date(Date.parse(c.expires_at) - (c.provider_state === 'unstarted' ? PAYMENT_START_WINDOW_MS : 0)).toISOString(),
       expiresAt: c.expires_at, state: c.state, pincode: c.quote.cart.destination?.postalCode,
       enabled: checkoutEnabled() });
   } catch { return json({ error: 'Checkout unavailable' }, 404); }
@@ -33,5 +34,12 @@ export async function POST(request: Request, { params }: Params) {
     // Strict schema rejects supplied prices/items/coupons or arbitrary actions.
     const customer = customerSchema.parse(input);
     return json(await beginPayment(id, customer));
-  } catch { return json({ error: 'Checkout unavailable or payment pending recovery. Retry, or contact support.' }, 409); }
+  } catch (error) {
+    const code = (error as { checkoutCode?: string })?.checkoutCode;
+    if (code && ['PAYMENT_WINDOW', 'CHECKOUT_CLOSED', 'PAYMENT_PROVIDER', 'PAYMENT_RECOVERY'].includes(code)) {
+      return json({ code, error: (error as Error).message }, 409);
+    }
+    if ((error as { name?: string })?.name === 'ZodError') return json({ error: 'Please check your delivery details, including phone number and postcode.' }, 400);
+    return json({ error: 'Checkout unavailable or payment pending recovery. Check payment status, or contact support.' }, 409);
+  }
 }
