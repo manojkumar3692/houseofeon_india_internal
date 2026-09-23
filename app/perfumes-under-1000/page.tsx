@@ -5,7 +5,7 @@ import { products } from "@/lib/products";
 import { getCatalogOffer } from "@/lib/catalogOffer";
 import { SITE_URL, jsonLd } from "@/lib/seo";
 
-const eligible = products.filter((product) => getCatalogOffer(product.price).price < 1000);
+const eligible = products.filter((product) => getCatalogOffer(product.price, product.id).price < 1000);
 const title = "Perfumes Under ₹1,000 in India with EON20 | House of Eon";
 const description = "Explore House of Eon 50ml perfumes under ₹1,000 with the public EON20 offer. Compare fresh, floral and warm scents for men, women and unisex wear.";
 export const metadata: Metadata = { title, description, alternates: { canonical: `${SITE_URL}/perfumes-under-1000` }, openGraph: { title, description, url: `${SITE_URL}/perfumes-under-1000`, type: "website" } };
@@ -27,7 +27,7 @@ export default function BudgetPerfumesPage() {
     </div></section>
     <section className="section"><div className="container">
       <h2>Find your fragrance under ₹1,000</h2>
-      {eligible.length ? <div className="grid products-grid">{eligible.map((product) => <div key={product.id}><ProductCard product={product} /><p>Single bottle: ₹{getCatalogOffer(product.price).price} with EON20 · Regular ₹{product.price}</p></div>)}</div> : <p>No full-size fragrances currently meet this budget. <Link href="/products">See current prices</Link>.</p>}
+      {eligible.length ? <div className="grid products-grid">{eligible.map((product) => <div key={product.id}><ProductCard product={product} /><p>Single bottle: ₹{getCatalogOffer(product.price, product.id).price} with EON20 · Regular ₹{product.price}</p></div>)}</div> : <p>No full-size fragrances currently meet this budget. <Link href="/products">See current prices</Link>.</p>}
     </div></section>
     <section className="section"><div className="container seo-guide-content">
       <h2>What does the offer include?</h2><p>Each listed fragrance is a 50ml bottle. Concentration varies by fragrance: check its product page for Eau de Parfum or Extrait de Parfum, notes and current availability. The regular price is the amount before EON20. The under-₹1,000 price depends on this offer remaining active.</p>

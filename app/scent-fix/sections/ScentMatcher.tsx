@@ -124,7 +124,7 @@ export default function ScentMatcher({
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: getCatalogOffer(product.price).price,
+      price: getCatalogOffer(product.price, product.id).price,
       quantity: 1,
     });
     router.push("/checkout");
@@ -182,7 +182,7 @@ export default function ScentMatcher({
               <div className={styles.s9Tag}>{getProductTagLine(product)}</div>
 
               <div className={styles.s9Price}>
-                {formatINR(getCatalogOffer(product.price).price)}
+                {formatINR(getCatalogOffer(product.price, product.id).price)}
               </div>
               <div className={styles.s9Facts}>
                 30–35% fragrance oil · 50 ml · {product.concentration}
@@ -204,7 +204,7 @@ export default function ScentMatcher({
                 className={styles.s9Cta}
                 onClick={handleGetProduct}
               >
-                Get {product.name} — {formatINR(getCatalogOffer(product.price).price)} →
+                Get {product.name} — {formatINR(getCatalogOffer(product.price, product.id).price)} →
               </button>
 
               {feeling && feeling.productIds.length > 1 ? (

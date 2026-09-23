@@ -22,7 +22,7 @@ export default function ProductCard({ product }: { product: Product }) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: getCatalogOffer(product.price).price,
+      price: getCatalogOffer(product.price, product.id).price,
       quantity: 1,
     });
     trackAddToCartClarity(product.name);
@@ -65,7 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="muted product-card-description">{product.description}</p>
 
         <div className="price">
-          {formatINR(getCatalogOffer(product.price).price)}{" "}
+          {formatINR(getCatalogOffer(product.price, product.id).price)}{" "}
           <span
             className="muted"
             style={{

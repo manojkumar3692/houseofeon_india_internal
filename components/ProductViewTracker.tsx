@@ -10,7 +10,7 @@ export default function ProductViewTracker({ product }: { product: Product }) {
     trackViewContent({
       id: product.id,
       name: product.name,
-      price: getCatalogOffer(product.price).price,
+      price: getCatalogOffer(product.price, product.id).price,
     });
   }, [product.id, product.name]);
 

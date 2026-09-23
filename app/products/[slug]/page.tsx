@@ -96,7 +96,7 @@ export default async function ProductPage({
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: getCatalogOffer(product.price).price,
+      price: getCatalogOffer(product.price, product.id).price,
       ...(inStock === undefined ? {} : { availability: `https://schema.org/${inStock ? "InStock" : "OutOfStock"}` }),
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@id": `${siteUrl}/#organization` },

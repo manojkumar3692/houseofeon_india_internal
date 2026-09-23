@@ -17,7 +17,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
     trackAddToCart({
       id: product.id,
       name: product.name,
-      price: getCatalogOffer(product.price).price,
+      price: getCatalogOffer(product.price, product.id).price,
       quantity: 1,
     });
   }
@@ -66,7 +66,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
               <div className="royal-product-bottom">
                 <div>
                   <div className="price">
-                    {formatINR(getCatalogOffer(product.price).price)}
+                    {formatINR(getCatalogOffer(product.price, product.id).price)}
                   </div>
                   <span className="royal-mrp">{formatINR((product.mrp ?? product.price))}</span>
                 </div>

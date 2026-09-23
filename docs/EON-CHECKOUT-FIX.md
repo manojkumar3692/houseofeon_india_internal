@@ -41,3 +41,19 @@ approved negotiation floors; coordinate the promotion comparison in EON before
 public launch.
 
 Reference: https://razorpay.com/docs/api/payments/payment-links/create-standard/
+
+## Latest owner correction: EON20 requires entry for Arctic Wave
+
+Arctic defaults to INR999 (original INR1249) on product cards, PDP, catalog/feed,
+cart and checkout. Entering EON20 explicitly gives INR799; removing it restores
+INR999 without automatic reapplication. Legacy automatically stored coupons are
+cleared for Arctic. Other products keep existing automatic coupon behavior.
+Connector prices remain124900/99900 and explicit EON20 evaluation79900; terms
+now explain that Arctic's code must be entered. Negotiated amounts remain exact,
+with no additional coupon stacking. This supersedes earlier autoapply wording.
+
+Validation:68/68 automated tests and production build pass. Local real-browser
+PDP/cart/checkout checks confirm999 by default, manualcode799 and removal999.
+No payment/order was created. The earlier checkout layout/payment-window fixes
+remain included in the source; deploy these latest store changes before a fresh
+private payment test. No new migration or environment setting is needed.
