@@ -1,23 +1,23 @@
 import { createConnectorHandler } from '@/lib/negotiation/vendor/handler.mjs';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
-import { getContext, listCatalog, reconcile, unavailable } from '@/lib/negotiation/merchant';
+import { listCatalog, unavailable } from '@/lib/negotiation/readOnly';
+import { connectorConfig } from '@/lib/negotiation/config';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
-  const workspaceId = process.env.NEGOTIATION_WORKSPACE_ID;
-  const installationId = process.env.NEGOTIATION_INSTALLATION_ID;
-  const secret = process.env.NEGOTIATION_INSTALLATION_SECRET;
-  // There is deliberately no production enable path in this first rollout.
-  if (process.env.VERCEL_ENV !== 'preview' || process.env.NEGOTIATION_CONNECTOR_ENABLED !== 'true' ||
-      !workspaceId || !installationId || !secret || secret.length < 32) {
-    return Response.json({ error: 'Connector unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+  const config = connectorConfig(process.env);
+  if (!config) {
+    return Response.json({ error: 'Connector not configured or disabled' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
   }
+  const { workspaceId, installationId, secret } = config;
   return createConnectorHandler({
-    workspaceId, installationId, secret, listCatalog, getContext, reconcile,
+    workspaceId, installationId, secret, listCatalog,
+    getContext: async () => unavailable(), reconcile: async () => unavailable(),
+    requirements: ['Read-only connection: negotiated checkout is not available.'],
     capabilities: async () => ({ businessModels: ['physical_goods'], catalog: true, inventory: true,
-      economics: true, sales: false, shipping: 'zone_table', checkout: false, reconciliation: true, events: true }),
+      economics: false, sales: false, shipping: 'none', checkout: false, reconciliation: false, events: false }),
     // The existing public checkout recomputes retail/bundle pricing. Never send
     // an approved quote there or claim an enforceable checkout until the shared
     // inventory transaction and Razorpay expiry/recovery path are verified.

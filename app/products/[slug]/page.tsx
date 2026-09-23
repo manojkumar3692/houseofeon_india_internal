@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailClient from "./product-detail-client";
 import ProductViewTracker from "@/components/ProductViewTracker";
-import NegotiationStagingWidget from "@/components/NegotiationStagingWidget";
 import { getProductBySlug, products } from "@/lib/products";
 import { SITE_URL } from "@/lib/seo";
 
@@ -119,7 +118,6 @@ export default async function ProductPage({
       />
       <ProductViewTracker product={product} />
       <ProductDetailClient product={product} />
-      <NegotiationStagingWidget productId={product.id} />
     </>
   );
 }

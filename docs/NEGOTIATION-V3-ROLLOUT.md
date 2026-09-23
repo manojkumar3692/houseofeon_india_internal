@@ -1,3 +1,5 @@
+> Historical staging design. Superseded for deployment by [read-only production onboarding](NEGOTIATION-READ-ONLY.md). Do not apply the original full staging migration to production.
+
 # House of EON connector v3 staging rollout
 
 Status: **partial implementation, NOT ready for negotiated checkout or activation**.
