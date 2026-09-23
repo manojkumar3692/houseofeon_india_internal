@@ -25,7 +25,7 @@ for any internal cleanup writes before promising strict database read-only behav
 2. In the existing merchant Supabase SQL editor, run only
    `supabase/migration-negotiation-read-only.sql`. It is rerunnable and creates a
    nonce table and restricted atomic RPC. It does not alter orders, inventory,
-   policy tables or payment triggers. Do not run the old full staging migration.
+   policy tables or payment triggers. The superseded full staging migration has been removed from this branch.
 3. Keep the existing merchant `NEXT_PUBLIC_SUPABASE_URL` and
    `SUPABASE_SERVICE_ROLE_KEY` on the backend. Confirm the inventory RPC exposes
    product_key, size, available_stock, available and storefront_enabled with the
@@ -84,6 +84,7 @@ existing production variables or domain records.
 
 ## Validation of this change
 
-All 41 local tests passed after incorporating current main (879cfd9). The Next.js
-production build, including TypeScript, passed. No production database migration,
-credential update, merge to main or production deployment has been performed.
+Before rollout, 41 local tests and the production build passed on main base 879cfd9.
+The superseded staging-only code, widget component, broad migration and four
+context tests were then removed; deployment validation is recorded in the task.
+Production database and credential setup must be verified separately.
