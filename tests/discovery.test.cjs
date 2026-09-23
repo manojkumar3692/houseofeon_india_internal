@@ -54,12 +54,12 @@ test('new guide slugs and product recommendations resolve', () => {
   for (const guide of discoveryGuides) for (const id of guide.relatedProductIds) assert.ok(products.some(p => p.id === id), `${guide.slug}: ${id}`);
 });
 
-test('public single-bottle sale uses checkout math and falls back when inactive', () => {
+test('sale display stays independent of optional coupon eligibility', () => {
   const coupons = load('lib/coupons.ts');
-  const { getCatalogOffer } = load('lib/catalogOffer.ts', { '@/lib/coupons': coupons });
-  assert.equal(getCatalogOffer(1249).price, 999);
-  assert.equal(getCatalogOffer(1249).basePrice, 1249);
+  const { getCatalogOffer, getCouponOffer } = load('lib/catalogOffer.ts', { '@/lib/coupons': coupons });
+  assert.equal(getCatalogOffer(999).price, 999);
+  assert.equal(getCouponOffer(999).price, 799);
   coupons.coupons.find(c => c.code === 'EON20').active = false;
-  assert.equal(getCatalogOffer(1249).price, 1249);
-  assert.equal(getCatalogOffer(1249).onSale, false);
+  assert.equal(getCatalogOffer(999).price, 999);
+  assert.equal(getCouponOffer(999).price, 999);
 });

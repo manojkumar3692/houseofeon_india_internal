@@ -103,3 +103,13 @@ test('unpaid cancellation releases reservation and cannot be reused',async()=>{
     assert.equal((await db.query('select count(*)::int as n from orders')).rows[0].n,0);
   } finally {await db.close();}
 });
+
+test('six approved pricing rows migration is idempotent and does not touch trial prices',async()=>{
+ const db=await database();try{
+  await db.exec("insert into store_product_pricing values ('trial-sentinel',24900,24900,'INR','inclusive',now())");
+  const sql=readFileSync('supabase/migration-six-perfume-selling-prices.sql','utf8');await db.exec(sql);await db.exec(sql);
+  const {rows}=await db.query("select product_id,regular_minor,selling_minor from store_product_pricing where product_id<>'trial-sentinel' order by product_id");
+  assert.equal(rows.length,6);for(const row of rows){assert.equal(row.regular_minor,124900);assert.equal(row.selling_minor,99900);}
+  assert.equal((await db.query("select selling_minor from store_product_pricing where product_id='trial-sentinel'")).rows[0].selling_minor,24900);
+ }finally{await db.close();}
+});

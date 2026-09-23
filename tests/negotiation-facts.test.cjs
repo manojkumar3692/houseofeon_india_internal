@@ -9,14 +9,12 @@ const { evaluateCart, cartFacts, storeTerms } = load('lib/negotiation/facts.ts')
 const cart = { currency: 'INR', lines: [{ productId: 'arctic-wave', variantId: 'arctic-wave:50ml', quantity: 1 }],
   promotionCodes: [], paymentMethod: 'prepaid', destination: { country: 'IN', postalCode: '560001' } };
 
-test('approved Arctic price changes only Arctic; exact normal checkout and coupon rounding', () => {
+test('approved six perfume prices; exact normal checkout and coupon rounding', () => {
   for (const product of products) {
     const order = calculateOrder([{ productId: product.id, quantity: 1 }]);
-    if (product.id === 'arctic-wave') {
-      assert.equal(product.mrp, 1249); assert.equal(product.price, 999);
-      assert.equal(order.amountInPaise, 99900);
-      assert.equal(getCatalogOffer(product.price).price, 799);
-    } else { assert.equal(order.amountInPaise, 124900); assert.equal(getCatalogOffer(product.price).price, 999); }
+    assert.equal(product.mrp, 1249); assert.equal(product.price, 999);
+    assert.equal(order.amountInPaise, 99900);
+    assert.equal(getCatalogOffer(product.price,product.id).price, 999);
   }
   const e = evaluateCart({ ...cart, promotionCodes: ['EON20'] });
   assert.equal(e.totalMinor, 79900); assert.equal(e.itemSubtotalMinor, 79900); assert.equal(e.shippingMinor, 0);
@@ -73,9 +71,18 @@ test('ordinary order API charges the approved Arctic total and preserves other p
     '@/lib/inventoryServer':{reserveInventory:async()=>true,releaseInventoryReservation:async()=>{}},
   },{RAZORPAY_KEY_ID:'test',RAZORPAY_KEY_SECRET:'test'})('app/api/orders/create/route.ts');
   const customer={name:'Test Buyer',phone:'9999999999',email:'buyer@example.test',address:'Test address',city:'Bengaluru',state:'Karnataka',pincode:'560001'};
-  for(const [productId,couponCode,expected] of [['arctic-wave','',99900],['arctic-wave','EON20',79900],['rank','EON20',99900]]) {
+  for(const [productId,couponCode,expected] of [['arctic-wave','',99900],['arctic-wave','EON20',79900],['rank','EON20',79900]]) {
     const response=await POST(new Request('https://store.test/api/orders/create',{method:'POST',body:JSON.stringify({customer,items:[{productId,quantity:1}],couponCode,amount:1,subtotal:1})}));
     assert.equal(response.status,200);assert.equal((await response.json()).amount,expected);
     assert.equal(created.at(-1).amount,expected);assert.equal(saved.at(-1).amount_in_paise,expected);
   }
+});
+
+test('catalog imports every product price from database with manual coupon terms',async()=>{
+ const ids=[];
+ const db={rpc:async()=>({data:products.map(p=>({product_key:p.id,size:'50ml',available_stock:5,available:true,storefront_enabled:true})),error:null}),from(){let id;return{select(){return this},eq(_,v){id=v;return this},async single(){ids.push(id);return{data:{regular_minor:124900,selling_minor:99900,currency:'INR',tax_basis:'inclusive'},error:null}}}}};
+ const catalog=await loader({'@/lib/supabaseAdmin':{getSupabaseAdmin:()=>db}})('lib/negotiation/readOnly.ts').listCatalog({cursor:null,limit:100});
+ assert.equal(catalog.items.length,6);assert.equal(new Set(ids).size,6);
+ for(const item of catalog.items){assert.equal(item.priceMinor,99900);assert.equal(item.pricing.regularMinor,124900);assert.equal(item.pricing.sellingMinor,99900);}
+ assert.match(catalog.storeTerms.promotions.offers[0].description,/never automatically applied/);
 });

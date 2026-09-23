@@ -57,3 +57,10 @@ PDP/cart/checkout checks confirm999 by default, manualcode799 and removal999.
 No payment/order was created. The earlier checkout layout/payment-window fixes
 remain included in the source; deploy these latest store changes before a fresh
 private payment test. No new migration or environment setting is needed.
+
+## Superseding approval: all six perfumes
+
+The owner subsequently approved the same1249/999/manual-EON20-799 model for
+all six50ml perfumes. See EON-SIX-PRODUCT-PRICING.md and the new store migration
+migration-six-perfume-selling-prices.sql. Earlier Arctic-only statements above
+are historical. Private negotiation remains Arctic-only.
