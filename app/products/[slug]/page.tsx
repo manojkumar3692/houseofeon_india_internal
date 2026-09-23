@@ -1,11 +1,14 @@
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailClient from "./product-detail-client";
 import ProductViewTracker from "@/components/ProductViewTracker";
 import { getProductBySlug, products } from "@/lib/products";
-import { SITE_URL } from "@/lib/seo";
+import { getCatalogAvailability } from "@/lib/catalogAvailability";
+import { SITE_URL, jsonLd } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   return products.map((product) => ({ slug: product.slug }));
@@ -32,6 +35,7 @@ export async function generateMetadata({
       description: product.seoDescription,
       url: `${siteUrl}/products/${product.slug}`,
       type: "website",
+      images: [{ url: `${siteUrl}${product.image}`, alt: `${product.name} ${product.size} perfume` }],
     },
   };
 }
@@ -46,9 +50,20 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
+  const availability = await getCatalogAvailability();
+  const inStock = availability?.[product.id];
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": `${siteUrl}/products/${product.slug}#product`,
+    url: `${siteUrl}/products/${product.slug}`,
+    sku: product.id,
+    size: product.size,
+    category: "Perfume",
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "Concentration", value: product.concentration },
+      { "@type": "PropertyValue", name: "Fragrance notes", value: product.notes.join(", ") },
+    ],
     name: product.name,
     description: product.description,
     image: `${siteUrl}${product.image}`,
@@ -80,8 +95,15 @@ export default async function ProductPage({
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: product.price,
-      availability: "https://schema.org/InStock",
+      price: getCatalogOffer(product.price).price,
+      ...(inStock === undefined ? {} : { availability: `https://schema.org/${inStock ? "InStock" : "OutOfStock"}` }),
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@id": `${siteUrl}/#organization` },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "INR" },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "IN" },
+      },
       url: `${siteUrl}/products/${product.slug}`,
     },
   };
@@ -110,11 +132,11 @@ export default async function ProductPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(productSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbSchema) }}
       />
       <ProductViewTracker product={product} />
       <ProductDetailClient product={product} />

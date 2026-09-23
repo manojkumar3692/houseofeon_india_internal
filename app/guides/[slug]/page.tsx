@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { guides, getGuideBySlug } from "@/lib/guides";
 import { getProductById } from "@/lib/products";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, jsonLd } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
 
@@ -58,6 +58,7 @@ export default async function GuidePage({
     "@type": "Article",
     headline: guide.title,
     description: guide.seoDescription,
+    author: { "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "House of Eon", url: `${siteUrl}/about` },
     publisher: {
       "@type": "Organization",
       name: "House of Eon",
@@ -102,15 +103,15 @@ export default async function GuidePage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(articleSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbSchema) }}
       />
 
       <section className="seo-hero">
@@ -125,6 +126,8 @@ export default async function GuidePage({
             <h1>{guide.heroTitle}</h1>
 
             <p>{guide.heroSubtitle}</p>
+            <p className="footer-mini-text">By <Link href="/about">House of Eon</Link> · Brand buying advice based on our catalogue and published policies.</p>
+            <Link href="/fragrances-india" className="text-link">Compare notes, sizes and prices →</Link>
 
             <div className="product-actions">
               <Link href="/products" className="btn">

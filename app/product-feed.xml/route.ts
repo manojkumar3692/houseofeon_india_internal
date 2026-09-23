@@ -1,5 +1,8 @@
+import { getCatalogOffer } from "@/lib/catalogOffer";
 import { products } from "@/lib/products";
-import { EON20_DISCOUNTED_PRICE_INR } from "@/lib/pricing";
+import { getCatalogAvailability } from "@/lib/catalogAvailability";
+
+export const dynamic = "force-dynamic";
 import { SITE_URL } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
@@ -13,8 +16,8 @@ const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "House of Eon";
 // (Products > Feeds > add a scheduled fetch) as:
 //   https://www.houseofeon.in/product-feed.xml
 //
-// This is what makes products eligible to appear in Google Shopping
-// results and in AI Overviews' shopping citations.
+// Submit and validate this feed for Google Shopping eligibility. It does
+// not guarantee ranking or inclusion in an AI answer.
 //
 // This same URL is also registered as a scheduled feed on the Meta
 // Commerce Manager "HOUSE_OF_EON_INTERNAL" catalog, since Meta accepts the
@@ -32,8 +35,13 @@ function escapeXml(value: string) {
 }
 
 export async function GET() {
+  const availability = await getCatalogAvailability();
+  if (!availability || products.some((product) => availability[product.id] === undefined)) {
+    return new Response("Inventory temporarily unavailable", { status: 503, headers: { "Retry-After": "300", "Cache-Control": "no-store" } });
+  }
   const items = products
     .map((product) => {
+      const offer = getCatalogOffer(product.price);
       return `
     <item>
       <g:id>${escapeXml(product.id)}</g:id>
@@ -41,11 +49,13 @@ export async function GET() {
       <description>${escapeXml(product.longDescription || product.description)}</description>
       <link>${siteUrl}/products/${product.slug}</link>
       <g:image_link>${siteUrl}${product.image}</g:image_link>
-      <g:availability>in stock</g:availability>
-      <g:price>${product.price}.00 INR</g:price>
-      <g:sale_price>${EON20_DISCOUNTED_PRICE_INR}.00 INR</g:sale_price>
+      <g:availability>${availability[product.id] ? "in stock" : "out of stock"}</g:availability>
+      <g:price>${product.price.toFixed(2)} INR</g:price>
+      ${offer.onSale ? `<g:sale_price>${offer.price.toFixed(2)} INR</g:sale_price>` : ""}
       <g:brand>${escapeXml(brandName)}</g:brand>
       <g:condition>new</g:condition>
+      <g:size>${escapeXml(product.size)}</g:size>
+      <g:shipping><g:country>IN</g:country><g:price>0.00 INR</g:price></g:shipping>
       <g:identifier_exists>false</g:identifier_exists>
       <g:google_product_category>Health &amp; Beauty &gt; Personal Care &gt; Cosmetics &gt; Perfume &amp; Cologne</g:google_product_category>
       <g:product_type>Perfume &gt; ${escapeXml(product.gender)}</g:product_type>
@@ -65,6 +75,7 @@ export async function GET() {
   return new Response(xml, {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "no-store",
     },
   });
 }

@@ -81,3 +81,9 @@ normal storefront checkout or disable its inventory checks. Keep Vercel Preview
 protection enabled. After the production read connection is verified, remove the
 unused staging connection/domain/variables as a separate cleanup; don't delete
 existing production variables or domain records.
+
+## Validation of this change
+
+All 41 local tests passed after incorporating current main (879cfd9). The Next.js
+production build, including TypeScript, passed. No production database migration,
+credential update, merge to main or production deployment has been performed.

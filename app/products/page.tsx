@@ -30,6 +30,7 @@ export default function ProductsPage() {
           <div>
             <div className="eyebrow">Shop Fragrances</div>
             <h1>Find the scent that makes them remember you.</h1>
+            <Link className="text-link" href="/fragrances-india">Compare fragrances by notes, occasion and price →</Link>
             <p>
               Explore modern, minimal and long lasting perfumes crafted for
               Indian weather, everyday confidence and Gen Z style.
