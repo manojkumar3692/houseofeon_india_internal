@@ -35,6 +35,7 @@ type CartContextValue = {
   hasBundleLine: boolean;
 
   couponCode: string;
+  couponPhone: string;
   couponDiscount: number;
   finalTotal: number;
   // phone is optional and only meaningful for trial-pack credit codes
@@ -80,6 +81,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false);
 
   const [couponCode, setCouponCode] = useState("");
+  // Keep the verification phone in memory, never in browser storage.
+  // Every revalidation of a Trial Pack credit needs the same phone.
+  const [couponPhone, setCouponPhone] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponExplicit, setCouponExplicit] = useState(false);
   const explicitRequired = requiresExplicitCoupon(lines);
@@ -251,6 +255,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             code: couponCode,
             subtotal: total,
             hasBundleLine,
+            phone: couponPhone || undefined,
           }),
         });
 
@@ -278,7 +283,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [total, couponCode, loaded, hasBundleLine, explicitRequired, couponExplicit]);
+  }, [total, couponCode, couponPhone, loaded, hasBundleLine, explicitRequired, couponExplicit]);
 
   const value = useMemo<CartContextValue>(() => {
     return {
@@ -289,6 +294,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       hasBundleLine,
 
       couponCode: explicitRequired && !couponExplicit ? "" : couponCode,
+      couponPhone,
       couponDiscount: activeDiscount,
       finalTotal,
 
@@ -339,6 +345,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       },
 
       clearCart() {
+        setCouponPhone("");
         setLines([]);
         setCouponCode("");
         setCouponDiscount(0);
@@ -395,9 +402,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           const data = await response.json();
 
           if (!response.ok || !data.valid) {
-            setCouponCode("");
-            setCouponDiscount(0);
-
             return {
               ok: false,
               message: data.error || "Invalid coupon code.",
@@ -408,6 +412,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           const appliedCode = String(data.code || cleanCode);
 
           setCouponExplicit(true);
+          setCouponPhone(phone || "");
           setCouponCode(appliedCode);
           setCouponDiscount(discount);
 
@@ -418,9 +423,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             )}.`,
           };
         } catch {
-          setCouponCode("");
-          setCouponDiscount(0);
-
           return {
             ok: false,
             message: "Unable to apply coupon. Please try again.",
@@ -429,6 +431,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       },
 
       removeCoupon() {
+        setCouponPhone("");
         setCouponExplicit(false);
         setCouponCode("");
         setCouponDiscount(0);
@@ -443,6 +446,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     count,
     hasBundleLine,
     couponCode,
+    couponPhone,
     couponDiscount,
     finalTotal,
     couponExplicit, explicitRequired, activeDiscount,

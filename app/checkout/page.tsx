@@ -59,46 +59,85 @@ export default function CheckoutPage() {
     total,
     hasBundleLine,
     couponCode,
+    couponPhone,
     couponDiscount,
     finalTotal,
     clearCart,
     applyCoupon,
+    removeCoupon,
   } = useCart();
 
-  // The general "Coupon code" box lives on /cart (EON20 etc., no phone
-  // needed there). Trial-pack credit codes are phone-matched though (see
-  // lib/trialCredit.ts), and phone is only known once someone's actually
-  // on this page — so this is a second, checkout-only entry point for
-  // "I have a trial pack order number" that reuses the exact same
-  // applyCoupon/validate pipeline, just with form.phone attached. Typing a
-  // normal coupon code in here works too, it's the same endpoint.
-  const [creditInput, setCreditInput] = useState("");
+  // Both phone inputs edit the same delivery phone, so the number verified
+  // here is also the one submitted with the order.
+  const [creditInput, setCreditInput] = useState(/^HOE-/i.test(couponCode) ? couponCode : "");
   const [creditMessage, setCreditMessage] = useState("");
+  const [creditStatus, setCreditStatus] = useState<"idle" | "error" | "success">("idle");
+  const [creditErrors, setCreditErrors] = useState({ code: "", phone: "" });
   const [creditApplying, setCreditApplying] = useState(false);
+  const creditCodeRef = useRef<HTMLInputElement>(null);
+  const creditPhoneRef = useRef<HTMLInputElement>(null);
+  const creditFeedbackRef = useRef<HTMLDivElement>(null);
+  const creditApplied = /^HOE-/i.test(couponCode) && couponDiscount > 0;
+
+  useEffect(() => {
+    if (!creditApplying && creditStatus !== "idle") {
+      creditFeedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [creditApplying, creditStatus, creditMessage]);
 
   async function handleApplyCredit() {
-    if (!form.phone) {
-      setCreditMessage("Enter your phone number above first.");
+    if (creditApplying || loading) return;
+    const codeAttempted = creditInput.trim().toUpperCase().replace(/\s+/g, "");
+    const phoneDigits = form.phone.replace(/[^0-9]/g, "");
+    const errors = {
+      code: !codeAttempted
+        ? "Enter your Trial Pack order number."
+        : !/^HOE-\d{8}-[A-Z0-9]{5}$/.test(codeAttempted)
+          ? "Enter the order number from your Trial Pack confirmation, starting with HOE-."
+          : "",
+      phone: /^(?:91|0)?[6-9]\d{9}$/.test(phoneDigits)
+        ? ""
+        : "Enter the 10-digit mobile number used for your Trial Pack order.",
+    };
+    setCreditErrors(errors);
+    setCreditMessage("");
+    setCreditStatus("idle");
+    if (errors.code || errors.phone) {
+      (errors.code ? creditCodeRef : creditPhoneRef).current?.focus();
       return;
     }
+
     setCreditApplying(true);
-    const codeAttempted = creditInput;
-    const result = await applyCoupon(creditInput, form.phone);
-    setCreditMessage(result.message);
-    if (result.ok) {
-      setCreditInput("");
-      // A trial pack order number redeeming here looks just like any other
-      // coupon code from applyCoupon's perspective — no separate "this was
-      // a trial credit" flag comes back. HOE-YYYYMMDD-XXXXX is the trial
-      // order-number format (see lib/order.ts createOrderNumber), which
-      // never collides with a real coupon code like EON20, so matching on
-      // that shape is a safe way to fire the funnel-specific event without
-      // over-counting normal coupon applies.
-      if (/^HOE-\d{8}-[A-Z0-9]{5}$/i.test(codeAttempted.trim())) {
-        trackTrialCreditRedeemed(codeAttempted.trim().toUpperCase());
+    const phoneAttempted = phoneDigits.slice(-10);
+    try {
+      const result = await applyCoupon(codeAttempted, form.phone);
+      if (formRef.current.phone.replace(/[^0-9]/g, "").slice(-10) !== phoneAttempted) {
+        if (result.ok) removeCoupon();
+        setCreditStatus("error");
+        setCreditMessage("Your phone number changed while we were checking. Select Apply ₹249 credit to verify it again.");
+        return;
       }
+      setCreditStatus(result.ok ? "success" : "error");
+      if (result.ok) {
+        setCreditInput(codeAttempted);
+        trackTrialCreditRedeemed(codeAttempted);
+      } else {
+        setCreditMessage(result.message.replace(/coupon code/gi, "Trial Pack order number").replace(/coupon/gi, "Trial Pack credit"));
+      }
+    } catch {
+      setCreditStatus("error");
+      setCreditMessage("We couldn’t check your credit. Please try again.");
+    } finally {
+      setCreditApplying(false);
     }
-    setCreditApplying(false);
+  }
+
+  function updateCreditInput(value: string) {
+    if (creditApplied) removeCoupon();
+    setCreditInput(value);
+    setCreditErrors((current) => ({ ...current, code: "" }));
+    setCreditMessage("");
+    setCreditStatus("idle");
   }
 
   const [loading, setLoading] = useState(false);
@@ -211,6 +250,18 @@ export default function CheckoutPage() {
   }, [form]);
 
   function update<K extends keyof CustomerForm>(key: K, value: CustomerForm[K]) {
+    if (key === "phone") {
+      setCreditErrors((current) => ({ ...current, phone: "" }));
+      setCreditMessage("");
+      setCreditStatus("idle");
+      if (creditApplied && value.replace(/[^0-9]/g, "").slice(-10) !== couponPhone.replace(/[^0-9]/g, "").slice(-10)) {
+        removeCoupon();
+        setCreditInput(couponCode);
+        setCreditStatus("error");
+        setCreditMessage("Your phone number changed. Select Apply ₹249 credit to verify it again.");
+      }
+    }
+    formRef.current = { ...formRef.current, [key]: value };
     setForm((current) => ({ ...current, [key]: value }));
     lastInteractionAtRef.current = Date.now();
   }
@@ -489,6 +540,10 @@ export default function CheckoutPage() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (creditApplying) {
+      setError("Please wait while we check your Trial Pack credit.");
+      return;
+    }
     setError("");
     setPaymentRecovery(null);
     setRescueTrigger(null);
@@ -770,11 +825,13 @@ export default function CheckoutPage() {
               />
 
               <input
+                id="delivery-phone"
                 className="input"
                 required
                 type="tel"
                 inputMode="tel"
                 autoComplete="tel"
+                aria-label="Delivery phone number"
                 placeholder="Phone"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
@@ -1058,14 +1115,14 @@ export default function CheckoutPage() {
 
               {couponDiscount > 0 ? (
                 <div>
-                  <span>Coupon discount</span>
+                  <span>{/^HOE-/i.test(couponCode) ? "Trial Pack credit" : "Coupon discount"}</span>
                   <b>-{formatINR(couponDiscount)}</b>
                 </div>
               ) : null}
 
               {couponCode ? (
                 <div>
-                  <span>Coupon code</span>
+                  <span>{/^HOE-/i.test(couponCode) ? "Trial Pack order" : "Coupon code"}</span>
                   <b>{couponCode}</b>
                 </div>
               ) : null}
@@ -1088,38 +1145,79 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {!hasBundleLine && (
-              <div className="checkout-credit-box">
-                <label htmlFor="credit-code">Redeem your Trial Pack credit</label>
+            <section className="checkout-credit-box" aria-labelledby="credit-heading">
+              <h3 id="credit-heading">Redeem your Trial Pack credit</h3>
+              {hasBundleLine ? (
                 <p className="checkout-credit-sublabel">
-                  No coupon needed. Enter your Trial Pack order number and use
-                  the same phone number in your delivery details. When they
-                  match, ₹249 is deducted automatically.
+                  Trial Pack credit can’t be combined with 2-bottle bundle pricing.
+                  You can use your credit on a single full-size bottle within 30 days of your Trial Pack order.
                 </p>
-                <div className="checkout-credit-row">
-                  <input
-                    id="credit-code"
-                    className="input"
-                    type="text"
-                    placeholder="e.g. HOE-20260813-7ZUE1"
-                    value={creditInput}
-                    onChange={(e) => setCreditInput(e.target.value)}
-                    disabled={creditApplying}
-                  />
-                  <button
-                    type="button"
-                    className="btn ghost"
-                    onClick={handleApplyCredit}
-                    disabled={creditApplying || !creditInput.trim()}
-                  >
-                    {creditApplying ? "Checking…" : "Apply"}
+              ) : (
+                <form noValidate onSubmit={(event) => { event.preventDefault(); return handleApplyCredit(); }} aria-busy={creditApplying}>
+                  <p className="checkout-credit-sublabel">
+                    Bought a Trial Pack? Enter these two details to claim ₹249 off a full-size bottle. No coupon needed.
+                  </p>
+                  <div className="checkout-credit-field">
+                    <label htmlFor="credit-code">Trial Pack order number</label>
+                    <input
+                      ref={creditCodeRef}
+                      id="credit-code"
+                      className="input"
+                      type="text"
+                      placeholder="e.g. HOE-20260813-7ZUE1"
+                      autoCapitalize="characters"
+                      spellCheck={false}
+                      value={creditInput}
+                      onChange={(event) => updateCreditInput(event.target.value)}
+                      aria-invalid={Boolean(creditErrors.code)}
+                      aria-describedby={creditErrors.code ? "credit-code-help credit-code-error" : "credit-code-help"}
+                      disabled={creditApplying || loading}
+                    />
+                    <p id="credit-code-help" className="checkout-credit-help">Find this in your Trial Pack order confirmation.</p>
+                    {creditErrors.code && <p id="credit-code-error" className="checkout-credit-error" role="alert">{creditErrors.code}</p>}
+                  </div>
+                  <div className="checkout-credit-field">
+                    <label htmlFor="credit-phone">Phone number used for your Trial Pack</label>
+                    <input
+                      ref={creditPhoneRef}
+                      id="credit-phone"
+                      className="input"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      placeholder="10-digit mobile number"
+                      value={form.phone}
+                      onChange={(event) => update("phone", event.target.value)}
+                      onBlur={(event) => handlePhoneBlur(event.target.value)}
+                      aria-invalid={Boolean(creditErrors.phone)}
+                      aria-describedby={creditErrors.phone ? "credit-phone-help credit-phone-error" : "credit-phone-help"}
+                      disabled={creditApplying || loading}
+                    />
+                    <p id="credit-phone-help" className="checkout-credit-help">Also used as your delivery phone number. Editing either field updates both.</p>
+                    {creditErrors.phone && <p id="credit-phone-error" className="checkout-credit-error" role="alert">{creditErrors.phone}</p>}
+                  </div>
+                  <p className="checkout-credit-terms">One use per paid Trial Pack order, within 30 days. Replaces any existing coupon discount.</p>
+                  <button type="submit" className="btn checkout-credit-apply" disabled={creditApplying || loading || creditApplied}>
+                    {creditApplying ? "Checking your details…" : creditApplied ? "₹249 credit applied" : "Apply ₹249 credit"}
                   </button>
-                </div>
-                {creditMessage && (
-                  <p className="checkout-credit-message">{creditMessage}</p>
-                )}
-              </div>
-            )}
+                  <div ref={creditFeedbackRef}>
+                  {creditApplying && <p className="checkout-credit-message" role="status">Checking your order number and phone number…</p>}
+                  {creditApplied && !creditApplying && (
+                    <div className="checkout-credit-success" role="status">
+                      <strong>₹249 Trial Pack credit applied</strong>
+                      <span>Your order total is now {formatINR(finalTotal)}.</span>
+                    </div>
+                  )}
+                  {!creditApplying && creditStatus === "error" && creditMessage && (
+                    <p className="checkout-credit-error checkout-credit-feedback" role="alert">{creditMessage}</p>
+                  )}
+                  {!creditApplying && creditStatus === "success" && !creditApplied && (
+                    <p className="checkout-credit-error checkout-credit-feedback" role="alert">Your credit is no longer applied. Please check your details and try again.</p>
+                  )}
+                  </div>
+                </form>
+              )}
+            </section>
 
             {effectivePaymentType === "partial_cod" ? (
               <>
