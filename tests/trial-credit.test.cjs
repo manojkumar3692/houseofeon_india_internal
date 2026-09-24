@@ -83,21 +83,22 @@ function cartHarness() {
   return { settle, requests, storage };
 }
 
-test('Trial Pack credit survives cart revalidation and replaces auto EON20', async () => {
+test('Trial Pack credit survives cart revalidation and replaces manually entered EON20', async () => {
   const h = cartHarness(); let cart = await h.settle();
+  await cart.applyCoupon('EON20'); cart = await h.settle();
   assert.equal(cart.couponCode, 'EON20');
   assert.equal((await cart.applyCoupon(code, '+91 98765 43210')).ok, true);
   cart = await h.settle();
   assert.equal(cart.couponCode, code);
   assert.equal(cart.couponDiscount, 249);
-  assert.equal(cart.finalTotal, 1000);
+  assert.equal(cart.finalTotal, 750);
   const checks = h.requests.filter((r) => r.code === code);
   assert.ok(checks.length >= 2, 'initial validation and cart revalidation both ran');
   assert.ok(checks.every((r) => r.phone === '+91 98765 43210'));
   assert.ok([...h.storage.values()].every((v) => !v.includes('98765')), 'phone stays out of localStorage');
 });
 
-test('credit revalidates with the phone when the single-bottle subtotal changes', async () => {
+test('credit retains its phone when switching single-bottle products', async () => {
   const h = cartHarness(); let cart = await h.settle();
   await cart.applyCoupon(code, phone); cart = await h.settle();
   cart.removeItem('rank'); cart.addItem('arctic-wave'); cart = await h.settle();
@@ -105,12 +106,12 @@ test('credit revalidates with the phone when the single-bottle subtotal changes'
   assert.equal(h.requests.at(-1).phone, phone);
 });
 
-test('removing credit clears its phone and restores the existing launch offer', async () => {
+test('removing credit clears its phone without automatically applying a coupon', async () => {
   const h = cartHarness(); let cart = await h.settle();
   await cart.applyCoupon(code, phone); cart = await h.settle();
   cart.removeCoupon(); cart = await h.settle();
-  assert.equal(cart.couponPhone, ''); assert.equal(cart.couponCode, 'EON20');
-  assert.equal(cart.finalTotal, 999);
+  assert.equal(cart.couponPhone, ''); assert.equal(cart.couponCode, '');
+  assert.equal(cart.finalTotal, cart.total);
 });
 
 test('switching to a bundle removes the credit instead of stacking discounts', async () => {
@@ -151,10 +152,11 @@ test('order creation deducts exactly 249 rupees and independently rejects a chan
 
 test('a rejected credit attempt preserves the existing coupon and total', async () => {
   const h = cartHarness(); let cart = await h.settle();
+  await cart.applyCoupon('EON20'); cart = await h.settle();
   const result = await cart.applyCoupon(code, '9876543211');
   assert.equal(result.ok, false); assert.match(result.message, /doesn’t match/);
   cart = await h.settle();
-  assert.equal(cart.couponCode, 'EON20'); assert.equal(cart.finalTotal, 999);
+  assert.equal(cart.couponCode, 'EON20'); assert.equal(cart.finalTotal, 799);
 });
 
 test('lookup failures explain the Trial Pack issue rather than saying invalid coupon', async () => {

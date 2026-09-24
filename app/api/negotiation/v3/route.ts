@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   return createConnectorHandler({
     workspaceId, installationId, secret, listCatalog,
     getContext, reconcile,
-    requirements: ['Arctic Wave 50ml, one bottle, prepaid pilot only. Approve product cost, floor and delivery expense in EON. Private testers only.'],
+    requirements: ['Arctic Wave or RANK 50ml, one bottle, prepaid pilot only. Approve product cost, floor and delivery expense in EON. Private testers only.'],
     capabilities: async () => ({ businessModels: ['physical_goods'], catalog: true, inventory: true,
       // economics means signed context support, not knowledge/approval of cost.
       economics: true, sales: false, shipping: 'flat', checkout: checkoutEnabled(), reconciliation: true, events: true }),

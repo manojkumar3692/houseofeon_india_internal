@@ -50,3 +50,11 @@ test('checkout access token binds installation and quote; public input cannot ad
   assert.ok(c.parse(customer));
   for(const extra of [{couponCode:'EON20'},{amountMinor:1},{items:[]},{paymentType:'partial_cod'}])assert.throws(()=>c.parse({...customer,...extra}));
 });
+
+test('RANK creates exact scoped checkout and retries without changing approved quote',async()=>{
+ const h=service(),rank={...cart,lines:[{productId:'rank',variantId:'rank:50ml',quantity:1}]};
+ const context=await h.api.getContext(rank);assert.equal(context.line.variantId,'rank:50ml');
+ const q={id:crypto.randomUUID(),cart:rank,amountMinor:75500,shippingMinor:0,currency:'INR',expiresAt:new Date(Date.now()+1800000).toISOString(),contextRevision:context.revision};
+ assert.equal((await h.api.createCheckout(q,'rank-key')).status,'created');h.setStock(4);
+ assert.equal((await h.api.createCheckout(q,'rank-key')).status,'already_created');
+});

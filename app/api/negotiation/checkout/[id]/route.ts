@@ -1,3 +1,4 @@
+import { getProductById } from '@/lib/products';
 import { authorizeCheckout, checkoutEnabled } from '@/lib/negotiation/security';
 import { checkoutRecord, customerSchema } from '@/lib/negotiation/checkout';
 import { beginPayment, cancelCheckout, reconcile, PAYMENT_START_WINDOW_MS } from '@/lib/negotiation/payments';
@@ -13,7 +14,8 @@ export async function GET(request: Request, { params }: Params) {
     const { id } = await params;
     authorizeCheckout(id, request);
     const c = await checkoutRecord(id);
-    return json({ name: c.items[0].name, quantity: c.quote.cart.lines[0].quantity,
+    const product = getProductById(c.quote.cart.lines[0].productId);
+    return json({ name: c.items[0].name, productSlug: product?.slug, productImage: product?.image, quantity: c.quote.cart.lines[0].quantity,
       itemMinor: c.quote.amountMinor, shippingMinor: c.quote.shippingMinor, currency: c.quote.currency,
       paymentStartUntil: new Date(Date.parse(c.expires_at) - (c.provider_state === 'unstarted' ? PAYMENT_START_WINDOW_MS : 0)).toISOString(),
       expiresAt: c.expires_at, state: c.state, pincode: c.quote.cart.destination?.postalCode,

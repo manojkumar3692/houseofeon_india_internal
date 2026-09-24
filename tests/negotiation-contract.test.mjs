@@ -42,3 +42,13 @@ test('signed extended catalog and exact coupon context pass v3 envelope contract
 test('a signed coupon request without an exact evaluation fails closed',async()=>{
   assert.equal((await request(handler(true),'context',{cart})).status,503);
 });
+
+test('RANK signed context preserves its external variant and unsupported products return422',async()=>{
+ const rank={...cart,lines:[{productId:'rank',variantId:'rank:50ml',quantity:1}]};
+ const response=await request(handler(),'context',{cart:rank});assert.equal(response.status,200);
+ const facts=await response.json();assert.equal(facts.line.productId,'rank');assert.equal(facts.line.variantId,'rank:50ml');
+ assert.equal(facts.checkoutSupported,true);assert.equal(facts.promotions.evaluation.totalMinor,79900);
+ for(const line of [{productId:'desert-tonka',variantId:'desert-tonka:50ml',quantity:1},{productId:'rank',variantId:'arctic-wave:50ml',quantity:1}]){
+  assert.equal((await request(handler(),'context',{cart:{...cart,lines:[line]}})).status,422);
+ }
+});

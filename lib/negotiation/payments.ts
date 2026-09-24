@@ -80,7 +80,7 @@ export async function beginPayment(id: string, customer: Customer) {
   customerSchema.parse(customer);
   let c = await checkoutRecord(id);
   if (c.quote.cart.destination?.postalCode !== customer.pincode || c.quote.cart.destination.country !== 'IN') throw Error('Use the postcode from the approved offer');
-  if (c.state !== 'pending') throw paymentFailure('CHECKOUT_CLOSED', 'This checkout is closed. Please return to Arctic Wave for a fresh offer.');
+  if (c.state !== 'pending') throw paymentFailure('CHECKOUT_CLOSED', 'This checkout is closed. Please return to the product page for a fresh offer.');
   if (c.provider_state === 'unstarted' && Date.parse(c.expires_at) - Date.now() <= PAYMENT_START_WINDOW_MS) {
     throw paymentFailure('PAYMENT_WINDOW', 'This offer has too little time left to start payment. Please request a fresh offer.');
   }

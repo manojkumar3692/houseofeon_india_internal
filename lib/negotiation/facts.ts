@@ -6,15 +6,17 @@ import { getUnitPrice } from '@/lib/pricing';
 import type { Cart } from './types';
 
 export const PILOT_PRODUCT = 'arctic-wave';
+export const PILOT_PRODUCTS = ['arctic-wave', 'rank'] as const;
+export function isPilotProduct(id: string) { return PILOT_PRODUCTS.some(product => product === id); }
 // Preserve the external variant identity already imported by the connector.
 export const PILOT_VARIANT = `${PILOT_PRODUCT}:50ml`;
 export const PLATFORM_ORIGIN = 'https://eon-negotiation.vercel.app';
 
 export function pilotCart(cart: Cart) {
   const line = cart.lines[0];
-  if (cart.currency !== 'INR' || cart.lines.length !== 1 || line.productId !== PILOT_PRODUCT ||
-      line.variantId !== PILOT_VARIANT || !Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 20 ||
-      new Set(cart.promotionCodes).size !== cart.promotionCodes.length) throw Error('Unsupported pilot cart');
+  if (cart.currency !== 'INR' || cart.lines.length !== 1 || !isPilotProduct(line.productId) ||
+      line.variantId !== `${line.productId}:50ml` || !Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 20 ||
+      new Set(cart.promotionCodes).size !== cart.promotionCodes.length) throw Object.assign(Error('Unsupported pilot cart'), { code: 'UNSUPPORTED' });
   const product = getProductById(line.productId);
   if (!product || product.size.toLowerCase() !== '50ml') throw Error('Product unavailable');
   return { product, quantity: line.quantity };
@@ -60,7 +62,7 @@ export function cartFacts(cart: Cart, stock: number, checkoutEnabled: boolean) {
   const supported = cart.paymentMethod === 'prepaid';
   const facts = {
     currency: 'INR', taxBasis: 'inclusive',
-    line: { productId: product.id, variantId: PILOT_VARIANT, name: product.name, quantity,
+    line: { productId: product.id, variantId: `${product.id}:50ml`, name: product.name, quantity,
       unitPriceMinor: getUnitPrice(product.price, quantity) * 100, availableToSell: stock,
       approvedFloorMinor: null, fulfillmentType: 'physical' },
     shipping: { mode: 'flat', serviceable, merchantCostMinor: null, customerChargeMinor: 0, rateId: 'india-free' },

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './checkout.module.css';
 
-type Offer = { name: string; quantity: number; itemMinor: number; shippingMinor: number; currency: string;
+type Offer = { name: string; productSlug?: string; productImage?: string; quantity: number; itemMinor: number; shippingMinor: number; currency: string;
   expiresAt: string; paymentStartUntil: string; state: string; pincode: string; enabled: boolean };
 const money = (minor: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(minor / 100);
 const fields = [
@@ -41,6 +41,8 @@ export default function NegotiatedCheckout({ id }: { id: string }) {
     // The credential stays in the tab, never in a query or analytics.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+  const productHref = offer?.productSlug ? `/products/${encodeURIComponent(offer.productSlug)}` : '/products';
+  const backLabel = offer ? `Back to ${offer.name}` : 'Back to perfumes';
   const expired = offer ? Date.parse(offer.expiresAt) <= clock : false;
   const tooLate = offer ? Date.parse(offer.paymentStartUntil) <= clock : false;
   const payable = offer?.state === 'pending' && !expired && !tooLate;
@@ -53,14 +55,14 @@ export default function NegotiatedCheckout({ id }: { id: string }) {
     finally { setBusy(false); }
   }
   return <main className={styles.page}>
-    <a className={styles.back} href="/products/arctic-wave-perfume">← Back to Arctic Wave</a>
+    <a className={styles.back} href={productHref}>← {backLabel}</a>
     <header className={styles.heading}><span className={styles.eyebrow}>YOUR EON OFFER</span><h1>A little closer to yours.</h1><p>Your agreed price. Free delivery. One secure checkout.</p></header>
     {error && <div className={styles.alert} role="alert">{error}</div>}
     {!offer && !error && <div className={styles.panel} role="status">Loading your secure offer…</div>}
     {offer && <div className={styles.layout}>
       <aside className={`${styles.panel} ${styles.summary}`}>
         <span className={styles.eyebrow}>YOUR ORDER</span>
-        <div className={styles.product}><img src="/products/arctic-wave.png" alt="Arctic Wave perfume" width={100} height={120} /><div><h2>{offer.name}</h2><p>50 ml · Quantity {offer.quantity}</p><span className={styles.badge}>Agreed EON price</span></div></div>
+        <div className={styles.product}>{offer.productImage && <img src={offer.productImage} alt={`${offer.name} perfume`} width={100} height={120} />}<div><h2>{offer.name}</h2><p>50 ml · Quantity {offer.quantity}</p><span className={styles.badge}>Agreed EON price</span></div></div>
         <dl className={styles.totals}><div><dt>Items</dt><dd>{money(offer.itemMinor)}</dd></div><div><dt>Delivery</dt><dd>{offer.shippingMinor === 0 ? 'Free' : money(offer.shippingMinor)}</dd></div><div className={styles.total}><dt>Total to pay</dt><dd>{money(offer.itemMinor + offer.shippingMinor)}</dd></div></dl>
         <p className={styles.note}>Your agreed offer is already included. No additional coupon applies.</p>
         {payable && <p className={styles.timer}>Start payment within <strong>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</strong></p>}
@@ -96,8 +98,8 @@ export default function NegotiatedCheckout({ id }: { id: string }) {
         </> : <div className={styles.state} role="status">
           <span className={styles.eyebrow}>YOUR CHECKOUT</span>
           <h2>{offer.state === 'paid' ? 'Payment received. Thank you.' : offer.state === 'refunded' ? 'Your payment has been refunded.' : offer.state === 'cancelled' ? 'This checkout is closed.' : 'This offer’s payment window has ended.'}</h2>
-          <p>{offer.state === 'paid' ? 'Your order is confirmed. We’ll send the order details to your email.' : offer.state === 'refunded' ? 'Your bank or payment provider will process the refund to your original payment method.' : 'Return to Arctic Wave and request a fresh offer through EON. This checkout cannot start a new payment.'}</p>
-          <a className={styles.returnLink} href="/products/arctic-wave-perfume">Back to Arctic Wave →</a>
+          <p>{offer.state === 'paid' ? 'Your order is confirmed. We’ll send the order details to your email.' : offer.state === 'refunded' ? 'Your bank or payment provider will process the refund to your original payment method.' : `Return to ${offer.name} and request a fresh offer through EON. This checkout cannot start a new payment.`}</p>
+          <a className={styles.returnLink} href={productHref}>{backLabel} →</a>
         </div>}
         <div className={styles.actions}><button disabled={busy} onClick={() => action('status')}>{busy ? 'Please wait…' : 'Check payment status'}</button>{offer.state === 'pending' && <button disabled={busy} onClick={() => action('cancel')}>Cancel this offer</button>}</div>
       </section>

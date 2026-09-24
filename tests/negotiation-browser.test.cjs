@@ -22,7 +22,7 @@ test('ordinary shopper mounts no widget; tester token is fragment/tab only; hidd
   const m=mount('#eonTest=private-test-token&keep=1');
   assert.equal(m.storage.get('eon-test:'+key),'private-test-token');
   assert.equal(m.location.hash,'#keep=1');assert.equal(m.tree.type,'iframe');
-  assert.equal(m.tree.props.src,'/api/negotiation/widget#eonTest=private-test-token');
+  assert.equal(m.tree.props.src,'/api/negotiation/widget?product=arctic-wave#eonTest=private-test-token');
   assert.equal(m.tree.props.style.visibility,'hidden');
   assert.equal(m.tree.props.referrerPolicy,'no-referrer');
   const source={};m.slots[0].current={contentWindow:source};
@@ -48,10 +48,19 @@ test('access fragments are removed before analytics without altering unrelated f
   const {fragmentBootstrap}=loader()('lib/negotiation/browserBootstrap.ts');
   for(const [pathname,hash,expected] of [
     ['/products/arctic-wave-perfume','#eonTest=private-token','eon-test:'+key],
+    ['/products/rank-perfume','#eonTest=private-token','eon-test:'+key],
     ['/checkout/negotiated/'+key,'#'+'t'.repeat(43),'eon-checkout:'+key],
   ]) {
     const location={pathname,hash,search:''},saved={};let url='';
     vm.runInNewContext(fragmentBootstrap(key),{location,URLSearchParams,sessionStorage:{setItem:(k,v)=>saved[k]=v},history:{replaceState:(_a,_b,v)=>url=v}});
     assert.ok(saved[expected]);assert.equal(url,pathname);
   }
+});
+
+test('RANK widget uses real IDs; other products cannot load the pilot host',async()=>{
+ const route=loader({}, {NEGOTIATION_WIDGET_ENABLED:'true',NEGOTIATION_PUBLIC_KEY:key})('app/api/negotiation/widget/route.ts');
+ const response=await route.GET(new Request('https://store.test/api/negotiation/widget?product=rank'));
+ assert.equal(response.status,200);const html=await response.text();
+ assert.match(html,/data-product="rank"/);assert.match(html,/data-variant="rank:50ml"/);
+ assert.equal((await route.GET(new Request('https://store.test/api/negotiation/widget?product=desert-tonka'))).status,404);
 });

@@ -36,7 +36,7 @@ export async function checkoutRecord(id: string): Promise<Checkout> {
 
 export async function getContext(cart: Cart) {
   pilotCart(cart);
-  await pilotPricing();
+  await pilotPricing(cart.lines[0].productId);
   return cartFacts(cart, await availableStock(cart.lines[0].productId), checkoutEnabled());
 }
 
