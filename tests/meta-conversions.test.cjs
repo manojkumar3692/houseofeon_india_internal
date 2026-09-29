@@ -90,6 +90,43 @@ test('browser Pixel Purchase carries the same stable order event ID used by CAPI
   assert.match(storage.get('houseofeon_meta_event_ids'), /HOE-20260929-ABCDE/);
 });
 
+test('catalog funnel events use product IDs while non-product landing views do not emit ViewContent', () => {
+  const calls = [];
+  const storage = new Map();
+  const api = loader({
+    '@/lib/checkoutSession': { hashEmailForMeta: async () => '', hashPhoneForMeta: async () => '' },
+    '@/lib/assistantSession': {
+      getConciergeSessionId: () => 'session', captureLandingContext: () => ({}), getConciergeVariant: () => ({ group: 'control' }),
+    },
+    '@/lib/campaignAttribution': { getCampaignEventParams: () => ({}) },
+  }, {}, {
+    window: {
+      fbq: (...args) => calls.push(args),
+      sessionStorage: { getItem: (key) => storage.get(key) || null, setItem: (key, val) => storage.set(key, val) },
+    },
+  })('lib/analytics.ts');
+
+  api.trackBeginCheckout({
+    value: 1998,
+    items: [
+      { item_id: 'rank', item_name: 'Rank', price: 999, quantity: 1 },
+      { item_id: 'syra', item_name: 'Syra', price: 999, quantity: 1 },
+    ],
+  });
+  assert.equal(calls[0][1], 'InitiateCheckout');
+  assert.deepEqual(calls[0][2].content_ids, ['rank', 'syra']);
+
+  api.trackScentFixViewContent();
+  assert.equal(calls[1][0], 'trackCustom');
+  assert.equal(calls[1][1], 'ScentFixViewed');
+  assert.equal(calls[1][2].event_name, undefined);
+  assert.notEqual(calls[1][1], 'ViewContent');
+
+  api.trackTrialBuilderStarted();
+  assert.equal(calls[2][0], 'trackCustom');
+  assert.equal(calls[2][1], 'TrialBuilderStarted');
+});
+
 test('temporary Meta failure is scheduled for retry and the same event ID is later delivered once', async () => {
   const updates = [];
   const requests = [];

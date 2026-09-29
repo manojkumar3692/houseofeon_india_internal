@@ -69,9 +69,25 @@ export function trackMetaEvent(
   if (typeof window === "undefined") return undefined;
   if (!window.fbq) return undefined;
 
-  const eventId = stableEventId || createMetaEventId(eventName);
-  persistMetaEventId(eventName, eventId);
-  window.fbq("track", eventName, params || {}, { eventID: eventId });
+  // Older call sites use a single "CustomEvent" sentinel and carry the real
+  // event name in `event_name`. Meta requires those to use `trackCustom`;
+  // sending `track("CustomEvent", ...)` is rejected by the Pixel runtime.
+  const customEventName =
+    eventName === "CustomEvent" && typeof params?.event_name === "string"
+      ? params.event_name.trim()
+      : "";
+  if (eventName === "CustomEvent" && !customEventName) return undefined;
+
+  const recordedName = customEventName || eventName;
+  const eventId = stableEventId || createMetaEventId(recordedName);
+  persistMetaEventId(recordedName, eventId);
+
+  if (customEventName) {
+    const { event_name: _eventName, ...customParams } = params || {};
+    window.fbq("trackCustom", customEventName, customParams, { eventID: eventId });
+  } else {
+    window.fbq("track", eventName, params || {}, { eventID: eventId });
+  }
   return eventId;
 }
 
@@ -149,6 +165,7 @@ export function trackBeginCheckout({
     currency: "INR",
     value,
     content_type: "product",
+    content_ids: items.map((item) => item.item_id),
     contents: items.map((item) => ({
       id: item.item_id,
       quantity: item.quantity || 1,
@@ -348,16 +365,15 @@ export function trackSwipeShared() {
   trackMetaEvent("CustomEvent", { event_name: "SwipeGameShared" });
 }
 
-// /scent-fix — the Meta-ad landing page. Exactly the 3 events the ad
-// account cares about: a real ViewContent on load (so Meta's optimization
-// sees this as a genuine landing page view, not just a generic PageView),
-// a Lead the moment the diagnostic produces a scored match (this is the
-// real "did the ad's promise land" signal — it fires whether or not they
-// ever hand over a phone number), and AddToCart is just the existing
-// trackAddToCart() reused as-is on the CTA.
+// /scent-fix — the Meta-ad landing page. This is deliberately a custom
+// landing-page event rather than the catalog-oriented ViewContent event:
+// there is no product to identify until the diagnostic produces a result.
+// Reporting an ID-less ViewContent here lowers Meta's catalog match rate.
+// The result Lead and AddToCart events carry the actual catalog product ID.
 export function trackScentFixViewContent() {
   trackGAEvent("view_item", { content_name: "Scent Fix" });
-  trackMetaEvent("ViewContent", {
+  trackMetaEvent("CustomEvent", {
+    event_name: "ScentFixViewed",
     content_name: "Scent Fix",
     content_category: "landing_page",
   });

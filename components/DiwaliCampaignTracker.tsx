@@ -18,7 +18,11 @@ export default function DiwaliCampaignTracker() {
       promotion_name: "Diwali Perfume Discovery",
       ...campaign,
     });
-    trackMetaEvent("ViewContent", {
+    // This landing page represents the campaign rather than one catalog
+    // product. Keep it out of catalog-oriented ViewContent matching until
+    // the visitor interacts with a specific product.
+    trackMetaEvent("CustomEvent", {
+      event_name: "DiwaliLandingViewed",
       content_name: "Diwali Perfume Discovery",
       content_category: "seasonal_landing_page",
       ...campaign,
