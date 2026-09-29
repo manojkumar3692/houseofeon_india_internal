@@ -13,6 +13,7 @@ import SocialProofSection from "@/components/SocialProofSection";
 import UrgencyStrip from "@/components/UrgencyStrip";
 import TrialPackBanner from "@/components/TrialPackBanner";
 import styles from "./product-detail.module.css";
+
 import {
   trackProductViewed,
   trackAddToCartClarity,
