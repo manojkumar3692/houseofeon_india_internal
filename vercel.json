@@ -2,8 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/meta-conversions",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 2 * * *"
     }
   ]
 }
-
