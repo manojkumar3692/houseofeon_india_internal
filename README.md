@@ -83,6 +83,15 @@ This project uses the Supabase service role key only in server route handlers. D
 
 If you already have an `orders` table from before the partial-COD feature was added, run `supabase/migration-partial-cod.sql` in the Supabase SQL editor instead of the create-table statement above.
 
+For first-party Meta attribution and authoritative server-side Purchase events,
+run `supabase/migration-checkout-sessions.sql` first (if it has not already been
+applied), followed by `supabase/migration-razorpay-webhook.sql` and
+`supabase/migration-meta-conversions.sql`. Configure the Meta and cron variables
+documented in `.env.example`. Browser Purchase and server Purchase share the
+order number as `event_id`; only the signed Razorpay `payment.captured` webhook
+can enqueue the server event. The outbox is attempted immediately and the
+scheduled `/api/cron/meta-conversions` worker retries temporary failures.
+
 For the Scent Finder quiz's lead capture, run `supabase/migration-quiz-leads.sql` in the Supabase SQL editor to create the `quiz_leads` table.
 
 The Scent Swipe game (`/scent-swipe`) reuses the same `quiz_leads` table. Run `supabase/migration-quiz-leads-source.sql` afterwards to add a `source` column (`quiz` vs `swipe`) so leads from each funnel can be told apart in the admin dashboard.

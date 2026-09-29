@@ -8,6 +8,7 @@ import { after } from 'next/server';
 import { createDelhiveryShipmentForPaidOrder } from '@/lib/delhivery';
 import { sendOrderEmails } from '@/lib/email';
 import { buildCustomerAddress } from '@/lib/order';
+import { deliverPendingMetaConversions, enqueueMetaPurchase } from '@/lib/metaConversions';
 
 type Link = {
   id: string; reference_id: string; amount: number; amount_paid: number; currency: string;
@@ -166,6 +167,12 @@ export async function reconcile(id: string) {
           const { data: order } = await getSupabaseAdmin().from('orders').select('*').eq('id', c.order_id).single();
           const current = await checkoutRecord(c.id);
           if (!order || current.state !== 'paid' || order.shipping_status === 'cancelled') return;
+          try {
+            await enqueueMetaPurchase(order);
+            await deliverPendingMetaConversions(3);
+          } catch (error) {
+            console.error('Negotiated Meta conversion delivery deferred', error);
+          }
           await createDelhiveryShipmentForPaidOrder(order.id);
           await sendOrderEmails({ orderNumber: order.order_number, order_id: order.order_number,
             customerName: order.customer_name, customerPhone: order.customer_phone, customerEmail: order.customer_email,

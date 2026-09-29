@@ -111,7 +111,9 @@ export default function AnalyticsScripts() {
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
               fbq('init', '${metaPixelId}');
-              fbq('track', 'PageView');
+              var pageEventId='PageView.'+(self.crypto&&self.crypto.randomUUID?self.crypto.randomUUID():Date.now()+'.'+Math.random().toString(36).slice(2));
+              try{var ledger=JSON.parse(sessionStorage.getItem('houseofeon_meta_event_ids')||'[]');if(!Array.isArray(ledger))ledger=[];ledger=ledger.slice(-49);ledger.push({eventName:'PageView',eventId:pageEventId,createdAt:new Date().toISOString()});sessionStorage.setItem('houseofeon_meta_event_ids',JSON.stringify(ledger));}catch(e){}
+              fbq('track', 'PageView', {}, {eventID:pageEventId});
             `}
           </Script>
           <noscript>

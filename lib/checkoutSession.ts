@@ -41,6 +41,11 @@ export type CheckoutSessionFields = Partial<{
   utmMedium: string;
   utmCampaign: string;
   deviceType: string;
+  landingUrl: string;
+  fbclid: string;
+  fbp: string;
+  fbc: string;
+  visitorId: string;
 }>;
 
 // One key per browser tab/session, persisted only for the duration of the
@@ -98,6 +103,11 @@ function getCheckoutAttributionFields(): CheckoutSessionFields {
     utmMedium: attribution.utmMedium || "",
     utmCampaign: attribution.utmCampaign || "",
     referrer: attribution.referrer || "",
+    landingUrl: attribution.landingUrl || "",
+    fbclid: attribution.fbclid || "",
+    fbp: attribution.fbp || "",
+    fbc: attribution.fbc || "",
+    visitorId: attribution.visitorId || "",
   };
 }
 
