@@ -22,7 +22,7 @@ create table if not exists public.checkout_sessions (
 
   -- Funnel stage timestamps — nullable, filled in as each stage happens.
   -- order_created_at and paid_at are set only by the server (orders/create
-  -- and orders/verify respectively), never by the client-facing endpoint,
+  -- and the signed Razorpay webhook respectively), never by the client-facing endpoint,
   -- since those two are the "ground truth" transitions.
   page_viewed_at timestamptz,
   phone_captured_at timestamptz,

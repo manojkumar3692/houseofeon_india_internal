@@ -5,10 +5,16 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const ts = require('typescript');
 
-function environment({ storage = new Map(), referrer = 'https://instagram.com/', search = '?utm_source=ig&utm_medium=paid&utm_campaign=campaign1', blocked = false } = {}) {
+function environment({ storage = new Map(), cookieJar = new Map(), referrer = 'https://instagram.com/', search = '?utm_source=ig&utm_medium=paid&utm_campaign=campaign1', blocked = false } = {}) {
   const document = { referrer };
+  Object.defineProperty(document, 'cookie', {
+    get() { return [...cookieJar].map(([key, val]) => `${key}=${val}`).join('; '); },
+    set(raw) { const [pair] = raw.split(';'); const split = pair.indexOf('='); cookieJar.set(pair.slice(0, split), pair.slice(split + 1)); },
+  });
+  const location = { hostname: 'www.houseofeon.in', pathname: '/products/rank-perfume', search, protocol: 'https:' };
+  Object.defineProperty(location, 'href', { get() { return `https://${location.hostname}${location.pathname}${location.search}`; } });
   const window = {
-    location: { hostname: 'www.houseofeon.in', pathname: '/products/rank-perfume', search },
+    location,
     sessionStorage: {
       getItem(key) { if (blocked) throw new Error('Blocked'); return storage.get(key) || null; },
       setItem(key, value) { if (blocked) throw new Error('Blocked'); storage.set(key, value); },
@@ -31,7 +37,7 @@ function environment({ storage = new Map(), referrer = 'https://instagram.com/',
   }
   const attribution = load('lib/visitorAttribution.ts');
   const checkout = load('lib/checkoutSession.ts', { '@/lib/visitorAttribution': attribution });
-  return { window, document, storage, attribution, checkout, requests, beacons };
+  return { window, document, storage, cookieJar, attribution, checkout, requests, beacons };
 }
 
 test('real incoming tags survive product/cart/trial navigation and a document reload', () => {
@@ -98,4 +104,25 @@ test('source values fit the existing API limits and omit referrer query/fragment
   const h = environment({ search: '?utm_campaign=' + 'x'.repeat(500), referrer: 'https://example.org/path?email=private@example.org#private' });
   const result = h.attribution.captureVisitorAttribution();
   assert.equal(result.utmCampaign.length, 200); assert.equal(result.referrer, 'https://example.org/path');
+});
+
+test('Meta click identifiers and a stable first-party visitor reach every checkout save', () => {
+  const cookies = new Map([['_fbp', 'fb.1.1700000000000.browser123']]);
+  const h = environment({ cookieJar: cookies, search: '?utm_source=meta&utm_campaign=launch&fbclid=click-123&private=omit-me' });
+  const result = h.attribution.captureVisitorAttribution();
+  assert.equal(result.visitorId, 'test-session');
+  assert.equal(result.fbp, 'fb.1.1700000000000.browser123');
+  assert.match(result.fbc, /^fb\.1\.\d+\.click-123$/);
+  assert.match(result.landingUrl, /fbclid=click-123/);
+  assert.doesNotMatch(result.landingUrl, /private/);
+
+  h.checkout.captureCheckoutSession('page_viewed');
+  const fields = JSON.parse(h.requests[0].body).fields;
+  assert.equal(fields.visitorId, 'test-session');
+  assert.equal(fields.fbp, result.fbp);
+  assert.equal(fields.fbc, result.fbc);
+  assert.equal(fields.fbclid, 'click-123');
+
+  const reload = environment({ storage: h.storage, cookieJar: h.cookieJar, search: '', referrer: 'https://www.houseofeon.in/cart' });
+  assert.equal(reload.attribution.captureVisitorAttribution().visitorId, 'test-session');
 });

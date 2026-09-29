@@ -32,6 +32,28 @@ export type AnalyticsItem = {
   quantity?: number;
 };
 
+const META_EVENT_LEDGER_KEY = "houseofeon_meta_event_ids";
+
+function createMetaEventId(eventName: string): string {
+  const random =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return `${eventName}.${random}`;
+}
+
+function persistMetaEventId(eventName: string, eventId: string) {
+  try {
+    const raw = window.sessionStorage.getItem(META_EVENT_LEDGER_KEY);
+    const ledger = raw ? JSON.parse(raw) : [];
+    const entries = Array.isArray(ledger) ? ledger.slice(-49) : [];
+    entries.push({ eventName, eventId, createdAt: new Date().toISOString() });
+    window.sessionStorage.setItem(META_EVENT_LEDGER_KEY, JSON.stringify(entries));
+  } catch {
+    // Pixel delivery must not depend on browser storage being available.
+  }
+}
+
 export function trackGAEvent(eventName: string, params?: Record<string, any>) {
   if (typeof window === "undefined") return;
   if (!window.gtag) return;
@@ -39,11 +61,18 @@ export function trackGAEvent(eventName: string, params?: Record<string, any>) {
   window.gtag("event", eventName, params || {});
 }
 
-export function trackMetaEvent(eventName: string, params?: Record<string, any>) {
-  if (typeof window === "undefined") return;
-  if (!window.fbq) return;
+export function trackMetaEvent(
+  eventName: string,
+  params?: Record<string, any>,
+  stableEventId?: string
+) {
+  if (typeof window === "undefined") return undefined;
+  if (!window.fbq) return undefined;
 
-  window.fbq("track", eventName, params || {});
+  const eventId = stableEventId || createMetaEventId(eventName);
+  persistMetaEventId(eventName, eventId);
+  window.fbq("track", eventName, params || {}, { eventID: eventId });
+  return eventId;
 }
 
 export function trackViewContent(product: {
@@ -272,7 +301,7 @@ export function trackPurchase({
 
     order_id: orderId,
     ...getCampaignEventParams(),
-  });
+  }, orderId);
 }
 
 export function trackPaymentFailed(reason?: string) {

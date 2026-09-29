@@ -6,6 +6,10 @@ import { sendOrderEmails } from "@/lib/email";
 import { markTrialCreditRedeemed } from "@/lib/trialCredit";
 import { createDelhiveryShipmentForPaidOrder } from "@/lib/delhivery";
 import { processNegotiationWebhook } from '@/lib/negotiation/payments';
+import {
+  deliverPendingMetaConversions,
+  enqueueMetaPurchase,
+} from "@/lib/metaConversions";
 
 // This route is the ONLY thing allowed to mark an order as truly paid.
 // Everything else in the checkout flow (the browser's post-payment callback
@@ -149,6 +153,22 @@ export async function POST(request: Request) {
       // Only process these the first time this order is confirmed
       // captured — not on every retry of the same webhook event.
       if (!alreadyCaptured) {
+        // Persist the authoritative Purchase before attempting delivery.
+        // Tracking failures never change payment state or the webhook
+        // response; the cron worker backfills/ retries this outbox later.
+        try {
+          await enqueueMetaPurchase(updated);
+          after(async () => {
+            try {
+              await deliverPendingMetaConversions(3);
+            } catch (metaError) {
+              console.error("Meta conversion delivery deferred:", metaError);
+            }
+          });
+        } catch (metaQueueError) {
+          console.error("Meta conversion enqueue deferred:", metaQueueError);
+        }
+
         // If a trial-pack credit code was used on this order, this is the
         // moment it actually counts as "redeemed" — same reasoning as
         // payment_status itself only flipping here, not in the client-

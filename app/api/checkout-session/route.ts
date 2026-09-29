@@ -42,6 +42,11 @@ const fieldsSchema = z
     utmMedium: z.string().max(200).optional(),
     utmCampaign: z.string().max(200).optional(),
     deviceType: z.string().max(30).optional(),
+    landingUrl: z.string().max(1500).optional(),
+    fbclid: z.string().max(500).optional(),
+    fbp: z.string().max(500).optional(),
+    fbc: z.string().max(500).optional(),
+    visitorId: z.string().max(100).optional(),
   })
   .partial();
 
@@ -76,6 +81,19 @@ export async function POST(request: Request) {
       last_activity_at: nowIso,
     };
 
+    // The request headers are a more reliable source than browser-supplied
+    // fields for CAPI matching. Keep only the originating address from a
+    // proxy chain and cap both values before persistence.
+    const forwardedFor =
+      request.headers.get("x-vercel-forwarded-for") ||
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      "";
+    const clientIpAddress = forwardedFor.split(",")[0]?.trim().slice(0, 100);
+    const userAgent = request.headers.get("user-agent")?.slice(0, 1000);
+    if (clientIpAddress) row.client_ip_address = clientIpAddress;
+    if (userAgent) row.client_user_agent = userAgent;
+
     if (payload.fields) {
       const f = payload.fields;
       if (f.name !== undefined) row.name = f.name;
@@ -98,6 +116,11 @@ export async function POST(request: Request) {
       if (f.utmMedium !== undefined) row.utm_medium = f.utmMedium;
       if (f.utmCampaign !== undefined) row.utm_campaign = f.utmCampaign;
       if (f.deviceType !== undefined) row.device_type = f.deviceType;
+      if (f.landingUrl !== undefined) row.landing_url = f.landingUrl;
+      if (f.fbclid !== undefined) row.fbclid = f.fbclid;
+      if (f.fbp !== undefined) row.fbp = f.fbp;
+      if (f.fbc !== undefined) row.fbc = f.fbc;
+      if (f.visitorId !== undefined) row.visitor_id = f.visitorId;
     }
 
     if (payload.stage) {
