@@ -1,3 +1,4 @@
+import RivaPreview from "@/components/RivaPreview";
 import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -184,6 +185,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <RivaPreview />
+
       <section className="home-diwali-banner" aria-label="Diwali perfume gifting">
         <div className="container home-diwali-banner-inner">
           <div>
@@ -231,7 +234,7 @@ export default function HomePage() {
       <div>
         <div className="eyebrow">Signature Collection</div>
         <h2 className="section-title">
-          Six perfumes. Six moods. One royal presence.
+          Signature scents. One royal presence.
         </h2>
       </div>
       <Link href="/products" className="text-link">

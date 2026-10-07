@@ -1,3 +1,4 @@
+import RivaPreview from "@/components/RivaPreview";
 import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -44,6 +45,7 @@ export default function FragrancesIndiaPage() {
       </div>
       <p>Wear varies with skin, weather and application. We do not claim a fixed wear time or an independently tested “best in India” ranking.</p>
     </div></section>
+    <RivaPreview />
     <section className="section"><div className="container"><h2>Choose for your day</h2><p><Link href="/perfumes-under-1000">Explore perfumes under ₹1,000 with EON20 →</Link></p><div className={styles.cards}>
       {discoveryGuides.map((guide) => <article key={guide.slug}><h3><Link href={`/guides/${guide.slug}`}>{guide.title}</Link></h3><p>{guide.heroSubtitle}</p><Link className="text-link" href={`/guides/${guide.slug}`}>Read the guide →</Link></article>)}
       <article><h3>Explore more of the collection</h3><p>Compare choices for daily wear and learn how concentration and application affect your experience.</p><p><Link href="/long-lasting-perfume-for-men-india">Perfumes for men</Link></p><p><Link href="/best-perfume-for-women-in-india">Perfumes for women</Link></p><Link href="/guides/extrait-de-parfum-vs-eau-de-parfum">Understand fragrance concentration</Link></article>
