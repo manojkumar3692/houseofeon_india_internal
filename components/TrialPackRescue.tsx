@@ -60,9 +60,8 @@ export default function TrialPackRescue({
         <span className="trial-rescue-eyebrow">Before you go</span>
         <h3>Not ready for the full bottle?</h3>
         <p>
-          Try 3 scents in {formatINR(TRIAL_PACK_PRICE_INR)} total — and that
-          order number becomes a one-time {formatINR(TRIAL_PACK_PRICE_INR)}{" "}
-          credit toward a full-size bottle later.
+          Try 3 scents for {formatINR(TRIAL_PACK_PRICE_INR)}, then unlock 50ML for ₹749.
+          Use your order number and matching phone within 30 days.
         </p>
 
         <Link href="/trial-pack" className="btn" onClick={handleClick}>

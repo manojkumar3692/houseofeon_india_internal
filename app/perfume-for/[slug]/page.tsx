@@ -125,7 +125,7 @@ export default async function SituationPage({
               <div className="eyebrow">Best matches</div>
               <h2 className="section-title">Three ways to wear the answer.</h2>
             </div>
-            <SituationCtaLink href="/trial-pack" className="text-link" slug={situation.slug} placement="product_header">Try three for ₹249 →</SituationCtaLink>
+            <SituationCtaLink href="/trial-pack" className="text-link" slug={situation.slug} placement="product_header">Try three for ₹299 →</SituationCtaLink>
           </div>
           <div className="grid products-grid">
             {relatedProducts.map((product) => (
@@ -140,7 +140,7 @@ export default async function SituationPage({
           <div>
             <div className="eyebrow">Still deciding?</div>
             <h2>Wear the answer before you buy the bottle.</h2>
-            <p>Choose any three 8ml fragrances for ₹249, then redeem the full ₹249 on an eligible 50ml bottle.</p>
+            <p>Choose any three 8ml fragrances for ₹299, then unlock an eligible 50ML bottle for ₹749.</p>
           </div>
           <SituationCtaLink href="/trial-pack" className="btn" slug={situation.slug} placement="trial_pack_card">Build my trial pack →</SituationCtaLink>
         </div>

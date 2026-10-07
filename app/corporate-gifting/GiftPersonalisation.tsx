@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, type ReactNode } from "react";
-export const giftScents = ["Desert Tonka", "Arctic Wave", "Zyrox", "RANK", "Silent Gold"] as const;
+export const giftScents = ["Desert Tonka", "Arctic Wave", "Zyrox", "RANK", "Silent Gold", "SYRA"] as const;
 const Context = createContext<{
   company: string; setCompany: (value: string) => void;
   giftMessage: string; setGiftMessage: (value: string) => void;

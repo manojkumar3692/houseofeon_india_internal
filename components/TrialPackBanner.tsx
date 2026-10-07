@@ -11,9 +11,7 @@ import {
 import { formatINR } from "@/lib/money";
 import { trackTrialBannerClicked } from "@/lib/analytics";
 
-// Shared between the homepage and product detail pages. The redemption copy
-// stays explicit: the trial value becomes a one-time discount code toward a
-// later order, rather than a cash refund.
+// Shared offer for the homepage and product detail pages.
 export default function TrialPackBanner({ ctaSource }: { ctaSource: string }) {
   return (
     <section className="trial-banner">
@@ -27,7 +25,7 @@ export default function TrialPackBanner({ ctaSource }: { ctaSource: string }) {
           >
             <Image
               className="trial-banner-campaign-image"
-              src="/discovery-set-campaign.png"
+              src="/discovery-set-campaign-299.png"
               alt="Three House of Eon 8 ml discovery fragrances"
               fill
               sizes="(max-width: 900px) 90vw, 40vw"
@@ -63,7 +61,7 @@ export default function TrialPackBanner({ ctaSource }: { ctaSource: string }) {
             <div>
               <span>03</span>
               <b>Enter your order number</b>
-              <small>Use the same phone. ₹249 comes off.</small>
+              <small>Use the same phone. Unlock 50ML for ₹749.</small>
             </div>
           </div>
 
@@ -71,7 +69,7 @@ export default function TrialPackBanner({ ctaSource }: { ctaSource: string }) {
             <b>No coupon to search for.</b>
             <span>
               At full-size checkout, enter your Trial Pack order number. If the
-              phone number matches, ₹249 is deducted automatically.
+              phone number matches, unlock one eligible 50ML bottle for ₹749.
             </span>
           </div>
 
@@ -84,7 +82,7 @@ export default function TrialPackBanner({ ctaSource }: { ctaSource: string }) {
               Build Your Discovery Set
               <span aria-hidden="true">→</span>
             </Link>
-            <p>Redeem once within {TRIAL_CREDIT_EXPIRY_DAYS} days.</p>
+            <p>Use once within {TRIAL_CREDIT_EXPIRY_DAYS} days.</p>
           </div>
         </div>
       </div>

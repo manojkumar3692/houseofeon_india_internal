@@ -564,7 +564,7 @@ export function trackAssistantError(reason: string) {
   trackGAEvent("assistant_error", withConciergeParams({ reason }));
 }
 
-// Trial Pack funnel (₹249, pick-3, see lib/trialPack.ts / lib/trialCredit.ts).
+// Trial Pack funnel (₹299, pick-3, see lib/trialPack.ts / lib/trialCredit.ts).
 // Purchase itself still goes through the regular trackBeginCheckout /
 // trackAddPaymentInfo / trackPurchase calls (generic GA4/Meta ecommerce
 // events, order-type-agnostic) — these four are the funnel-specific markers
@@ -646,7 +646,7 @@ export function trackTrialPackPurchased(orderId: string, scentNames: string[]) {
 }
 
 // Fired from app/checkout/page.tsx when a trial-pack order number is
-// successfully applied as a ₹249 credit on a later full-size order.
+// successfully applied as a full-size offer on a later full-size order.
 export function trackTrialCreditRedeemed(trialOrderNumber: string) {
   trackGAEvent("trial_credit_redeemed", { trial_order_number: trialOrderNumber });
 }

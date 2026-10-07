@@ -41,6 +41,7 @@ const SCENT_GUIDANCE: Record<string, string> = {
   "arctic-wave": "Fresh · Clean · Everyday",
   zyrox: "Cool · Energetic · Summer",
   rank: "Bold · Spicy · Date night",
+  syra: "Floral · Soft musk · Elegant",
   "silent-gold": "Rich · Elegant · Occasion",
 };
 
@@ -49,6 +50,7 @@ const SCENT_PERSONALITY: Record<string, string> = {
   "arctic-wave": "Clean energy",
   zyrox: "Main character",
   rank: "Bold entrance",
+  syra: "Grace with power",
   "silent-gold": "Quiet luxury",
 };
 
@@ -78,7 +80,7 @@ const EMPTY_FORM: CustomerForm = {
 
 // Kept deliberately separate from useCart()/CartContext — a trial pack isn't
 // a cart line with a quantity and per-unit bundle pricing, it's a fixed
-// ₹249-for-3-vials product with its own dedicated order-creation route
+// ₹299-for-3-vials product with its own dedicated order-creation route
 // (/api/trial-orders/create). Bolting it onto the cart model would mean
 // teaching every bit of bundle/coupon math about a case where none of that
 // math applies.
@@ -554,20 +556,20 @@ export default function TrialPackPage() {
         <div className="container trial-page-hero-grid">
           <div className="trial-page-hero-copy">
             <span className="trial-page-kicker">House of Eon Discovery Set</span>
-            <h1>Try 3 for ₹249. Get ₹249 credit.</h1>
+            <h1>Try 3 for ₹299. Unlock 50ML for ₹749.</h1>
 
             <div className="trial-page-redeem-badge">
-              <span>₹249 fully redeemable</span>
-              <strong>Your ₹249 trial becomes ₹249 credit</strong>
-              <small>toward any full-size perfume · use within 30 days</small>
+              <span>Unlock 50ML for ₹749</span>
+              <strong>Try your favourites, then choose your 50ML</strong>
+              <small>One eligible 50ML bottle · use within 30 days</small>
             </div>
 
-            <div className="trial-page-value-flow" aria-label="Pay ₹249, try three perfumes, then get ₹249 credit toward a full-size perfume">
-              <span><b>₹249</b><small>Trial</small></span>
+            <div className="trial-page-value-flow" aria-label="Pay ₹299, try three perfumes, then unlock 50ML for ₹749">
+              <span><b>₹299</b><small>Trial</small></span>
               <i aria-hidden="true">→</i>
               <span><b>3 × {TRIAL_VIAL_SIZE_ML} ml</b><small>Wear &amp; decide</small></span>
               <i aria-hidden="true">→</i>
-              <span className="is-credit"><b>₹249</b><small>Full-size credit</small></span>
+              <span className="is-credit"><b>₹749</b><small>50ML offer</small></span>
             </div>
 
             <div className="trial-page-offer" aria-label="Discovery Set details">
@@ -595,7 +597,7 @@ export default function TrialPackPage() {
             >
               <Image
                 className="trial-page-campaign-image"
-                src="/discovery-set-campaign.png"
+                src="/discovery-set-campaign-299.png"
                 alt="Three House of Eon 8 ml discovery fragrances"
                 fill
                 priority
@@ -608,8 +610,8 @@ export default function TrialPackPage() {
 
       <div className="trial-page-marquee" aria-hidden="true">
         <div>
-          <span>3 perfumes</span><i>✦</i><strong>₹249 fully redeemable</strong><i>✦</i><span>Find your signature</span><i>✦</i>
-          <span>3 perfumes</span><i>✦</i><strong>₹249 fully redeemable</strong><i>✦</i><span>Find your signature</span><i>✦</i>
+          <span>3 perfumes</span><i>✦</i><strong>Unlock 50ML for ₹749</strong><i>✦</i><span>Find your signature</span><i>✦</i>
+          <span>3 perfumes</span><i>✦</i><strong>Unlock 50ML for ₹749</strong><i>✦</i><span>Find your signature</span><i>✦</i>
         </div>
       </div>
 
@@ -847,12 +849,12 @@ export default function TrialPackPage() {
             )}
 
             <div className="trial-page-credit-note">
-              <strong>₹249 trial → ₹249 full-size credit</strong>
+              <strong>₹299 trial → Unlock 50ML for ₹749</strong>
               <b>No coupon needed — use your order number</b>
               <p>
                 Enter your Trial Pack order number at full-size checkout and use
-                the same phone number. When they match, ₹249 is deducted
-                automatically. Redeem once within 30 days.
+                the same phone number to unlock one eligible 50ML bottle for ₹749.
+                Use once within 30 days. Cannot be combined with other offers.
               </p>
             </div>
           </aside>
@@ -881,15 +883,15 @@ export default function TrialPackPage() {
         <section className="trial-page-how" aria-labelledby="discovery-how-title">
           <div className="trial-page-how-title">
             <span>How it works</span>
-            <h2 id="discovery-how-title">How your ₹249 comes back.</h2>
+            <h2 id="discovery-how-title">How to unlock 50ML for ₹749.</h2>
           </div>
           <ol>
             <li><span>01</span><div><b>Choose any three</b><small>Create a set around your taste.</small></div></li>
             <li><span>02</span><div><b>Wear, don&apos;t just smell</b><small>Give every fragrance time on skin.</small></div></li>
-            <li><span>03</span><div><b>Keep your order number</b><small>It is your key to the ₹249 credit.</small></div></li>
-            <li><span>04</span><div><b>Enter it at checkout</b><small>Use the same phone number. ₹249 is deducted automatically.</small></div></li>
+            <li><span>03</span><div><b>Keep your order number</b><small>It is your key to the ₹749 50ML offer.</small></div></li>
+            <li><span>04</span><div><b>Enter it at checkout</b><small>Use the same phone number. Unlock 50ML for ₹749.</small></div></li>
           </ol>
-          <div className="trial-page-redeem-flow" aria-label="How to redeem the Discovery Set credit">
+          <div className="trial-page-redeem-flow" aria-label="How to unlock the Discovery Set offer">
             <b>No coupon to find</b>
             <span>Full-size checkout</span>
             <i aria-hidden="true">→</i>
@@ -897,7 +899,7 @@ export default function TrialPackPage() {
             <i aria-hidden="true">→</i>
             <span>Same phone number</span>
             <i aria-hidden="true">→</i>
-            <strong>₹249 deducted</strong>
+            <strong>50ML for ₹749</strong>
           </div>
         </section>
       </div>
@@ -909,7 +911,7 @@ export default function TrialPackPage() {
             <span>
               {remaining > 0
                 ? `${remaining} ${remaining === 1 ? "perfume" : "perfumes"} to go`
-                : "₹249 fully redeemable"}
+                : "Unlock 50ML for ₹749"}
             </span>
           </div>
           <div className="trial-page-mobile-progress" aria-hidden="true">

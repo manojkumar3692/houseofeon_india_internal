@@ -400,13 +400,13 @@ export const guides: Guide[] = [
     sections: [
       { heading: "Start with how he actually spends his day", body: ["The most useful Diwali gifts reflect the recipient rather than the festival. Think about whether he spends more time at the office, travelling, training, dressing for evenings out or building a quiet daily routine. A compact grooming or fragrance gift fits into real life long after Diwali."] },
       { heading: "Perfume is personal—so make discovery the gift", body: ["Fresh, warm and spicy fragrances can feel completely different on skin. Arctic Wave suits someone who prefers clean daily wear, Desert Tonka leans warm and rich, while RANK has a bolder evening character. If you cannot confidently choose between them, a Discovery Set is more thoughtful than a blind buy."] },
-      { heading: "A premium option well below ₹1000", body: ["The House of Eon Discovery Set costs ₹249 and lets him select three 8ml fragrances. He can wear each one properly, choose a favourite and redeem the full ₹249 toward an eligible 50ml purchase within 30 days."] },
+      { heading: "A premium option well below ₹1000", body: ["The House of Eon Discovery Set costs ₹299 and lets him select three 8ml fragrances. He can wear each one properly, choose a favourite and unlock an eligible 50ML bottle for ₹749 within 30 days."] },
       { heading: "Other useful ideas under ₹1000", body: ["A slim wallet, travel organiser, insulated mug, grooming tool or well-made notebook can all work when they match his habits. Avoid adding random filler just to make a box look bigger; one considered item generally feels more premium than several disposable ones."] },
     ],
     faqs: [
       { question: "What is a unique Diwali gift for men under ₹1000?", answer: "A choose-your-own perfume Discovery Set is unusual, personal and useful without requiring you to guess one full bottle." },
       { question: "Which perfume style is safest for men?", answer: "Fresh profiles are often easy to wear, but no fragrance is universal. Letting him try fresh, warm and bold options is safer than assuming." },
-      { question: "Can the ₹249 Discovery Set be redeemed?", answer: "Yes. The order number can be used once with the same phone number for ₹249 off an eligible full-size order within 30 days." },
+      { question: "Does the ₹299 Discovery Set unlock a 50ML offer?", answer: "Yes. The order number can be used once with the same phone number to unlock one eligible 50ML bottle for ₹749 within 30 days." },
     ],
     relatedProductIds: ["arctic-wave", "desert-tonka", "rank"],
     campaignLink: { href: "/pages/diwali-perfume", label: "Explore the Diwali Discovery Set", text: "Don’t guess his perfume. Let him try three and choose the one he genuinely wants to wear." },
@@ -424,7 +424,7 @@ export const guides: Guide[] = [
     sections: [
       { heading: "Choose an everyday luxury, not festive filler", body: ["A small gift can feel premium when it improves an ordinary day: a fragrance, a quality candle, a compact jewellery organiser, a hand-care ritual or a book chosen for her. Start with what she already enjoys rather than defaulting to a generic women’s hamper."] },
       { heading: "If she loves fragrance", body: ["SYRA is House of Eon’s graceful floral women’s fragrance, while Silent Gold offers a richer unisex direction. Those are distinct preferences, which is why fragrance gifting works best when you know her taste—or invite her into the choice."] },
-      { heading: "When you do not know her perfume taste", body: ["Use the Scent Finder to narrow the mood, or gift the ₹249 Discovery Set so she can wear three fragrances on skin. The point is not merely sampling; it is giving her enough time to notice which scent feels like her."] },
+      { heading: "When you do not know her perfume taste", body: ["Use the Scent Finder to narrow the mood, or gift the ₹299 Discovery Set so she can wear three fragrances on skin. The point is not merely sampling; it is giving her enough time to notice which scent feels like her."] },
       { heading: "Make the presentation intentional", body: ["A short handwritten note explaining why you chose the gift adds more meaning than elaborate disposable packaging. Mention the routine, memory or quality you had in mind. That context is what makes an affordable gift feel specific."] },
     ],
     faqs: [
@@ -449,12 +449,12 @@ export const guides: Guide[] = [
       { heading: "Fragrance becomes part of a person’s routine", body: ["Unlike a decorative object used once for the festival, perfume can become part of getting ready for work, dinner, celebrations or travel. That repeated use is what gives the gift a life beyond Diwali."] },
       { heading: "Scent connects strongly with memory", body: ["People often remember where they wore a fragrance and who gave it to them. A perfume associated with festive evenings can carry that memory into completely ordinary days, making a relatively small gift feel emotionally durable."] },
       { heading: "The risk is choosing by packaging or discount", body: ["A beautiful bottle and a large discount do not tell you how a fragrance develops on someone’s skin. The wrong scent becomes cupboard clutter. Choose from known preferences, use a Scent Finder, or make trying several options part of the gift itself."] },
-      { heading: "A Discovery Set solves the taste problem", body: ["House of Eon’s ₹249 set lets the recipient select three 8ml fragrances and redeem ₹249 toward a later full-size purchase. The gift still feels complete, while the final choice belongs to the person who will wear it."] },
+      { heading: "A Discovery Set solves the taste problem", body: ["House of Eon’s ₹299 set lets the recipient select three 8ml fragrances and unlock 50ML for ₹749 on a later purchase. The gift still feels complete, while the final choice belongs to the person who will wear it."] },
     ],
     faqs: [
       { question: "Is perfume considered a good Diwali gift?", answer: "Yes. It is personal, useful and memorable, provided you respect that fragrance taste varies from person to person." },
       { question: "How do I choose perfume when gifting?", answer: "Look at fragrances they already use, ask whether they prefer fresh, warm, floral or woody styles, or choose a Discovery Set instead of blind buying." },
-      { question: "Is a perfume Discovery Set a complete gift?", answer: "Yes. It provides multiple wearable fragrances immediately and lets the recipient carry its ₹249 value toward a preferred full-size bottle." },
+      { question: "Is a perfume Discovery Set a complete gift?", answer: "Yes. It provides multiple wearable fragrances immediately and lets the recipient unlock a preferred eligible 50ML bottle for ₹749." },
     ],
     relatedProductIds: ["silent-gold", "desert-tonka", "syra"],
     campaignLink: { href: "/pages/diwali-perfume", label: "See the Diwali fragrance experience", text: "Start with discovery, then let the fragrance they love become the full-size gift." },
@@ -473,7 +473,7 @@ export const guides: Guide[] = [
       { heading: "Look at what they already wear", body: ["If possible, check the names or descriptions on their current bottles, deodorants or body products. Repeated words such as fresh, aquatic, floral, amber, vanilla, wood or spice are more useful than gender labels."] },
       { heading: "Use lifestyle clues carefully", body: ["Someone seeking a clean office scent may enjoy Arctic Wave; a person who dresses for warm evening occasions may prefer Desert Tonka; someone drawn to floral elegance may suit SYRA. These are informed starting points, not guarantees—skin chemistry and memory still shape preference."] },
       { heading: "Avoid the ‘most popular must be safe’ trap", body: ["Popularity reflects many people’s taste, not this person’s taste. A bestseller can still feel too sweet, sharp or heavy to the recipient. Reviews help with quality and performance questions, but cannot choose a personal scent for them."] },
-      { heading: "Let them discover it themselves", body: ["When confidence is low, a Discovery Set is the honest solution. They choose three, wear them in real settings, then redeem the ₹249 value on the full-size fragrance that wins. The uncertainty becomes part of the experience instead of a gifting failure."] },
+      { heading: "Let them discover it themselves", body: ["When confidence is low, a Discovery Set is the honest solution. They choose three, wear them in real settings, then unlock the eligible 50ML fragrance that wins for ₹749. The uncertainty becomes part of the experience instead of a gifting failure."] },
     ],
     faqs: [
       { question: "What is the safest perfume to give as a gift?", answer: "There is no universally safe perfume. Fresh styles can be approachable and unisex styles can reduce assumptions, but trying several is safer than guessing." },
@@ -497,15 +497,15 @@ export const guides: Guide[] = [
       { heading: "Give an experience with a decision built in", body: ["A tasting flight, workshop, bookstore credit or perfume Discovery Set gives the recipient something to do as well as something to keep. This works especially well when you know their interests but not the exact item they would choose."] },
       { heading: "Upgrade something they use every day", body: ["A better travel mug, desk object, grooming essential, notebook or compact organiser can feel thoughtful when it solves a real inconvenience. Choose quality and usefulness over the number of items in the package."] },
       { heading: "Choose gifts that create a ritual", body: ["Tea, coffee, candles, fragrance and self-care products create repeatable moments. A scent worn before work or festive dinners can become a small personal ritual—and a strong memory of the occasion."] },
-      { heading: "For fragrance, do not turn uncertainty into waste", body: ["If you know their scent family, a full bottle is direct. If you do not, gift three wearable trials for ₹249 and let them choose. The full ₹249 can then be redeemed on an eligible 50ml fragrance within 30 days."] },
+      { heading: "For fragrance, do not turn uncertainty into waste", body: ["If you know their scent family, a full bottle is direct. If you do not, gift three wearable trials for ₹299 and let them choose. They can then unlock an eligible 50ML fragrance for ₹749 within 30 days."] },
     ],
     faqs: [
       { question: "What can I give for Diwali instead of sweets?", answer: "Consider an everyday upgrade, a personal care ritual, a learning or tasting experience, a book, a useful desk object or a fragrance Discovery Set." },
-      { question: "What is a unique but affordable Diwali gift?", answer: "An experience-led gift can feel distinctive without being expensive. House of Eon’s ₹249 Discovery Set combines three wearable fragrances with redeemable value." },
+      { question: "What is a unique but affordable Diwali gift?", answer: "An experience-led gift can feel distinctive without being expensive. House of Eon’s ₹299 Discovery Set combines three wearable fragrances with the option to unlock 50ML for ₹749." },
       { question: "What is suitable for both men and women?", answer: "Useful everyday objects, experiences and try-first fragrance sets avoid many gender assumptions. Silent Gold is also a unisex full-size fragrance option." },
     ],
     relatedProductIds: ["silent-gold", "arctic-wave", "syra"],
-    campaignLink: { href: "/pages/diwali-perfume", label: "Explore a different kind of Diwali gift", text: "Three fragrances, real time to choose, and ₹249 carried into the final bottle." },
+    campaignLink: { href: "/pages/diwali-perfume", label: "Explore a different kind of Diwali gift", text: "Three fragrances, real time to choose, and 50ML unlocked for ₹749." },
   },
 ];
 

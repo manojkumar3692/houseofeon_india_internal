@@ -36,7 +36,7 @@ Use the landing page's “20-second answer” as the spoken script foundation.
 3. **8–18 seconds — give the rule:** name the scent direction and spray plan.
 4. **18–25 seconds — show two choices:** one safe match and one alternative.
 5. **Final frame — CTA:** “See the full answer” for cold traffic; “Try any three
-   for ₹249” for retargeting.
+   for ₹299” for retargeting.
 
 Create three edits from the same footage: a 20–25 second Reel/Short, a 10–12
 second Meta prospecting cut, and a 6-second retargeting reminder.

@@ -192,7 +192,7 @@ export default function HomePage() {
           <div>
             <span>Diwali 2026 · A gift without the guesswork</span>
             <h2>Don&apos;t guess their perfume.</h2>
-            <p>Let them try three premium fragrances for ₹249, then redeem the full ₹249 on a 50ml.</p>
+            <p>Let them try three premium fragrances for ₹299, then unlock 50ML for ₹749.</p>
           </div>
           <Link href="/pages/diwali-perfume" className="home-diwali-cta">
             Explore Diwali gifts →

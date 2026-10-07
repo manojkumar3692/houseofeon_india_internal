@@ -15,9 +15,9 @@ import DiwaliCampaignTracker from "@/components/DiwaliCampaignTracker";
 const pageUrl = `${SITE_URL}/pages/diwali-perfume`;
 
 export const metadata: Metadata = {
-  title: "Diwali Perfume Gifts 2026 | Try 3 Perfumes for ₹249 | House of Eon",
+  title: "Diwali Perfume Gifts 2026 | Try 3 Perfumes for ₹299 | House of Eon",
   description:
-    "Find a Diwali perfume gift they will actually wear. Try 3 premium House of Eon fragrances for ₹249, then redeem the full ₹249 on a 50ml perfume.",
+    "Find a Diwali perfume gift they will actually wear. Try 3 premium House of Eon fragrances for ₹299, then unlock 50ML for ₹749.",
   keywords: [
     "Diwali perfume gifts",
     "Diwali gifts for men",
@@ -34,17 +34,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Don’t Guess Their Perfume This Diwali | House of Eon",
     description:
-      "Try 3 premium fragrances for ₹249. Find the one you love, then redeem the full ₹249 on a 50ml bottle.",
+      "Try 3 premium fragrances for ₹299. Find the one you love, then unlock 50ML for ₹749.",
     url: pageUrl,
     siteName: "House of Eon",
     type: "website",
-    images: [{ url: "/diwali-perfume-og.png", width: 1200, height: 630 }],
+    images: [{ url: "/diwali-perfume-og-299.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Don’t Guess Their Perfume This Diwali | House of Eon",
-    description: "Try 3 premium fragrances for ₹249, then redeem ₹249 on your 50ml.",
-    images: ["/diwali-perfume-og.png"],
+    description: "Try 3 premium fragrances for ₹299, then unlock 50ML for ₹749.",
+    images: ["/diwali-perfume-og-299.png"],
   },
 };
 
@@ -65,12 +65,12 @@ const faqs = [
   {
     question: "What makes the Discovery Set a good Diwali perfume gift?",
     answer:
-      "It removes the pressure of guessing someone’s taste. They can wear three different 8ml fragrances, choose the one they genuinely enjoy, and use the Discovery Set order number to redeem ₹249 on a full-size perfume.",
+      "It removes the pressure of guessing someone’s taste. They can wear three different 8ml fragrances, choose the one they genuinely enjoy, and use the Discovery Set order number to unlock 50ML for ₹749.",
   },
   {
     question: "Is there a Diwali perfume gift under ₹1000?",
     answer:
-      "Yes. The House of Eon Discovery Set costs ₹249 and includes three 8ml fragrances selected by the customer. It is an affordable luxury Diwali gift with a practical path to a full-size fragrance later.",
+      "Yes. The House of Eon Discovery Set costs ₹299 and includes three 8ml fragrances selected by the customer. It is an affordable luxury Diwali gift with a practical path to a full-size fragrance later.",
   },
   {
     question: "Which House of Eon perfume is best for men?",
@@ -83,8 +83,8 @@ const faqs = [
       "SYRA is House of Eon’s floral, graceful women’s fragrance. For someone who prefers a richer unisex profile, Silent Gold is another festive option. If taste is uncertain, start with the Scent Finder rather than blind buying.",
   },
   {
-    question: "How does the ₹249 redemption work?",
-    answer: `At full-size checkout, enter the Discovery Set order number and use the same phone number. The ₹249 is deducted once from an eligible full-size order within ${TRIAL_CREDIT_EXPIRY_DAYS} days.`,
+    question: "How do I unlock 50ML for ₹749?",
+    answer: `At full-size checkout, enter the Discovery Set order number and use the same phone number. Unlock one eligible 50ML bottle for ₹749 within ${TRIAL_CREDIT_EXPIRY_DAYS} days.`,
   },
 ];
 
@@ -134,17 +134,17 @@ export default function DiwaliPerfumePage() {
               </h1>
               <p className={styles.heroLead}>
                 Try {TRIAL_PICK_COUNT} premium fragrances for ₹{TRIAL_PACK_PRICE_INR}. Wear them. Find the one you love.
-                Redeem the full ₹{TRIAL_PACK_PRICE_INR} when you buy your 50ml.
+                Unlock 50ML for ₹749 after your trial.
               </p>
               <div className={styles.heroActions}>
                 <Link href="/trial-pack" className={styles.primaryCta} data-diwali-cta="hero_trial_pack">
-                  Try 3 for ₹249 <span aria-hidden="true">→</span>
+                  Try 3 for ₹299 <span aria-hidden="true">→</span>
                 </Link>
                 <a href="#choose-your-path" className={styles.textCta} data-diwali-cta="hero_paths">Find your way in ↓</a>
               </div>
               <div className={styles.offerLine}>
                 <span>{TRIAL_PICK_COUNT} × {TRIAL_VIAL_SIZE_ML}ml</span>
-                <span>₹249 redeemable</span>
+                <span>Unlock 50ML for ₹749</span>
                 <span>{TRIAL_CREDIT_EXPIRY_DAYS}-day window</span>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function DiwaliPerfumePage() {
             <div className={styles.heroVisual} aria-label="House of Eon Discovery Set">
               <div className={styles.diyaHalo} aria-hidden="true" />
               <Image
-                src="/diwali-discovery.webp"
+                src="/diwali-discovery-299.webp"
                 alt="Three House of Eon discovery fragrances for Diwali"
                 width={720}
                 height={960}
@@ -195,7 +195,7 @@ export default function DiwaliPerfumePage() {
               <span className={styles.pathNumber}>02</span>
               <p>I’m not sure</p>
               <h3>Let the Scent Finder narrow it down.</h3>
-              <p className={styles.pathBody}>Choose how you want to feel. Get a match, then try it with two more for ₹249.</p>
+              <p className={styles.pathBody}>Choose how you want to feel. Get a match, then try it with two more for ₹299.</p>
               <Link href="/scent-fix" className={styles.darkCta} data-diwali-cta="path_scent_finder">Take the Scent Finder →</Link>
             </article>
           </div>
@@ -248,7 +248,7 @@ export default function DiwaliPerfumePage() {
             </div>
             <div className={styles.giftCalloutAction}>
               <span>Discovery Set</span>
-              <strong>₹249</strong>
+              <strong>₹299</strong>
               <Link href="/trial-pack" className={styles.primaryCta} data-diwali-cta="gift_trial_pack">Gift the Discovery Set →</Link>
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function DiwaliPerfumePage() {
             <li><span>01</span><h3>Choose three</h3><p>Build a set from the available House of Eon fragrances.</p></li>
             <li><span>02</span><h3>Wear, don’t just smell</h3><p>Try each fragrance on skin across real days and real plans.</p></li>
             <li><span>03</span><h3>Find the winner</h3><p>Discover the fragrance that still feels right after the first spray.</p></li>
-            <li><span>04</span><h3>Redeem ₹249</h3><p>Use the trial order number and matching phone at full-size checkout.</p></li>
+            <li><span>04</span><h3>Unlock 50ML for ₹749</h3><p>Use the trial order number and matching phone at full-size checkout.</p></li>
           </ol>
         </div>
       </section>
@@ -288,7 +288,7 @@ export default function DiwaliPerfumePage() {
           <p>Don’t search for the biggest Diwali discount.</p>
           <h2>Search for the perfume you’ll love.</h2>
           <div className={styles.heroActions}>
-            <Link href="/trial-pack" className={styles.primaryCta} data-diwali-cta="final_trial_pack">Try 3 for ₹249 →</Link>
+            <Link href="/trial-pack" className={styles.primaryCta} data-diwali-cta="final_trial_pack">Try 3 for ₹299 →</Link>
             <Link href="/scent-fix" className={styles.outlineCta} data-diwali-cta="final_scent_finder">Find my scent →</Link>
           </div>
         </div>
@@ -306,7 +306,7 @@ export default function DiwaliPerfumePage() {
                 A perfume gift set can feel more personal than another box of sweets or dry fruits—but fragrance is also deeply individual. Someone shopping for a Diwali gift for men may be choosing between fresh Arctic Wave, warm Desert Tonka and bold RANK. For a Diwali gift for women, floral SYRA offers a graceful direction, while Silent Gold makes a rich unisex alternative.
               </p>
               <p>
-                The Discovery Set turns that uncertainty into the gift. At ₹249, it is a unique Diwali gift under ₹1000 that lets the recipient participate in the choice, then carry the full value into a 50ml purchase.
+                The Discovery Set turns that uncertainty into the gift. At ₹299, it is a unique Diwali gift under ₹1000 that lets the recipient participate in the choice, then unlock 50ML for ₹749.
               </p>
             </div>
           </div>

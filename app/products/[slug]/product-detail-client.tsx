@@ -436,8 +436,7 @@ ${productUrl}`;
                   {TRIAL_PICK_COUNT} × {TRIAL_VIAL_SIZE_ML}ml ·{" "}
                   {formatINR(TRIAL_PACK_PRICE_INR)}
                   <br />
-                  Your {formatINR(TRIAL_PACK_PRICE_INR)} is fully redeemable on
-                  your {product.size}.
+                  Unlock 50ML for ₹749 after your trial.
                 </p>
                 <Link
                   href="/trial-pack"

@@ -54,7 +54,7 @@ export function getCouponByCode(code: string) {
 
 // Pure discount math for an already-resolved coupon — pulled out of
 // calculateCouponDiscount so lib/trialCredit.ts can run a virtual,
-// DB-resolved "coupon" (the ₹249 trial credit) through the exact same
+// DB-resolved "coupon" (the trial full-size offer) through the exact same
 // rules (bundle mutual-exclusion, min-subtotal, cap at subtotal) without
 // duplicating the logic or needing to fake an entry in the static list.
 export function applyCouponMath(

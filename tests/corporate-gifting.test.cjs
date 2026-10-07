@@ -60,7 +60,7 @@ test('personalised gift card and chosen scents reach the enquiry email', async (
   assert.match(h.sent[0][0].text, /Requested fragrances: Zyrox, RANK, Silent Gold/);
 });
 test('personalisation rejects unsupported, repeated or incomplete scent choices and long cards', async () => {
-  for (const change of [{fragrances:['SYRA','RANK','Zyrox']},{fragrances:['RANK','RANK','Zyrox']},{fragrances:['Zyrox']},{giftMessage:'x'.repeat(141)}]) {
+  for (const change of [{fragrances:['RIVA','RANK','Zyrox']},{fragrances:['RANK','RANK','Zyrox']},{fragrances:['Zyrox']},{giftMessage:'x'.repeat(141)}]) {
     const h = handler(); assert.equal((await h.post(request({...valid,...change}))).status,400); assert.equal(h.sent.length,0);
   }
 });

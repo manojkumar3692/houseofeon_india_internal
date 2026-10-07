@@ -7,7 +7,7 @@ const phone = '9876543210';
 function backend(changes = {}) {
   const trial = {
     order_number: code, customer_phone: phone, payment_status: 'paid',
-    order_type: 'trial_pack', trial_credit_redeemed_at: null,
+    order_type: 'trial_pack', trial_credit_redeemed_at: null, amount_in_paise: 29900,
     created_at: new Date().toISOString(), ...changes,
   };
   const charged = [], saved = [];
@@ -31,6 +31,7 @@ function backend(changes = {}) {
   return {
     validate: load('app/api/coupons/validate/route.ts').POST,
     create: load('app/api/orders/create/route.ts').POST,
+    createTrial: load('app/api/trial-orders/create/route.ts').POST,
     charged, saved,
   };
 }
@@ -83,14 +84,14 @@ function cartHarness() {
   return { settle, requests, storage };
 }
 
-test('Trial Pack credit survives cart revalidation and replaces auto EON20', async () => {
+test('Trial Pack offer survives cart revalidation', async () => {
   const h = cartHarness(); let cart = await h.settle();
-  assert.equal(cart.couponCode, 'EON20');
+  assert.equal(cart.couponCode, '');
   assert.equal((await cart.applyCoupon(code, '+91 98765 43210')).ok, true);
   cart = await h.settle();
   assert.equal(cart.couponCode, code);
-  assert.equal(cart.couponDiscount, 249);
-  assert.equal(cart.finalTotal, 1000);
+  assert.equal(cart.couponDiscount, 250);
+  assert.equal(cart.finalTotal, 749);
   const checks = h.requests.filter((r) => r.code === code);
   assert.ok(checks.length >= 2, 'initial validation and cart revalidation both ran');
   assert.ok(checks.every((r) => r.phone === '+91 98765 43210'));
@@ -101,15 +102,15 @@ test('credit revalidates with the phone when the single-bottle subtotal changes'
   const h = cartHarness(); let cart = await h.settle();
   await cart.applyCoupon(code, phone); cart = await h.settle();
   cart.removeItem('rank'); cart.addItem('arctic-wave'); cart = await h.settle();
-  assert.equal(cart.couponCode, code); assert.equal(cart.finalTotal, 750);
+  assert.equal(cart.couponCode, code); assert.equal(cart.finalTotal, 749);
   assert.equal(h.requests.at(-1).phone, phone);
 });
 
-test('removing credit clears its phone and restores the existing launch offer', async () => {
+test('removing offer clears its phone and restores the regular price', async () => {
   const h = cartHarness(); let cart = await h.settle();
   await cart.applyCoupon(code, phone); cart = await h.settle();
   cart.removeCoupon(); cart = await h.settle();
-  assert.equal(cart.couponPhone, ''); assert.equal(cart.couponCode, 'EON20');
+  assert.equal(cart.couponPhone, ''); assert.equal(cart.couponCode, '');
   assert.equal(cart.finalTotal, 999);
 });
 
@@ -123,7 +124,7 @@ test('switching to a bundle removes the credit instead of stacking discounts', a
 
 test('server accepts matching formatted phone and normalized order number', async () => {
   const response = await backend().validate(request({ code: ` ${code.toLowerCase()} `, phone: '+91 98765 43210', subtotal: 999 }));
-  assert.equal(response.status, 200); assert.equal((await response.json()).discount, 249);
+  assert.equal(response.status, 200); assert.equal((await response.json()).discount, 250);
 });
 
 test('server rejects missing/mismatched phone, unpaid, used, expired and non-trial orders', async () => {
@@ -138,13 +139,13 @@ test('server rejects missing/mismatched phone, unpaid, used, expired and non-tri
   }
 });
 
-test('order creation deducts exactly 249 rupees and independently rejects a changed phone', async () => {
+test('order creation charges exactly 749 rupees and independently rejects a changed phone', async () => {
   const api = backend();
   const customer = { name: 'Test Buyer', phone, email: 'buyer@example.test', address: '123 Test Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400001' };
   const body = { customer, items: [{ productId: 'arctic-wave', quantity: 1 }], couponCode: code };
   const response = await api.create(request(body));
-  assert.equal(response.status, 200); assert.equal((await response.json()).amount, 75000);
-  assert.equal(api.charged[0].amount, 75000); assert.equal(api.saved[0].coupon_discount_in_paise, 24900);
+  assert.equal(response.status, 200); assert.equal((await response.json()).amount, 74900);
+  assert.equal(api.charged[0].amount, 74900); assert.equal(api.saved[0].coupon_discount_in_paise, 25000);
   const rejected = await api.create(request({ ...body, customer: { ...customer, phone: '9876543211' } }));
   assert.equal(rejected.status, 400); assert.equal(api.charged.length, 1);
 });
@@ -154,7 +155,7 @@ test('a rejected credit attempt preserves the existing coupon and total', async 
   const result = await cart.applyCoupon(code, '9876543211');
   assert.equal(result.ok, false); assert.match(result.message, /doesn’t match/);
   cart = await h.settle();
-  assert.equal(cart.couponCode, 'EON20'); assert.equal(cart.finalTotal, 999);
+  assert.equal(cart.couponCode, ''); assert.equal(cart.finalTotal, 999);
 });
 
 test('lookup failures explain the Trial Pack issue rather than saying invalid coupon', async () => {
@@ -168,4 +169,37 @@ test('lookup failures explain the Trial Pack issue rather than saying invalid co
     const response = await backend(changes).validate(request({ code, phone, subtotal: 999, ...input }));
     assert.equal(response.status, 400); assert.match((await response.json()).error, message);
   }
+});
+
+
+test('legacy paid ₹249 trial orders retain their original credit', async () => {
+  const api = backend({ amount_in_paise: 24900 });
+  const response = await api.validate(request({ code, phone, subtotal: 999 }));
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).discount, 249);
+  const order = await api.create(request({
+    customer: { name: 'Test Buyer', phone, email: 'buyer@example.test', address: '123 Test Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400001' },
+    items: [{ productId: 'rank', quantity: 1 }], couponCode: code,
+  }));
+  assert.equal(order.status, 200);
+  assert.equal(api.charged[0].amount, 75000);
+});
+
+test('new trial pack amount is ₹299 and full-size offer is independent of trial price', () => {
+  const trial = loader()('lib/trialPack.ts');
+  assert.equal(trial.getTrialPackAmountInPaise(), 29900);
+  assert.equal(trial.TRIAL_FULL_SIZE_PRICE_INR, 749);
+});
+
+
+test('trial order API accepts SYRA and charges INR299 regardless of client-supplied price', async () => {
+  const api = backend();
+  const response = await api.createTrial(request({
+    customer: { name: 'Test Buyer', phone, email: 'buyer@example.test', address: '123 Test Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400001' },
+    selectedScents: ['syra', 'arctic-wave', 'desert-tonka'], price: 249,
+  }));
+  assert.equal(response.status, 200);
+  assert.equal(api.charged[0].amount, 29900);
+  assert.equal(api.saved[0].amount_in_paise, 29900);
+  assert.equal(api.saved[0].items[0].price, 299);
 });

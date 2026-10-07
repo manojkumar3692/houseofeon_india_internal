@@ -9,7 +9,7 @@
 // app/api/orders/create).
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { applyCouponMath, Coupon, normalizeCouponCode } from "@/lib/coupons";
-import { TRIAL_PACK_PRICE_INR, TRIAL_CREDIT_EXPIRY_DAYS } from "@/lib/trialPack";
+import { TRIAL_FULL_SIZE_PRICE_INR, TRIAL_CREDIT_EXPIRY_DAYS, isLegacyTrialOffer } from "@/lib/trialPack";
 
 export type CouponResolution = {
   valid: boolean;
@@ -65,7 +65,7 @@ export async function resolveTrialCredit({
     const supabase = getSupabaseAdmin();
     const { data: trialOrder, error } = await supabase
       .from("orders")
-      .select("order_number, customer_phone, payment_status, order_type, trial_credit_redeemed_at, created_at")
+      .select("order_number, customer_phone, payment_status, order_type, trial_credit_redeemed_at, created_at, amount_in_paise")
       .eq("order_number", normalized)
       .eq("order_type", "trial_pack")
       .single();
@@ -99,9 +99,9 @@ export async function resolveTrialCredit({
 
     const virtualCoupon: Coupon = {
       code: trialOrder.order_number,
-      label: "Trial Pack Credit",
-      type: "flat",
-      value: TRIAL_PACK_PRICE_INR,
+      label: isLegacyTrialOffer(trialOrder.amount_in_paise) ? "Trial Pack Credit" : "Unlock 50ML for ₹749",
+      type: isLegacyTrialOffer(trialOrder.amount_in_paise) ? "flat" : "fixed_final",
+      value: isLegacyTrialOffer(trialOrder.amount_in_paise) ? 249 : TRIAL_FULL_SIZE_PRICE_INR,
       active: true,
     };
 

@@ -1,5 +1,5 @@
 import { formatINR } from "@/lib/money";
-import { TRIAL_PACK_PRICE_INR, TRIAL_CREDIT_EXPIRY_DAYS } from "@/lib/trialPack";
+import { TRIAL_FULL_SIZE_PRICE_INR, TRIAL_CREDIT_EXPIRY_DAYS, isLegacyTrialOffer } from "@/lib/trialPack";
 
 type OrderEmailItem = {
   name?: string;
@@ -251,16 +251,10 @@ function customerEmailHtml(rawOrder: OrderEmailInput) {
       ${
         order.isTrialPack
           ? `<div style="background:#fdf3e6;border:1px solid #e2c48c;border-radius:8px;padding:14px 16px;margin:16px 0;">
-              <p style="margin:0 0 6px;font-weight:bold;color:#7a5200;">Your ${formatINR(
-                TRIAL_PACK_PRICE_INR
-              )} credit</p>
-              <p style="margin:0;color:#7a5200;">This order number — <b>${escapeHtml(
-                order.orderId
-              )}</b> — also works as a one-time ${formatINR(
-                TRIAL_PACK_PRICE_INR
-              )} discount code on a full-size bottle. Enter it at checkout under "Redeem your Trial Pack credit" within ${TRIAL_CREDIT_EXPIRY_DAYS} days. The phone number on that order must match this one (${escapeHtml(
-                order.customerPhone
-              )}), and it can only be used once.</p>
+              <p style="margin:0 0 6px;font-weight:bold;color:#7a5200;">${isLegacyTrialOffer(order.amountInPaise) ? "Your ₹249 Trial Pack credit" : `Unlock 50ML for ${formatINR(TRIAL_FULL_SIZE_PRICE_INR)}`}</p>
+              <p style="margin:0;color:#7a5200;">Use this order number — <b>${escapeHtml(order.orderId)}</b> — at full-size checkout with the same phone number (${escapeHtml(order.customerPhone)}).
+              ${isLegacyTrialOffer(order.amountInPaise) ? "Your existing ₹249 credit remains valid." : `Unlock one eligible 50ML bottle for ${formatINR(TRIAL_FULL_SIZE_PRICE_INR)}.`}
+              Valid once within ${TRIAL_CREDIT_EXPIRY_DAYS} days of your Trial Pack order. Cannot be combined with other coupons or bundle pricing.</p>
             </div>`
           : ""
       }

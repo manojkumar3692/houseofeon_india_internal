@@ -114,7 +114,7 @@ export default function CheckoutPage() {
       if (formRef.current.phone.replace(/[^0-9]/g, "").slice(-10) !== phoneAttempted) {
         if (result.ok) removeCoupon();
         setCreditStatus("error");
-        setCreditMessage("Your phone number changed while we were checking. Select Apply ₹249 credit to verify it again.");
+        setCreditMessage("Your phone number changed while we were checking. Select Apply Trial Pack offer to verify it again.");
         return;
       }
       setCreditStatus(result.ok ? "success" : "error");
@@ -258,7 +258,7 @@ export default function CheckoutPage() {
         removeCoupon();
         setCreditInput(couponCode);
         setCreditStatus("error");
-        setCreditMessage("Your phone number changed. Select Apply ₹249 credit to verify it again.");
+        setCreditMessage("Your phone number changed. Select Apply Trial Pack offer to verify it again.");
       }
     }
     formRef.current = { ...formRef.current, [key]: value };
@@ -1145,7 +1145,7 @@ export default function CheckoutPage() {
             </div>
 
             <section className="checkout-credit-box" aria-labelledby="credit-heading">
-              <h3 id="credit-heading">Redeem your Trial Pack credit</h3>
+              <h3 id="credit-heading">Unlock 50ML for ₹749</h3>
               {hasBundleLine ? (
                 <p className="checkout-credit-sublabel">
                   Trial Pack credit can’t be combined with 2-bottle bundle pricing.
@@ -1154,7 +1154,7 @@ export default function CheckoutPage() {
               ) : (
                 <form noValidate onSubmit={(event) => { event.preventDefault(); return handleApplyCredit(); }} aria-busy={creditApplying}>
                   <p className="checkout-credit-sublabel">
-                    Bought a Trial Pack? Enter these two details to claim ₹249 off a full-size bottle. No coupon needed.
+                    Bought a Trial Pack? Enter these two details to unlock one eligible 50ML bottle for ₹749. No coupon needed. Existing ₹249 trial orders retain their original ₹249 credit.
                   </p>
                   <div className="checkout-credit-field">
                     <label htmlFor="credit-code">Trial Pack order number</label>
@@ -1197,13 +1197,13 @@ export default function CheckoutPage() {
                   </div>
                   <p className="checkout-credit-terms">One use per paid Trial Pack order, within 30 days. Replaces any existing coupon discount.</p>
                   <button type="submit" className="btn checkout-credit-apply" disabled={creditApplying || loading || creditApplied}>
-                    {creditApplying ? "Checking your details…" : creditApplied ? "₹249 credit applied" : "Apply ₹249 credit"}
+                    {creditApplying ? "Checking your details…" : creditApplied ? "Trial Pack offer applied" : "Apply Trial Pack offer"}
                   </button>
                   <div ref={creditFeedbackRef}>
                   {creditApplying && <p className="checkout-credit-message" role="status">Checking your order number and phone number…</p>}
                   {creditApplied && !creditApplying && (
                     <div className="checkout-credit-success" role="status">
-                      <strong>₹249 Trial Pack credit applied</strong>
+                      <strong>Trial Pack offer applied</strong>
                       <span>Your order total is now {formatINR(finalTotal)}.</span>
                     </div>
                   )}

@@ -54,13 +54,13 @@ test('CAPI Purchase uses the order event ID, authoritative value, catalog produc
 test('trial pack CAPI content IDs match the selected catalog scents', () => {
   const api = metaModule();
   const payload = api.buildMetaPurchasePayload({
-    order_number: 'HOE-20260929-TRIAL', order_type: 'trial_pack', amount_in_paise: 24900,
+    order_number: 'HOE-20260929-TRIAL', order_type: 'trial_pack', amount_in_paise: 29900,
     trial_selected_scents: ['rank', 'syra', 'zyrox'],
-    items: [{ productId: 'trial-pack', quantity: 1, price: 249 }],
+    items: [{ productId: 'trial-pack', quantity: 1, price: 299 }],
   }, null, '2026-09-29T10:00:00.000Z');
   assert.deepEqual(payload.custom_data.content_ids, ['rank', 'syra', 'zyrox']);
   assert.equal(payload.custom_data.contents.length, 3);
-  assert.equal(payload.custom_data.value, 249);
+  assert.equal(payload.custom_data.value, 299);
 });
 
 test('browser Pixel Purchase carries the same stable order event ID used by CAPI', () => {

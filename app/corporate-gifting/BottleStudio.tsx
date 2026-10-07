@@ -138,6 +138,6 @@ export default function BottleStudio({ name, image }: Props) {
     </div>
     <div className={s.rotation} role="group" aria-label="Rotate bottle"><button aria-label="Rotate bottle left" disabled={!ready||failed} onClick={()=>controls.current?.rotate(-Math.PI/4)}>←</button><span>EXPLORE EVERY ANGLE</span><button aria-label="Rotate bottle right" disabled={!ready||failed} onClick={()=>controls.current?.rotate(Math.PI/4)}>→</button><button className={s.reset} disabled={!ready||failed} onClick={()=>controls.current?.reset()}>Reset</button></div>
     <p className={s.status} role="status">{playing?"Rotate. Uncap. A moment of fragrance.":spraying?"A fine mist, a lasting impression.":opened?"The cap is lifted. Press to release the mist.":"Lift the gold cap to reveal the atomiser."}</p>
-    <p className={s.caption}>{name === "SYRA" ? "3D interpretation of SYRA’s 50ml bottle. SYRA is not currently available in the 8ml Discovery Set." : "3D interpretation of our 50ml bottle. Discovery gift sets contain three 8ml miniatures."}</p>
+    <p className={s.caption}>{"3D interpretation of our 50ml bottle. Discovery gift sets contain three 8ml miniatures."}</p>
   </div>;
 }

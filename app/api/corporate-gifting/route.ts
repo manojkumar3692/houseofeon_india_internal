@@ -13,7 +13,7 @@ const schema = z.object({
   delivery: line(200), date: z.iso.date().or(z.literal("")),
   branding: z.enum(["Explore the options", "Company message card", "Branded sleeve / packaging", "Standard Discovery Set"]),
   giftMessage: z.string().trim().max(140).optional(),
-  fragrances: z.array(z.enum(["Desert Tonka", "Arctic Wave", "Zyrox", "RANK", "Silent Gold"])).length(3).refine(v => new Set(v).size === 3).optional(),
+  fragrances: z.array(z.enum(["Desert Tonka", "Arctic Wave", "Zyrox", "RANK", "Silent Gold", "SYRA"])).length(3).refine(v => new Set(v).size === 3).optional(),
   message: z.string().trim().max(2000), website: z.string().max(200), consent: z.literal(true),
 });
 

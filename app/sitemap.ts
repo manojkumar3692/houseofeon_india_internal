@@ -9,6 +9,7 @@ const siteUrl = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
+    { url: `${siteUrl}/trial-pack`, lastModified: "2026-10-07", changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}${rivaPath}`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/corporate-gifting`, changeFrequency: "monthly", priority: 0.9 },
     {
@@ -76,7 +77,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [
+  const entries: MetadataRoute.Sitemap = [
     ...["/perfumes-under-1000", "/fragrances-india", "/about", "/contact", "/shipping", "/pages/return-refund-policy"].map((path) => ({ url: `${siteUrl}${path}` })),
     ...staticPages, ...productPages, ...guidePages, ...situationPages];
+  return entries.map((entry) => ({
+      ...entry,
+      ...(entry.url === siteUrl || /\/(trial-pack|products\/|perfume-for\/|guides\/|pages\/diwali-perfume)/.test(entry.url)
+        ? { lastModified: "2026-10-07" } : {}),
+    }));
 }
