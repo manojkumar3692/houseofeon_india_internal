@@ -681,3 +681,7 @@
       font-size: 14px;
     }
   }
+
+/* Preserve supplied portrait artwork and embedded text without cropping. */
+.mainImage.preserveArtwork { object-fit: contain; }
+.imageButton:hover .mainImage.preserveArtwork { transform: none; }

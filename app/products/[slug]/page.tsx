@@ -1,3 +1,5 @@
+import RivaProductPage from "@/components/RivaProductPage";
+import { riva, rivaPath } from "@/lib/upcomingProducts";
 import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -12,7 +14,7 @@ const siteUrl = SITE_URL;
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  return [...products, riva].map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({
@@ -21,6 +23,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === riva.slug) return {
+    title: riva.seoTitle, description: riva.seoDescription,
+    alternates: { canonical: `${siteUrl}${rivaPath}` },
+    openGraph: { title: riva.seoTitle, description: riva.seoDescription, url: `${siteUrl}${rivaPath}`, type: "website", ...(riva.image ? { images: [{ url: `${siteUrl}${riva.image}`, alt: "RIVA perfume by House of Eon" }] } : {}) },
+    twitter: { card: "summary", title: riva.seoTitle, description: riva.seoDescription },
+  };
   const product = getProductBySlug(slug);
 
   if (!product) return {};
@@ -47,6 +55,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (slug === riva.slug) return <RivaProductPage />;
   const product = getProductBySlug(slug);
 
   if (!product) notFound();

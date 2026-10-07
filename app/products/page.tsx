@@ -1,3 +1,4 @@
+import { RivaCard } from "@/components/RivaPreview";
 import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
@@ -93,6 +94,7 @@ export default function ProductsPage() {
           </div>
 
           <div className="grid products-grid">
+            <RivaCard />
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

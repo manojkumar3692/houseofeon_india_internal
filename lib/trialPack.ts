@@ -16,11 +16,9 @@ export const TRIAL_PICK_COUNT = 3;
 // enforced (measured from the trial order's created_at).
 export const TRIAL_CREDIT_EXPIRY_DAYS = 30;
 
-// SYRA isn't in the trial pack yet — coming later. Keeping this as an
-// explicit slug exclusion (rather than a hand-typed eligible list) means
-// any other future product change to lib/products.ts still flows through
-// automatically, and re-including SYRA later is a one-line change.
-const EXCLUDED_SLUGS = new Set(["syra-women-perfume"]);
+// SYRA and RIVA are not offered as trial samples. Keep RIVA excluded even
+// after it moves from the waitlist to the purchasable catalogue.
+const EXCLUDED_SLUGS = new Set(["syra-women-perfume", "riva-women-perfume"]);
 
 export function getTrialEligibleProducts(): Product[] {
   return products.filter((p) => !EXCLUDED_SLUGS.has(p.slug));

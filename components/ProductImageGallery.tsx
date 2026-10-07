@@ -5,7 +5,7 @@ import { Product } from "@/lib/products";
 import styles from "./ProductImageGallery.module.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-export default function ProductImageGallery({ product }: { product: Product }) {
+export default function ProductImageGallery({ product, preserveArtwork = false }: { product: Pick<Product, "name" | "shortName" | "image" | "gallery" | "size" | "concentration" | "tagline">; preserveArtwork?: boolean }) {
   const images = useMemo(() => {
     const galleryImages =
       product.gallery && product.gallery.length > 0
@@ -83,16 +83,16 @@ export default function ProductImageGallery({ product }: { product: Product }) {
               alt={`${product.name} perfume by House of Eon`}
               fill
               priority
-              className={styles.mainImage}
+              className={`${styles.mainImage} ${preserveArtwork ? styles.preserveArtwork : ""}`}
               sizes="(max-width: 860px) 94vw, 520px"
               onError={() => handleImageError(activeImage)}
             />
 
-            <div className={styles.shade} />
+            {!preserveArtwork && <div className={styles.shade} />}
 
-            <div className={styles.badge}>
+            {!preserveArtwork && <div className={styles.badge}>
               <span>{product.tagline}</span>
-            </div>
+            </div>}
 
             <div className={styles.zoomHint}>Tap to zoom</div>
           </button>
