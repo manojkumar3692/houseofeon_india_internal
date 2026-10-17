@@ -123,12 +123,12 @@ export const situations: Situation[] = [
     seoTitle: "Perfume That Smells Expensive Under ₹1000 in India | House of Eon",
     seoDescription: "Shop perfumes that smell polished and premium under ₹1000 with EON20. Compare warm, fresh and unisex House of Eon fragrance styles.",
     summary: "Expensive-smelling is usually about a smooth dry-down and a clear point of view—not how loud or sweet a perfume is.",
-    shortAnswer: "All six 50ml House of Eon perfumes sell for ₹999, or ₹799 when you enter EON20. Start with Desert Tonka for warm richness, Silent Gold for quiet luxury or Arctic Wave for clean, polished freshness.",
+    shortAnswer: "All seven 50ml House of Eon perfumes sell for ₹999, or ₹799 when you enter EON20. Start with Desert Tonka for warm richness, Silent Gold for quiet luxury or Arctic Wave for clean, polished freshness.",
     productIds: ["silent-gold", "desert-tonka", "arctic-wave"],
     sections: [
       { heading: "What 'smells expensive' actually means", body: ["A polished fragrance develops rather than staying stuck on one loud note. Look for a clear opening, a balanced middle and a smooth woody, amber or musk dry-down. Strong projection alone is not quality."] },
       { heading: "Three kinds of premium", body: ["Silent Gold gives golden amber, saffron and smooth woods; Desert Tonka gives warm, magnetic depth; Arctic Wave gives crisp cleanliness. Each feels premium in a different way, so choose the direction that matches your wardrobe and routine."] },
-      { heading: "How the price gets under ₹1000", body: ["House of Eon 50ml bottles have an original price of ₹1,249. All six sell for ₹999 before coupons and ₹799 when you enter EON20. Check the price shown at checkout before ordering, since promotional pricing can change."] },
+      { heading: "How the price gets under ₹1000", body: ["House of Eon 50ml bottles have an original price of ₹1,249. All seven sell for ₹999 before coupons and ₹799 when you enter EON20. Check the price shown at checkout before ordering, since promotional pricing can change."] },
     ],
     faqs: [
       { question: "Which perfume smells most expensive under ₹1000?", answer: "For warm richness choose Desert Tonka; for understated unisex luxury choose Silent Gold. Both sell for ₹999, or ₹799 when you enter EON20." },

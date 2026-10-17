@@ -54,13 +54,13 @@ test('provider rejection, empty acknowledgement and network failures return reco
 
 test('personalised gift card and chosen scents reach the enquiry email', async () => {
   const h = handler();
-  const response = await h.post(request({...valid, giftMessage: 'Thank you for a wonderful year.', fragrances: ['Zyrox','RANK','Silent Gold']}));
+  const response = await h.post(request({...valid, giftMessage: 'Thank you for a wonderful year.', fragrances: ['RIVA','RANK','Silent Gold']}));
   assert.equal(response.status, 200);
   assert.match(h.sent[0][0].text, /Gift card message: Thank you for a wonderful year\./);
-  assert.match(h.sent[0][0].text, /Requested fragrances: Zyrox, RANK, Silent Gold/);
+  assert.match(h.sent[0][0].text, /Requested fragrances: RIVA, RANK, Silent Gold/);
 });
 test('personalisation rejects unsupported, repeated or incomplete scent choices and long cards', async () => {
-  for (const change of [{fragrances:['RIVA','RANK','Zyrox']},{fragrances:['RANK','RANK','Zyrox']},{fragrances:['Zyrox']},{giftMessage:'x'.repeat(141)}]) {
+  for (const change of [{fragrances:['Unknown','RANK','Zyrox']},{fragrances:['RANK','RANK','Zyrox']},{fragrances:['Zyrox']},{giftMessage:'x'.repeat(141)}]) {
     const h = handler(); assert.equal((await h.post(request({...valid,...change}))).status,400); assert.equal(h.sent.length,0);
   }
 });

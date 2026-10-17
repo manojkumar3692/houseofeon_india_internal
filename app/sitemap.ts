@@ -1,4 +1,3 @@
-import { rivaPath } from "@/lib/upcomingProducts";
 import type { MetadataRoute } from "next";
 import { products } from "@/lib/products";
 import { guides } from "@/lib/guides";
@@ -10,7 +9,6 @@ const siteUrl = SITE_URL;
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${siteUrl}/trial-pack`, lastModified: "2026-10-07", changeFrequency: "weekly", priority: 0.9 },
-    { url: `${siteUrl}${rivaPath}`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/corporate-gifting`, changeFrequency: "monthly", priority: 0.9 },
     {
       url: siteUrl,

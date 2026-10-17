@@ -62,6 +62,51 @@ export type Product = {
 
 export const products: Product[] = [
   {
+  id: "riva",
+  slug: "riva-women-perfume",
+  name: "RIVA",
+  tagline: "A new chapter for her.",
+  gender: "Women",
+  shortName: "RIVA",
+  size: "50ml",
+  concentration: "Eau de Parfum",
+  price: 999,
+  mrp: 1249,
+  mood: ["Radiant", "Feminine", "Soft", "Elegant"],
+  occasion: ["Daily Wear", "Brunch", "Evening", "Gifting"],
+  reviews: [],
+  seoKeywords: ["RIVA perfume", "floral perfume for women", "House of Eon RIVA"],
+  // Scent direction supplied by the owner: J’adore Eau de Parfum.
+  // Original editorial copy based on its floral reference, not an ingredient list
+  // or a measured claim about RIVA's longevity.
+  description: "A radiant floral perfume for women, bringing together sunny ylang-ylang, soft rose and a graceful jasmine bouquet.",
+  seoDescription: "Buy RIVA by House of Eon, a radiant floral perfume for women with ylang-ylang, rose and jasmine notes. Available in 50ml, or try it in your trial pack.",
+  notes: ["Ylang-ylang", "Rose", "Jasmine", "White Florals", "Fruity Nuance"],
+  longDescription: "RIVA is for those who love a full floral scent with a gentle, feminine feel. Bright at first, then softer and rounder, its bouquet moves from a sunny introduction to an intimate floral finish.",
+  scentProfile: {
+    opening: "A bright, lightly fruity lift meets sunny ylang-ylang for a fresh floral introduction.",
+    heart: "Rose and jasmine come forward together, giving the bouquet a soft, rounded fullness.",
+    dryDown: "The floral character softens into a smooth, close-wearing finish with a lingering impression of petals.",
+    performance: "Wear and projection vary with skin, weather and application.",
+  },
+  highlights: [
+    { title: "A floral signature", text: "Ylang-ylang, rose and jasmine shape an expressive, feminine bouquet." },
+    { title: "Brightness with softness", text: "A fresh introduction gives way to a gentler floral feel." },
+    { title: "Your next discovery", text: "Choose a 50ml bottle or discover RIVA in your 8ml trial pack." },
+  ],
+  image: "/products/riva.png",
+  gallery: [
+    "/products/riva.png",
+    "/products/riva-lifestyle-2.png",
+    "/products/riva-lifestyle-3.png",
+    "/products/riva-lifestyle-4.png",
+    "/products/riva-lifestyle-5.png",
+    "/products/riva-label.png",
+  ],
+  seoTitle: "RIVA Floral Perfume for Women | House of Eon",
+},
+
+  {
     id: "desert-tonka",
     slug: "desert-tonka-perfume",
     name: "Desert Tonka",

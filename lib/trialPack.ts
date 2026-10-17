@@ -18,12 +18,22 @@ export const TRIAL_FULL_SIZE_PRICE_INR = 749;
 // enforced (measured from the trial order's created_at).
 export const TRIAL_CREDIT_EXPIRY_DAYS = 30;
 
-// RIVA is not offered as a trial sample. Keep RIVA excluded even
-// after it moves from the waitlist to the purchasable catalogue.
-const EXCLUDED_SLUGS = new Set(["riva-women-perfume"]);
+const TRIAL_PRODUCT_ORDER = [
+  "rank",
+  "desert-tonka",
+  "silent-gold",
+  "zyrox",
+  "arctic-wave",
+  "riva",
+  "syra",
+];
 
 export function getTrialEligibleProducts(): Product[] {
-  return products.filter((p) => !EXCLUDED_SLUGS.has(p.slug));
+  const position = (id: string) => {
+    const index = TRIAL_PRODUCT_ORDER.indexOf(id);
+    return index === -1 ? TRIAL_PRODUCT_ORDER.length : index;
+  };
+  return [...products].sort((a, b) => position(a.id) - position(b.id));
 }
 
 export function isTrialEligibleProductId(productId: string): boolean {

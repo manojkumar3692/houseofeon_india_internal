@@ -6,7 +6,7 @@ export function getCouponOffer(basePrice: number) {
   return { basePrice, price, onSale: price < basePrice };
 }
 
-// All six 50 ml perfumes display their selling price before a manual coupon.
+// All seven 50 ml perfumes display their selling price before a manual coupon.
 export function getCatalogOffer(basePrice: number, _productId?: string) {
   return { basePrice, price: basePrice, onSale: true };
 }

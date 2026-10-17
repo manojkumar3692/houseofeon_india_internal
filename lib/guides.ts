@@ -364,7 +364,7 @@ export const guides: Guide[] = [
       {
         heading: "If you genuinely can't decide",
         body: [
-          "Our Scent Finder quiz takes 30 seconds and matches a personality/occasion profile to one of our six perfumes — a useful shortcut if you know your partner well but aren't confident translating that into a specific scent family.",
+          "Our Scent Finder quiz takes 30 seconds and matches a personality/occasion profile to one of our seven perfumes — a useful shortcut if you know your partner well but aren't confident translating that into a specific scent family.",
         ],
       },
     ],

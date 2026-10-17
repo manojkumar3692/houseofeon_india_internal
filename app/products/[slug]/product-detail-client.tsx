@@ -279,7 +279,7 @@ ${productUrl}`;
             <div className="detail-glow detail-glow-one" />
             <div className="detail-glow detail-glow-two" />
 
-            <ProductImageGallery product={product} />
+            <ProductImageGallery product={product} preserveArtwork={product.id === "riva"} />
           </div>
 
           <div className="product-detail-copy">
@@ -299,12 +299,12 @@ ${productUrl}`;
               <p className="product-detail-tagline">{product.tagline}</p>
             ) : null}
 
-            <div className={styles.ratingRow}>
+            {product.rating ? <div className={styles.ratingRow}>
               <span className={styles.stars}>
                 <Stars rating={rating} />
               </span>
               <span>{ratingText}</span>
-            </div>
+            </div> : null}
 
             <p className={styles.valueLine}>{valueLine}</p>
 

@@ -89,7 +89,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
       </div>
 
       <div className="carousel-hint">
-        <span>Swipe to explore all 6 perfumes</span>
+        <span>Swipe to explore all {products.length} perfumes</span>
       </div>
     </div>
   );

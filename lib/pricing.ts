@@ -1,4 +1,4 @@
-// Approved price for all six 50ml perfumes. Original/MRP remains1249.
+// Approved price for all seven 50ml perfumes. Original/MRP remains1249.
 export const BASE_PRICE_INR = 999;
 // Manual EON20 entry: round the discount to INR200, then999-200=799.
 export const EON20_DISCOUNTED_PRICE_INR = 799;

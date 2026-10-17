@@ -4,7 +4,7 @@ import { Product, getProductById, products } from "@/lib/products";
 // Section 8's matcher — "How do you want to feel?" — is a single tap, not a
 // multi-question quiz. Each feeling maps to an ordered list of products:
 // the first is the primary recommendation, the rest are what "Show me
-// another" cycles through. Every one of the 6 products is reachable from
+// another" cycles through. Every one of the 7 products is reachable from
 // at least one feeling.
 // ---------------------------------------------------------------------------
 export type FeelingId =
@@ -43,7 +43,7 @@ export const FEELINGS: Feeling[] = [
     id: "soft-elegant",
     label: "Soft & Elegant",
     sub: "Quiet luxury.",
-    productIds: ["syra", "silent-gold"],
+    productIds: ["syra", "riva", "silent-gold"],
   },
 ];
 

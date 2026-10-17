@@ -41,6 +41,7 @@ const SCENT_GUIDANCE: Record<string, string> = {
   "arctic-wave": "Fresh · Clean · Everyday",
   zyrox: "Cool · Energetic · Summer",
   rank: "Bold · Spicy · Date night",
+  riva: "Ylang-ylang · Rose · Jasmine",
   syra: "Floral · Soft musk · Elegant",
   "silent-gold": "Rich · Elegant · Occasion",
 };
@@ -50,6 +51,7 @@ const SCENT_PERSONALITY: Record<string, string> = {
   "arctic-wave": "Clean energy",
   zyrox: "Main character",
   rank: "Bold entrance",
+  riva: "A radiant floral signature",
   syra: "Grace with power",
   "silent-gold": "Quiet luxury",
 };
