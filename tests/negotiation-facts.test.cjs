@@ -82,7 +82,7 @@ test('catalog imports every product price from database with manual coupon terms
  const ids=[];
  const db={rpc:async()=>({data:products.map(p=>({product_key:p.id,size:'50ml',available_stock:5,available:true,storefront_enabled:true})),error:null}),from(){let id;return{select(){return this},eq(_,v){id=v;return this},async single(){ids.push(id);return{data:{regular_minor:124900,selling_minor:99900,currency:'INR',tax_basis:'inclusive'},error:null}}}}};
  const catalog=await loader({'@/lib/supabaseAdmin':{getSupabaseAdmin:()=>db}})('lib/negotiation/readOnly.ts').listCatalog({cursor:null,limit:100});
- assert.equal(catalog.items.length,6);assert.equal(new Set(ids).size,6);
+ assert.equal(catalog.items.length,products.length);assert.equal(new Set(ids).size,products.length);
  for(const item of catalog.items){assert.equal(item.priceMinor,99900);assert.equal(item.pricing.regularMinor,124900);assert.equal(item.pricing.sellingMinor,99900);}
  assert.match(catalog.storeTerms.promotions.offers[0].description,/never automatically applied/);
 });

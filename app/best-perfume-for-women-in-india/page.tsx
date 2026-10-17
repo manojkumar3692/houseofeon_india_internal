@@ -1,4 +1,3 @@
-import { RivaCard } from "@/components/RivaPreview";
 import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
   title:
     "Best Perfume for Women in India | Long Lasting Elegant Perfumes by House of Eon",
   description:
-    "Discover the best long lasting perfume for women in India — House of Eon SYRA, a floral musk perfume for office, brunch, evenings and gifting, plus Silent Gold for quiet unisex luxury. Join the waitlist for RIVA, coming soon.",
+    "Discover the best long lasting perfume for women in India — House of Eon SYRA, a floral musk perfume for office, brunch, evenings and gifting, plus Silent Gold for quiet unisex luxury. Discover RIVA for a radiant floral bouquet.",
   keywords: [
     "best perfume for women in india",
     "long lasting perfume for women",
@@ -219,11 +218,10 @@ export default function BestPerfumeForWomenPage() {
 
           <p className="muted home-section-subtitle">
             Explore SYRA for women and Silent Gold for a richer unisex option.
-            Meet RIVA, our upcoming women&apos;s perfume, and join its launch waitlist.
+            Discover RIVA for a radiant bouquet of ylang-ylang, rose and jasmine.
           </p>
 
           <div className="grid products-grid">
-            <RivaCard />
             {womenProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -7,6 +7,7 @@ import s from "./atelier.module.css";
 const BottleStudio = dynamic(() => import("./BottleStudio"), { ssr: false, loading: () => <p style={{ minHeight: 550, display: "grid", placeItems: "center", color: "#d5b885" }}>Preparing the fragrance studio…</p> });
 
 const scents = [
+  { name: "RIVA", image: "/products/riva.png", mood: "A RADIANT FLORAL SIGNATURE", line: "A new chapter for her.", notes: "Ylang-ylang · Rose · Jasmine", copy: "A bright, soft floral bouquet. Choose RIVA as one of your three 8ml Discovery Set fragrances." },
   { name: "Desert Tonka", image: "/gifting/desert-tonka.png", mood: "THE WARMTH OF APPRECIATION", line: "A little warmth. A lasting memory.", notes: "Tonka · Amber · Warm woods", copy: "Warm, rich and quietly magnetic. For a gesture that feels as personal as the people behind it." },
   { name: "Silent Gold", image: "/gifting/silent-gold.png", mood: "THE ART OF QUIET LUXURY", line: "Some gestures speak softly.", notes: "Golden amber · Saffron touch · Smooth woods", copy: "Golden warmth with a refined, unisex character. A thoughtful way to celebrate a valued connection." },
   { name: "Zyrox", image: "/gifting/zyrox.png", mood: "A FRESH PERSPECTIVE", line: "A cool edge. A new beginning.", notes: "Icy freshness · Citrus spark · Minty cool", copy: "Crisp, energetic and distinctly modern. A fresh expression of appreciation for the people moving things forward." },
