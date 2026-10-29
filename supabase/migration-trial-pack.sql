@@ -1,7 +1,7 @@
 -- Run this once in the Supabase SQL editor to add support for the
 -- Trial Pack (pick-3-scents, 8ml vials, ₹249) and its credit-back
 -- mechanic (the trial order's own order_number doubles as a one-time
--- ₹249 discount code toward a full-size order, phone-matched, 30-day
+-- ₹249 discount code toward a full-size order, phone-matched, 90-day
 -- window, enforced server-side).
 --
 -- Safe to run on an existing orders table: all new columns are additive

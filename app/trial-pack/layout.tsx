@@ -3,7 +3,7 @@ import { SITE_URL, jsonLd } from "@/lib/seo";
 import { TRIAL_PACK_PRICE_INR, TRIAL_FULL_SIZE_PRICE_INR } from "@/lib/trialPack";
 
 const title = `Trial Pack ₹${TRIAL_PACK_PRICE_INR} | Unlock 50ML for ₹${TRIAL_FULL_SIZE_PRICE_INR} | House of Eon`;
-const description = `Try 3 House of Eon fragrances, 8ML each, for ₹${TRIAL_PACK_PRICE_INR}. Unlock 50ML for ₹${TRIAL_FULL_SIZE_PRICE_INR} using your paid trial order number and matching phone within 30 days. One use; no offer stacking.`;
+const description = `Try 3 House of Eon fragrances, 8ML each, for ₹${TRIAL_PACK_PRICE_INR}. Unlock 50ML for ₹${TRIAL_FULL_SIZE_PRICE_INR} using your paid trial order number and matching phone within 90 days. One use; no offer stacking.`;
 const url = `${SITE_URL}/trial-pack`;
 const image = `${SITE_URL}/discovery-set-campaign-299.png`;
 export const metadata: Metadata = {

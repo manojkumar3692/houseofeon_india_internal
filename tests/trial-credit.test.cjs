@@ -4,7 +4,7 @@ const { loader } = require('./negotiation-loader.cjs');
 
 const code = 'HOE-20260923-ABCDE';
 const phone = '9876543210';
-function backend(changes = {}) {
+function backend(changes = {}, globals = {}) {
   const trial = {
     order_number: code, customer_phone: phone, payment_status: 'paid',
     order_type: 'trial_pack', trial_credit_redeemed_at: null, amount_in_paise: 29900,
@@ -27,7 +27,7 @@ function backend(changes = {}) {
     'next/server': { NextResponse: Response }, razorpay: Razorpay,
     '@/lib/supabaseAdmin': { getSupabaseAdmin: () => db },
     '@/lib/inventoryServer': { reserveInventory: async () => true, releaseInventoryReservation: async () => {} },
-  }, { RAZORPAY_KEY_ID: 'test', RAZORPAY_KEY_SECRET: 'test' });
+  }, { RAZORPAY_KEY_ID: 'test', RAZORPAY_KEY_SECRET: 'test' }, globals);
   return {
     validate: load('app/api/coupons/validate/route.ts').POST,
     create: load('app/api/orders/create/route.ts').POST,
@@ -131,7 +131,7 @@ test('server rejects missing/mismatched phone, unpaid, used, expired and non-tri
   for (const [changes, input] of [
     [{}, { phone: undefined }], [{}, { phone: '9876543211' }],
     [{ payment_status: 'pending' }, {}], [{ trial_credit_redeemed_at: new Date().toISOString() }, {}],
-    [{ created_at: new Date(Date.now() - 31 * 86400000).toISOString() }, {}],
+    [{ created_at: new Date(Date.now() - 91 * 86400000).toISOString() }, {}],
     [{ order_type: 'standard' }, {}], [{}, { hasBundleLine: true }],
   ]) {
     const response = await backend(changes).validate(request({ code, phone, subtotal: 999, ...input }));
@@ -163,7 +163,7 @@ test('lookup failures explain the Trial Pack issue rather than saying invalid co
     [{}, { code: 'HOE-20260923-XXXXX' }, /couldn’t find/],
     [{ payment_status: 'pending' }, {}, /Payment.*isn’t confirmed/],
     [{ trial_credit_redeemed_at: new Date().toISOString() }, {}, /already been used/],
-    [{ created_at: new Date(Date.now() - 31 * 86400000).toISOString() }, {}, /expired.*30 days/],
+    [{ created_at: new Date(Date.now() - 91 * 86400000).toISOString() }, {}, /expired.*90 days/],
   ];
   for (const [changes, input, message] of scenarios) {
     const response = await backend(changes).validate(request({ code, phone, subtotal: 999, ...input }));
@@ -202,4 +202,26 @@ test('trial order API accepts SYRA and charges INR299 regardless of client-suppl
   assert.equal(api.charged[0].amount, 29900);
   assert.equal(api.saved[0].amount_in_paise, 29900);
   assert.equal(api.saved[0].items[0].price, 299);
+});
+
+
+test('90-day eligibility is enforced at validation and order creation for both trial offers', async () => {
+  const now = Date.parse('2026-10-29T12:00:00Z');
+  class FixedDate extends Date { static now() { return now; } }
+  for (const amount_in_paise of [24900, 29900]) {
+    for (const ageMs of [31 * 86400000, 89 * 86400000, 90 * 86400000, 90 * 86400000 + 1]) {
+      const eligible = ageMs <= 90 * 86400000;
+      const api = backend({ amount_in_paise, created_at: new Date(now - ageMs).toISOString() }, { Date: FixedDate });
+      const validation = await api.validate(request({ code, phone, subtotal: 999 }));
+      assert.equal(validation.status, eligible ? 200 : 400);
+      const order = await api.create(request({
+        customer: { name: 'Test Buyer', phone, email: 'buyer@example.test', address: '123 Test Road', city: 'Mumbai', state: 'Maharashtra', pincode: '400001' },
+        items: [{ productId: 'rank', quantity: 1 }], couponCode: code,
+      }));
+      assert.equal(order.status, eligible ? 200 : 400);
+      assert.equal(api.charged.length, eligible ? 1 : 0);
+      if (eligible) assert.equal(api.charged[0].amount, amount_in_paise === 24900 ? 75000 : 74900);
+      else assert.match((await validation.json()).error, /expired.*90 days/);
+    }
+  }
 });

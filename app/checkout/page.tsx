@@ -1149,7 +1149,7 @@ export default function CheckoutPage() {
               {hasBundleLine ? (
                 <p className="checkout-credit-sublabel">
                   Trial Pack credit can’t be combined with 2-bottle bundle pricing.
-                  You can use your credit on a single full-size bottle within 30 days of your Trial Pack order.
+                  You can use your credit on a single full-size bottle within 90 days of your Trial Pack order.
                 </p>
               ) : (
                 <form noValidate onSubmit={(event) => { event.preventDefault(); return handleApplyCredit(); }} aria-busy={creditApplying}>
@@ -1195,7 +1195,7 @@ export default function CheckoutPage() {
                     <p id="credit-phone-help" className="checkout-credit-help">Also used as your delivery phone number. Editing either field updates both.</p>
                     {creditErrors.phone && <p id="credit-phone-error" className="checkout-credit-error" role="alert">{creditErrors.phone}</p>}
                   </div>
-                  <p className="checkout-credit-terms">One use per paid Trial Pack order, within 30 days. Replaces any existing coupon discount.</p>
+                  <p className="checkout-credit-terms">One use per paid Trial Pack order, within 90 days. Replaces any existing coupon discount.</p>
                   <button type="submit" className="btn checkout-credit-apply" disabled={creditApplying || loading || creditApplied}>
                     {creditApplying ? "Checking your details…" : creditApplied ? "Trial Pack offer applied" : "Apply Trial Pack offer"}
                   </button>

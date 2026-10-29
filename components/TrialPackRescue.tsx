@@ -61,7 +61,7 @@ export default function TrialPackRescue({
         <h3>Not ready for the full bottle?</h3>
         <p>
           Try 3 scents for {formatINR(TRIAL_PACK_PRICE_INR)}, then unlock 50ML for ₹749.
-          Use your order number and matching phone within 30 days.
+          Use your order number and matching phone within 90 days.
         </p>
 
         <Link href="/trial-pack" className="btn" onClick={handleClick}>
