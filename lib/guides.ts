@@ -400,13 +400,13 @@ export const guides: Guide[] = [
     sections: [
       { heading: "Start with how he actually spends his day", body: ["The most useful Diwali gifts reflect the recipient rather than the festival. Think about whether he spends more time at the office, travelling, training, dressing for evenings out or building a quiet daily routine. A compact grooming or fragrance gift fits into real life long after Diwali."] },
       { heading: "Perfume is personal—so make discovery the gift", body: ["Fresh, warm and spicy fragrances can feel completely different on skin. Arctic Wave suits someone who prefers clean daily wear, Desert Tonka leans warm and rich, while RANK has a bolder evening character. If you cannot confidently choose between them, a Discovery Set is more thoughtful than a blind buy."] },
-      { heading: "A premium option well below ₹1000", body: ["The House of Eon Discovery Set costs ₹299 and lets him select three 8ml fragrances. He can wear each one properly, choose a favourite and unlock an eligible 50ML bottle for ₹749 within 30 days."] },
+      { heading: "A premium option well below ₹1000", body: ["The House of Eon Discovery Set costs ₹299 and lets him select three 8ml fragrances. He can wear each one properly, choose a favourite and unlock an eligible 50ML bottle for ₹749 within 90 days."] },
       { heading: "Other useful ideas under ₹1000", body: ["A slim wallet, travel organiser, insulated mug, grooming tool or well-made notebook can all work when they match his habits. Avoid adding random filler just to make a box look bigger; one considered item generally feels more premium than several disposable ones."] },
     ],
     faqs: [
       { question: "What is a unique Diwali gift for men under ₹1000?", answer: "A choose-your-own perfume Discovery Set is unusual, personal and useful without requiring you to guess one full bottle." },
       { question: "Which perfume style is safest for men?", answer: "Fresh profiles are often easy to wear, but no fragrance is universal. Letting him try fresh, warm and bold options is safer than assuming." },
-      { question: "Does the ₹299 Discovery Set unlock a 50ML offer?", answer: "Yes. The order number can be used once with the same phone number to unlock one eligible 50ML bottle for ₹749 within 30 days." },
+      { question: "Does the ₹299 Discovery Set unlock a 50ML offer?", answer: "Yes. The order number can be used once with the same phone number to unlock one eligible 50ML bottle for ₹749 within 90 days." },
     ],
     relatedProductIds: ["arctic-wave", "desert-tonka", "rank"],
     campaignLink: { href: "/pages/diwali-perfume", label: "Explore the Diwali Discovery Set", text: "Don’t guess his perfume. Let him try three and choose the one he genuinely wants to wear." },
@@ -497,7 +497,7 @@ export const guides: Guide[] = [
       { heading: "Give an experience with a decision built in", body: ["A tasting flight, workshop, bookstore credit or perfume Discovery Set gives the recipient something to do as well as something to keep. This works especially well when you know their interests but not the exact item they would choose."] },
       { heading: "Upgrade something they use every day", body: ["A better travel mug, desk object, grooming essential, notebook or compact organiser can feel thoughtful when it solves a real inconvenience. Choose quality and usefulness over the number of items in the package."] },
       { heading: "Choose gifts that create a ritual", body: ["Tea, coffee, candles, fragrance and self-care products create repeatable moments. A scent worn before work or festive dinners can become a small personal ritual—and a strong memory of the occasion."] },
-      { heading: "For fragrance, do not turn uncertainty into waste", body: ["If you know their scent family, a full bottle is direct. If you do not, gift three wearable trials for ₹299 and let them choose. They can then unlock an eligible 50ML fragrance for ₹749 within 30 days."] },
+      { heading: "For fragrance, do not turn uncertainty into waste", body: ["If you know their scent family, a full bottle is direct. If you do not, gift three wearable trials for ₹299 and let them choose. They can then unlock an eligible 50ML fragrance for ₹749 within 90 days."] },
     ],
     faqs: [
       { question: "What can I give for Diwali instead of sweets?", answer: "Consider an everyday upgrade, a personal care ritual, a learning or tasting experience, a book, a useful desk object or a fragrance Discovery Set." },

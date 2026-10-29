@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       });
 
       // Not a static coupon — check if it's a real, paid, unredeemed trial
-      // pack order number instead (phone-matched, 30-day window; see
+      // pack order number instead (phone-matched, 90-day window; see
       // lib/trialCredit.ts). This is the authoritative check: the preview
       // in /api/coupons/validate can be wrong or stale, this can't be.
       if (!couponResult.valid) {

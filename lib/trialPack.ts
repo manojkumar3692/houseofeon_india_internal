@@ -16,7 +16,7 @@ export const TRIAL_FULL_SIZE_PRICE_INR = 749;
 
 // The one-time full-size offer window — see lib/trialCredit.ts for how this is
 // enforced (measured from the trial order's created_at).
-export const TRIAL_CREDIT_EXPIRY_DAYS = 30;
+export const TRIAL_CREDIT_EXPIRY_DAYS = 90;
 
 const TRIAL_PRODUCT_ORDER = [
   "rank",

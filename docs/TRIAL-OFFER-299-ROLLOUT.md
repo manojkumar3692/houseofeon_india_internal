@@ -1,6 +1,6 @@
 # Trial pack offer update — 7 October 2026
 
-Implemented locally: trial pack INR299; new paid trial orders unlock one eligible 50ML bottle for INR749. The order number and phone must match. The existing 30-day, one-use and no-stacking conditions remain. Paid INR249 trial orders retain their original INR249 credit. No database migration is required: the server distinguishes the offers using the recorded order amount.
+Implemented locally: trial pack INR299; new paid trial orders unlock one eligible 50ML bottle for INR749. The order number and phone must match. The existing 90-day, one-use and no-stacking conditions remain. Paid INR249 trial orders retain their original INR249 credit. No database migration is required: the server distinguishes the offers using the recorded order amount.
 
 Updated: trial checkout amount and analytics, homepage/PDP/rescue banners, trial page, situation pages, gifting guides and Diwali campaign, confirmation emails, trial canonical/Open Graph/Twitter metadata and Product structured data, sitemap and campaign images. New image URLs avoid reusing cached old artwork; original image paths also contain the updated artwork.
 

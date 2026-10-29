@@ -563,7 +563,7 @@ export default function TrialPackPage() {
             <div className="trial-page-redeem-badge">
               <span>Unlock 50ML for ₹749</span>
               <strong>Try your favourites, then choose your 50ML</strong>
-              <small>One eligible 50ML bottle · use within 30 days</small>
+              <small>One eligible 50ML bottle · use within 90 days</small>
             </div>
 
             <div className="trial-page-value-flow" aria-label="Pay ₹299, try three perfumes, then unlock 50ML for ₹749">
@@ -856,7 +856,7 @@ export default function TrialPackPage() {
               <p>
                 Enter your Trial Pack order number at full-size checkout and use
                 the same phone number to unlock one eligible 50ML bottle for ₹749.
-                Use once within 30 days. Cannot be combined with other offers.
+                Use once within 90 days. Cannot be combined with other offers.
               </p>
             </div>
           </aside>

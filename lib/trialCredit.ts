@@ -32,7 +32,7 @@ const INVALID: CouponResolution = {
 // order), payment_status confirms it was actually paid, phone match stops
 // someone else's leaked order number being redeemed, the null check on
 // trial_credit_redeemed_at enforces single-use, and the date check is the
-// 30-day window.
+// 90-day window.
 export async function resolveTrialCredit({
   code,
   phone,
@@ -94,7 +94,7 @@ export async function resolveTrialCredit({
     const ageInDays =
       (Date.now() - new Date(trialOrder.created_at).getTime()) / (1000 * 60 * 60 * 24);
     if (ageInDays > TRIAL_CREDIT_EXPIRY_DAYS) {
-      return { ...INVALID, error: "This Trial Pack credit has expired. Credits are valid for 30 days from the Trial Pack order date." };
+      return { ...INVALID, error: `This Trial Pack credit has expired. Credits are valid for ${TRIAL_CREDIT_EXPIRY_DAYS} days from the Trial Pack order date.` };
     }
 
     const virtualCoupon: Coupon = {
