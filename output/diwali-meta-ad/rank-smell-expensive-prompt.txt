@@ -1,0 +1,17 @@
+Generated using built-in image generation.
+
+Use case: ads-marketing.
+Create ONE finished premium vertical 4:5 Meta feed advertisement for HOUSE OF EON RANK perfume, part of the Diwali ₹699 sale. Exact 4:5 canvas composition. A bold, highly legible, sophisticated sales poster.
+REFERENCE: actual RANK perfume photograph supplied. Faithfully preserve the real bottle: rectangular clear glass body, gold textured cylindrical cap, ivory label with thin gold border, HOUSE OF EON, large widely spaced RANK lettering, RAW POWER. REFINED EDGE. tagline, gold tiger portrait illustration. RANK is the hero product. Do not use Silent Gold or Desert Tonka artwork. Bottle label identity must stay accurate.
+Art direction: masculine quiet luxury with deep charcoal-black transitioning to subtle aubergine, warm champagne-gold lighting, dramatic realistic glass reflections. Large luminous sharp hero bottle standing on sculpted black stone pedestal with subtle gold veins. A small ornate brass diya near the base and restrained golden fireworks in the distant background, warm bokeh and softly lit haze. Premium Indian festival ambiance. Luxury product photography with refined art direction, not cluttered bargain-flyer styling. No people, no extra bottles.
+Typography and layout: enormous high-contrast upper headline in elegant bold condensed capitals, an even more prominent price immediately below, substantial central hero bottle. Footer has clearly separated Saturday urgency, shipping information and gold coupon treatment. Use crisp ivory and champagne gold type, comfortable spacing, 6% safe margins, all copy readable at phone-feed size, no text overlapping the bottle.
+Advertising copy EXACT:
+top brand: "HOUSE OF EON"
+large headline: "SMELL THIS EXPENSIVE."
+dominant price line: "PAY ₹699."
+urgency: "Only until Saturday."
+offer detail: "50ML · Shipping included"
+gold coupon panel: "CODE DIWALI"
+bottom deadline: "ENDS 7 NOV · 11:59 PM IST"
+small footer: "All 50ML perfumes. Trial Packs excluded."
+Render the rupee symbol correctly. Keep headline and price extremely clear. No invented discount percentages, crossed-out prices, stock claims or longevity claims. No watermark, no social platform UI. Finished polished advertising creative, desirable bottle and unmistakable offer.

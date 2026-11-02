@@ -1,0 +1,17 @@
+Generated using the built-in image generation tool.
+
+Use case: ads-marketing.
+Create ONE finished, exceptionally polished vertical 4:5 Meta feed advertisement (1080x1350 proportion), not a mockup of an ad. House of Eon Diwali perfume sale. Input reference is the actual SILENT GOLD perfume bottle: faithfully preserve its rectangular transparent glass body, gold textured cylindrical cap, cream label, House of Eon / Silent Gold branding and mountain illustration. Use it as the hero photographed product, not a different invented bottle.
+Art direction: stop-the-scroll, bold editorial luxury meets playful social-media screenshot hook. Deep aubergine/plum background, warm ivory type, luminous champagne gold accents. Immaculate large readable typesetting, strong contrast, short copy. Huge heavy condensed sans-serif headline across upper portion, stylish and confident. A few thin gold screenshot framing corner brackets around the hero composition subtly reinforce the hook; no actual phone interface. Center/lower-middle hero bottle lit like a premium fragrance commercial, standing on a dimensional sculptural dark stone and gold pedestal, one or two elegant brass diyas near its base and restrained fine golden firework sparks in the distance. High-end realistic glass reflections and warm cinematic depth, no messy confetti. Bottle should be large and instantly identifiable.
+Exact advertising text, professionally arranged with comfortable margins and hierarchy:
+small brand line at top: "HOUSE OF EON"
+dominant headline: "SCREENSHOT IT."
+immediately below in very legible smaller bold capitals: "BUT DON’T FORGET TO BUY IT."
+small festive label: "THE DIWALI EDIT"
+a very prominent offer block integrated beside the bottle with price as second strongest focal point: "50ML." then very large "₹699" then "FREE SHIPPING."
+below scene: "Your screenshot stays."
+next line: "This price ends Saturday."
+clear coupon treatment: "USE CODE  DIWALI"
+small but readable bottom deadline: "ENDS 7 NOV · 11:59 PM IST"
+small footer eligibility: "All 50ML perfumes. Trial Packs excluded."
+Keep each line exact and clear, render rupee symbol correctly. Price and coupon readable at phone-feed size. Keep all text inside safe 6% margins, no collisions with bottle. No crossed-out invented prices, no percentage-off claims, no invented scarcity, no Meta logo, no watermark. Sophisticated visual hierarchy with deliberate whitespace, do not make a crowded bargain flyer. A striking finished ad suitable for upload.
