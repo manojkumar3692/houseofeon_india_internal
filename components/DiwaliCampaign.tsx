@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DIWALI_END, DIWALI_START, isDiwaliActive } from "@/lib/diwali";
+import DiwaliFireworks from "./DiwaliFireworks";
 import styles from "./DiwaliCampaign.module.css";
 
 export function useDiwaliActive() {
@@ -43,6 +44,7 @@ export default function DiwaliCampaign({ fallback = null, compact = false, produ
   const seconds = Math.floor(remaining / 1000);
   const clock = [Math.floor(seconds / 86400), Math.floor(seconds / 3600) % 24, Math.floor(seconds / 60) % 60, seconds % 60];
   return <section className={`${styles.campaign} ${compact ? styles.compact : ""}`} aria-label="Diwali exclusive offer">
+    <DiwaliFireworks />
     <div className={styles.inner}>
       <div className={styles.copy}>
         <span className={styles.eyebrow}>HOUSE OF EON · THE DIWALI EDIT</span>
