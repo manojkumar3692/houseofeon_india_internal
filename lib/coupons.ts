@@ -1,3 +1,4 @@
+import { diwaliDiscount } from "./diwali";
 // "fixed_final" means: regardless of subtotal, the discount is whatever
 // brings the order down to exactly `value` — used for the admin-only
 // ₹1 test checkout, where a flat discount amount wouldn't work (it would
@@ -118,11 +119,14 @@ export function calculateCouponDiscount({
   code,
   subtotal,
   hasBundleLine,
+  items,
 }: {
   code: string;
   subtotal: number;
   hasBundleLine?: boolean;
+  items?: { productId: string; quantity: number }[];
 }) {
+  if (normalizeCouponCode(code) === "DIWALI") return diwaliDiscount(items);
   const coupon = getCouponByCode(code);
 
   if (!coupon) {

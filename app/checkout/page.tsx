@@ -1144,6 +1144,8 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            <p className="checkout-credit-help"><a href="/cart">Apply or change a coupon in your cart →</a> Coupon codes do not work in the Trial Pack order-number field below.</p>
+
             <section className="checkout-credit-box" aria-labelledby="credit-heading">
               <h3 id="credit-heading">Unlock 50ML for ₹749</h3>
               {hasBundleLine ? (

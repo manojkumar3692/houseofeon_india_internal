@@ -38,6 +38,7 @@ const schema = z.object({
     state: z.string().min(2),
     pincode: z.string().min(4),
   }),
+  couponCode: z.string().max(0, "Coupons are not valid on Trial Packs.").optional(),
   selectedScents: z.array(z.string()).length(TRIAL_PICK_COUNT),
   sessionKey: z.string().max(200).optional(),
 });

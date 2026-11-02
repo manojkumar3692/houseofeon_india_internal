@@ -1,5 +1,6 @@
 "use client";
 
+import DiwaliCampaign, { useDiwaliActive } from "@/components/DiwaliCampaign";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -92,6 +93,7 @@ function Stars({ rating = 5 }: { rating?: number }) {
 }
 
 export default function ProductDetailClient({ product }: { product: Product }) {
+  const diwaliActive = useDiwaliActive();
   const router = useRouter();
   const { addItem, updateQuantity, lines } = useCart();
   const { getAvailability } = useInventory();
@@ -194,7 +196,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
     }
     trackProductAdd(selectedQuantity);
     trackAddToCartClarity(product.name);
-    router.push("/checkout");
+    router.push(diwaliActive ? "/cart" : "/checkout");
   }
 
   async function handleShareProduct() {
@@ -224,7 +226,7 @@ ${product.description}
 
 Price: ${formatINR(product.price)}
 
-🔥 Limited launch offer. Use EON20 for 20% OFF. Order now before stock closes.
+${diwaliActive ? "Diwali exclusive: ₹699 per 50ML bottle with DIWALI, shipping included. Ends Saturday 7 Nov, 11:59 PM IST." : "Use EON20 for 20% OFF."}
 
 Buy here:
 ${productUrl}`;
@@ -273,6 +275,7 @@ ${productUrl}`;
 
   return (
     <>
+      <DiwaliCampaign compact productImage={product.image} />
       <section className="product-detail-hero product-detail-hero-modern">
         <div className="container product-detail-grid">
           <div className="product-detail-visual product-detail-visual-image">
@@ -343,7 +346,7 @@ ${productUrl}`;
                 Free Shipping
               </span>
               <span className={styles.priceHeroSub}>
-                {isBundleSelected
+                {diwaliActive ? "₹699 per 50ML bottle with DIWALI · Shipping included" : isBundleSelected
                   ? `${formatINR(BUNDLE_UNIT_PRICE_INR)} each · works with any 2 perfumes`
                   : `${formatINR(product.price)} before coupons · ${formatINR(getCouponOffer(product.price).price)} with EON20`}
               </span>
@@ -368,7 +371,7 @@ ${productUrl}`;
                   Free Shipping
                 </span>
                 <span className={styles.quantityCardSub}>
-                  20% off with EON20
+                  {diwaliActive ? "₹699 with DIWALI" : "20% off with EON20"}
                 </span>
               </button>
 
@@ -404,7 +407,7 @@ ${productUrl}`;
 
             <div className={`${styles.productCtaBlock} detail-actions`}>
               <button className={styles.buyNowButton} onClick={handleBuyNow} disabled={!stock.available || selectedQuantity > stock.maxQuantity}>
-                {stock.available ? `Buy now — ${formatINR(selectedTotalPrice)}` : "Temporarily unavailable"}
+                {stock.available ? (diwaliActive ? `Get Diwali offer — ${formatINR(699 * selectedQuantity)}` : `Buy now — ${formatINR(selectedTotalPrice)}`) : "Temporarily unavailable"}
               </button>
 
               <button className={styles.addCartButton} onClick={handleAddToCart} disabled={!stock.available || selectedQuantity > stock.maxQuantity}>
@@ -703,10 +706,10 @@ ${productUrl}`;
 
       <div className="mobile-sticky-buy product-mobile-buy">
   <div>
-    <b>{formatINR(selectedTotalPrice)}</b>
+    <b>{formatINR(diwaliActive ? 699 * selectedQuantity : selectedTotalPrice)}</b>
     <span>
       {product.shortName} ·{" "}
-      {isBundleSelected ? "2 bottles" : "Sale price"} · Free Shipping
+      {diwaliActive ? "with DIWALI" : isBundleSelected ? "2 bottles" : "Sale price"} · Free Shipping
     </span>
   </div>
 

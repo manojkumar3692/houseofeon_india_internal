@@ -1,3 +1,4 @@
+import DiwaliCampaign from "@/components/DiwaliCampaign";
 import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
 export default function ProductsPage() {
   return (
     <>
+      <DiwaliCampaign fallback={<>
       <section className="products-hero">
         <div className="container products-hero-inner">
           <div>
@@ -52,6 +54,7 @@ export default function ProductsPage() {
           </div>
         </div>
       </section>
+      </>} />
 
       <section className="quiz-cta-banner">
         <div className="quiz-cta-banner-inner">
@@ -79,7 +82,7 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <section className="section products-list-section">
+      <section id="collection" className="section products-list-section">
         <div className="container">
           <div className="section-head">
             <div>
