@@ -1,0 +1,20 @@
+Generated using built-in image generation.
+
+Use case: ads-marketing.
+Create ONE finished vertical 4:5 Meta advertisement for HOUSE OF EON RANK perfume. A genuinely funny but tasteful Indian Diwali gifting joke, premium light ivory studio styling with very clear readable advertising text.
+REFERENCE IMAGE: supplied actual RANK perfume bottle. Preserve its clear rectangular glass silhouette, textured gold cylindrical cap, cream label, HOUSE OF EON logo, widely spaced RANK name, gold tiger portrait illustration and RAW POWER. REFINED EDGE. tagline. Do not use another fragrance.
+Visual joke: split hero still life on an ivory tabletop. On the left, a generic festive SOAN PAPDI sweet gift box, intact and appetizing, with several overlapping colourful gift tags, crossed-out names and old ribbons suggesting it has been politely regifted repeatedly. Small funny visible tag progression "To: Sharma ji" crossed out, "To: Gupta ji" crossed out, last tag "Next stop?" Make the box look comically well-travelled but not dirty or disgusting. No real sweets-company logo. Some soan papdi visible through a small packaging window so it is recognizable. On the right, the pristine photorealistic RANK perfume bottle prominently and fully visible, with one simple elegant attached gift tag reading "Keeping this." The contrast is immediately funny and legible. Perfume should be slightly larger/more visually prominent than the sweet box. A tiny curled ribbon or a couple of marigold petals gives Diwali context. No people needed.
+Art direction: bright airy warm ivory background, polished contemporary advertising layout, deep espresso type, restrained champagne gold, one playful muted saffron accent. Expensive product photography with natural soft studio shadows, tactile paper tags, immaculate glass and metal highlights. Sophisticated humor, not a meme screenshot or cartoon. Generous whitespace. Do not reuse dark firework-palace backdrop. No clutter or ornate frame.
+Exact main copy, high contrast and readable on mobile:
+top brand: "HOUSE OF EON"
+large bold modern headline: "SOME GIFTS GET PASSED AROUND."
+even stronger second line: "THIS ONE GETS KEPT."
+small supporting line: "Gift a signature."
+large offer below product scene: "₹699 per 50ML bottle."
+a clear separate shipping line or pill: "FREE SHIPPING"
+coupon: "USE CODE DIWALI"
+deadline: "ENDS SATURDAY · 7 NOV"
+small footer: "11:59 PM IST · Trial Packs excluded."
+Sweet box label: "SOAN PAPDI"
+Product gift tag: "Keeping this."
+Render all copy accurately, correct rupee symbol, no misspellings. Layout hierarchy: headline, funny comparison scene, large price, code and deadline. Keep 6% safe margins. Text should never obscure the RANK product label. The three gift-tag texts may be small secondary details but headline and price must be large. Do not imply ₹699 buys both items or that sweets are included: the scene is a humorous comparison, the offer is clearly per perfume bottle. No fake percent discounts, crossed-out prices, longevity promises, watermark or Meta UI. Finished striking premium funny Diwali ad in exact 4:5 composition.

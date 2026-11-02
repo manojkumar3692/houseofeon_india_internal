@@ -1,0 +1,17 @@
+Generated using built-in image generation.
+
+Use case: ads-marketing.
+Create ONE finished vertical 4:5 Meta feed perfume advertisement, ideally 1080x1350 or another exact 4:5 size. This is a second House of Eon Diwali campaign creative with an exceptionally clear price and urgency hook.
+Reference image: actual House of Eon SILENT GOLD perfume bottle. Faithfully preserve its clear rectangular glass silhouette, textured gold cylindrical cap, cream label, brand and product name, fine gold mountain illustration. Use this real product identity in the new scene.
+Art direction: bold, sophisticated luxury advertising, premium cinematic product photography and immaculate readable graphic typography. Deep plum and near-black backdrop, champagne-gold light, ivory text. Much cleaner and more spacious than a conventional festival-sale flyer. One large hero bottle on a sculpted dark stone pedestal with gold veins; dramatic warm side lighting and physically believable glass reflections. One elegant glowing brass diya near the base, delicate distant golden firework trails. No clutter, no unrelated objects. Do not use the previous screenshot slogan.
+Composition: upper third has beautifully typeset huge high-contrast headline in a bold condensed editorial sans-serif, followed by a very prominent price line. Hero bottle dominates the middle and lower portion, fully visible and recognizable. Urgency and offer details in distinct, highly readable strips, with generous safe margins. Clear reading sequence: hook, price, bottle, deadline, code. Subtle festive gold detailing, not excessive borders. Strong mobile-feed legibility.
+Advertising text EXACT:
+Small brand line at top: "HOUSE OF EON"
+Headline: "SMELL THIS EXPENSIVE."
+Largest price line: "PAY ₹699."
+Urgency line: "Only until Saturday."
+Offer detail: "50ML · Shipping included"
+Coupon treatment: "CODE DIWALI"
+Readable bottom date: "ENDS 7 NOV · 11:59 PM IST"
+Small footer: "All 50ML perfumes. Trial Packs excluded."
+Render all copy correctly, especially the rupee symbol. No invented discount percentages, no crossed-out prices, no claims about stock, no watermarks, no Meta UI or logo. Do not put small hard-to-read paragraphs on the ad. Finished professional ad ready to use, exciting and desirable with tasteful Indian Diwali ambiance.

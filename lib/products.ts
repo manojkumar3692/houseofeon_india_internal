@@ -95,6 +95,8 @@ export const products: Product[] = [
     { title: "Your next discovery", text: "Choose a 50ml bottle or discover RIVA in your 8ml trial pack." },
   ],
   image: "/products/riva.png",
+  videoUrl:
+    "https://media.tenor.com/cWvcDyHqUzMAAAAC/i-could-still-smell-her-perfume-justin-bieber.gif",
   gallery: [
     "/products/riva.png",
     "/products/riva-lifestyle-2.png",
@@ -263,7 +265,7 @@ export const products: Product[] = [
     occasion: ["Office", "College", "Daily Wear", "Summer", "Daytime"],
     image: "/products/arctic-wave.png",
     videoUrl:
-      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
+      "https://media.tenor.com/74kbHdTSY5sAAAAC/pirates-chasing.gif",
     gallery: [
       "/products/arctic-wave-lifestyle-1.png",
       "/products/arctic-wave-lifestyle-4.png",
@@ -359,7 +361,7 @@ export const products: Product[] = [
     occasion: ["College", "Parties", "Daily Wear", "Hangouts", "Summer"],
     image: "/products/zyrox.png",
     videoUrl:
-      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
+      "https://media.tenor.com/s0lpQLYrqGkAAAAC/running-away-austin-powers.gif",
     gallery: [
       "/products/zyrox-lifestyle-1.png",
       "/products/zyrox-lifestyle-2.png",
@@ -434,7 +436,7 @@ export const products: Product[] = [
     occasion: ["Office", "Business", "Evening", "Date Night", "Gifting"],
     image: "/products/rank.png",
     videoUrl:
-      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
+      "https://media.tenor.com/HqT8SeqGvSwAAAAC/sliding-away.gif",
     gallery: [
       "/products/rank-lifestyle-1.png",
       "/products/rank-lifestyle-2.png",
@@ -520,7 +522,7 @@ export const products: Product[] = [
     occasion: ["Office", "Brunch", "Evening", "Gifting", "Daily Wear"],
     image: "/products/syra.png",
     videoUrl:
-      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
+      "https://media.tenor.com/jVv6NCSnOjwAAAAC/hearts-surrounded.gif",
     gallery: [
       "/products/syra-lifestyle-7.png",
       "/products/syra-lifestyle-1.png",
@@ -618,7 +620,7 @@ export const products: Product[] = [
     ],
     image: "/products/silent-gold.png",
     videoUrl:
-      "https://fvctxehmnzprbqhrxukc.supabase.co/storage/v1/object/public/campaign-image/kling_20260806_VIDEO_Create_a_5_4812_0-ezgif.com-video-speed.gif",
+      "https://media.tenor.com/kUWWuYyr0dYAAAAC/buster-keaton-running-man.gif",
     gallery: [
       "/products/sgold-lifestyle-3.png",
       "/products/sgold-lifestyle-1.png",

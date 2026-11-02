@@ -1,0 +1,17 @@
+Generated using built-in image generation.
+
+Use case: ads-marketing.
+Create ONE finished vertical 4:5 Meta advertising poster for House of Eon. Primary request: a simple, very modern, ultra-premium LIGHT version featuring all three actual perfume products RANK, DESERT TONKA, SILENT GOLD with the hook "WE DON’T DO THIS OFTEN." It must look dramatically lighter and more minimal than dark gold Diwali posters.
+References: image 1 is RANK (tiger label), image 2 is DESERT TONKA (horse and dunes label), image 3 is SILENT GOLD (mountain label). Preserve each distinct cream label, correct product name, rectangular clear-glass bottle shape, textured cylindrical gold cap, logo and illustration. Show exactly three bottles: RANK left, DESERT TONKA center, SILENT GOLD right. Each bottle clearly separated and readable. Use reference product identities only, not their backgrounds.
+Visual direction: ultra-rich modern luxury fragrance editorial with the precision and simplicity of a beautiful premium ecommerce interface. Very light warm ivory/off-white background, subtle pearl tones, pale limestone plinth, champagne gold metal, deep espresso typography. Bright daylight studio photography, delicate long soft shadows, believable transparent glass and realistic materials. Huge clean negative space. No dark backdrop, no black stone, no fireworks, no bokeh, no ornate frames, no busy festival props, no grunge, no orange cast. A tiny elegant gold diya mark by a small Diwali caption is enough festive detail. No actual website navigation or browser frame.
+Composition: refined spaced HOUSE OF EON wordmark at top. Upper section headline in large confident modern black/espresso typography, perhaps two balanced lines. Short elegant subtitle beneath. Central middle three hero bottles of comparable size, front-facing or subtly turned, on low architectural ivory platforms at very slightly different elevations. Bright beautiful soft rim lighting and ample space around bottles. Bottom offer section with oversized ₹699 in dark espresso, quiet 50ML and Delivered details, plus explicit per-bottle clarification so nobody thinks three bottles cost ₹699 total. Minimal fine gold divider and a clean small coupon pill. Strong readable Saturday deadline. All text inside safe 6% margins.
+Exact advertising text:
+"HOUSE OF EON"
+"WE DON’T DO THIS OFTEN."
+"This Diwali, make it yours."
+"50ML. ₹699. Delivered."
+"PER BOTTLE"
+"Use code DIWALI"
+"ENDS SATURDAY · 7 NOV"
+Small footer: "11:59 PM IST · Trial Packs excluded."
+Typography: pristine highly readable editorial sans-serif headline with refined luxury styling; crisp, sharp, high contrast, no overly thin low-contrast type. The ₹699 must be second strongest focal point after the headline. Keep it simple and sophisticated, premium at phone-feed size. Do not add extra slogans, prices, percentages or claims. No watermark, no social media UI. Finished print-quality ad creative in exact 4:5 proportion.
