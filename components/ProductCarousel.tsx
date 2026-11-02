@@ -1,5 +1,6 @@
 "use client";
 
+import { DiwaliPriceNote } from "./DiwaliCampaign";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/lib/products";
@@ -65,6 +66,7 @@ export default function ProductCarousel({ products }: { products: Product[] }) {
 
               <div className="royal-product-bottom">
                 <div>
+                  <DiwaliPriceNote />
                   <div className="price">
                     {formatINR(getCatalogOffer(product.price, product.id).price)}
                   </div>

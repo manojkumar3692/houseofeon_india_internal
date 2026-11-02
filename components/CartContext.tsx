@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { DIWALI_END, isDiwaliActive } from "@/lib/diwali";
 import { getProductById } from "@/lib/products";
 import { requiresExplicitCoupon } from "@/lib/catalogOffer";
 import { formatINR } from "@/lib/money";
@@ -170,7 +171,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // bundle-eligible.
   useEffect(() => {
     if (!loaded) return;
-    if (!hasBundleLine || !couponCode) return;
+    if (!hasBundleLine || !couponCode || couponCode === "DIWALI") return;
 
     setCouponCode("");
     setCouponDiscount(0);
@@ -188,7 +189,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loaded) return;
     if (!couponCode || (explicitRequired && !couponExplicit)) return;
-    if (hasBundleLine) return;
+    if (hasBundleLine && couponCode !== "DIWALI") return;
     if (total <= 0) {
       setCouponCode("");
       setCouponDiscount(0);
@@ -205,6 +206,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            items: lines,
             code: couponCode,
             subtotal: total,
             hasBundleLine,
@@ -236,7 +238,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [total, couponCode, couponPhone, loaded, hasBundleLine, explicitRequired, couponExplicit]);
+  }, [total, lines, couponCode, couponPhone, loaded, hasBundleLine, explicitRequired, couponExplicit]);
+
+  useEffect(() => {
+    if (couponCode !== "DIWALI") return;
+    const reset = () => { setCouponCode(""); setCouponDiscount(0); };
+    if (!isDiwaliActive()) { reset(); return; }
+    const timer = setTimeout(reset, DIWALI_END - Date.now());
+    return () => clearTimeout(timer);
+  }, [couponCode]);
 
   const value = useMemo<CartContextValue>(() => {
     return {
@@ -330,7 +340,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           };
         }
 
-        if (hasBundleLine) {
+        if (hasBundleLine && cleanCode !== "DIWALI") {
           return {
             ok: false,
             message:
@@ -345,6 +355,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
+              items: lines,
               code: cleanCode,
               subtotal: total,
               hasBundleLine,

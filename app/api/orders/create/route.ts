@@ -67,6 +67,7 @@ export async function POST(request: Request) {
       const normalizedCode = normalizeCouponCode(payload.couponCode);
 
       let couponResult = calculateCouponDiscount({
+        items: payload.items,
         code: normalizedCode,
         subtotal,
         hasBundleLine: orderCalc.hasBundleLine,
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
       // pack order number instead (phone-matched, 90-day window; see
       // lib/trialCredit.ts). This is the authoritative check: the preview
       // in /api/coupons/validate can be wrong or stale, this can't be.
-      if (!couponResult.valid) {
+      if (!couponResult.valid && /^HOE-/i.test(normalizedCode)) {
         couponResult = await resolveTrialCredit({
           code: normalizedCode,
           phone: payload.customer.phone,

@@ -1,5 +1,6 @@
 "use client";
 
+import { DiwaliPriceNote } from "./DiwaliCampaign";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/lib/products";
@@ -77,6 +78,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
 
+        <DiwaliPriceNote />
         <div className="product-actions product-card-actions">
           <Link className="btn secondary" href={`/products/${product.slug}`}>
             View

@@ -5,6 +5,7 @@ import { resolveTrialCredit } from "@/lib/trialCredit";
 
 const schema = z.object({
   code: z.string().min(1),
+  items: z.array(z.object({ productId: z.string(), quantity: z.number().int().min(1).max(20) })).optional(),
   subtotal: z.number().min(0),
   hasBundleLine: z.boolean().optional(),
   // Only known once the customer's on the checkout page with a phone
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
     const payload = schema.parse(await request.json());
 
     let result = calculateCouponDiscount({
+      items: payload.items,
       code: payload.code,
       subtotal: payload.subtotal,
       hasBundleLine: payload.hasBundleLine,
@@ -26,7 +28,7 @@ export async function POST(request: Request) {
 
     // Static coupon list didn't match — try it as a trial-pack order
     // number instead (real DB-backed lookup, see lib/trialCredit.ts).
-    if (!result.valid) {
+    if (!result.valid && /^HOE-/i.test(payload.code.trim())) {
       result = await resolveTrialCredit({
         code: payload.code,
         phone: payload.phone,

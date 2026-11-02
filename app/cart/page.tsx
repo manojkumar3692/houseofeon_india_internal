@@ -1,5 +1,6 @@
 "use client";
 
+import { useDiwaliActive } from "@/components/DiwaliCampaign";
 import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/CartContext";
@@ -23,6 +24,7 @@ export default function CartPage() {
     removeCoupon,
   } = useCart();
 
+  const diwaliActive = useDiwaliActive();
   const [couponInput, setCouponInput] = useState("");
   const [couponMessage, setCouponMessage] = useState("");
 
@@ -212,7 +214,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="coupon-box">
-                  {hasBundleLine ? (
+                  {hasBundleLine && !diwaliActive ? (
                     <div className="coupon-hint">
                       🎁 2-bottle bundle pricing is already applied — it's a
                       bigger saving than a coupon code, so codes are disabled
@@ -221,12 +223,12 @@ export default function CartPage() {
                   ) : (
                     <>
                       <label>
-                        <span>Launch coupon</span>
+                        <span>{diwaliActive ? "Diwali exclusive · ₹699 per bottle" : "Coupon code"}</span>
 
                         <div className="coupon-row">
                           <input
                             className="input"
-                            placeholder="Try EON20"
+                            placeholder={diwaliActive ? "Enter DIWALI" : "Try EON20"}
                             value={couponInput}
                             onChange={(event) =>
                               setCouponInput(event.target.value.toUpperCase())
@@ -258,7 +260,7 @@ export default function CartPage() {
                         </div>
                       ) : (
                         <div className="coupon-hint">
-                          Use <b>EON20</b> for 20% OFF launch offer.
+                          {diwaliActive ? <>Use <b>DIWALI</b> for ₹699 per 50ML bottle, shipping included. Ends 7 Nov, 11:59 PM IST. Replaces other offers; excludes Trial Pack credit.</> : <>Use <b>EON20</b> for 20% OFF launch offer.</>}
                         </div>
                       )}
 

@@ -1,3 +1,4 @@
+import DiwaliCampaign from "@/components/DiwaliCampaign";
 import RivaPreview from "@/components/RivaPreview";
 import { getCatalogOffer } from "@/lib/catalogOffer";
 import type { Metadata } from "next";
@@ -115,6 +116,7 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
+      <DiwaliCampaign fallback={<>
       <section className="home-hero">
         <div className="container home-hero-grid">
           <div className="home-hero-copy">
@@ -173,6 +175,7 @@ export default function HomePage() {
 </section>
         </div>
       </section>
+      </>} />
 
       <section className="home-marquee-section">
         <div className="container">
