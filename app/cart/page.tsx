@@ -223,7 +223,7 @@ export default function CartPage() {
                   ) : (
                     <>
                       <label>
-                        <span>{diwaliActive ? "Diwali exclusive · ₹699 per bottle" : "Coupon code"}</span>
+                        <span>{diwaliActive ? "Diwali extended · ₹699 per bottle" : "Coupon code"}</span>
 
                         <div className="coupon-row">
                           <input
@@ -260,7 +260,7 @@ export default function CartPage() {
                         </div>
                       ) : (
                         <div className="coupon-hint">
-                          {diwaliActive ? <>Use <b>DIWALI</b> for ₹699 per 50ML bottle, shipping included. Ends 7 Nov, 11:59 PM IST. Replaces other offers; excludes Trial Pack credit.</> : <>Use <b>EON20</b> for 20% OFF launch offer.</>}
+                          {diwaliActive ? <>Use <b>DIWALI</b> for ₹699 per 50ML bottle, shipping included. Extended by popular demand until 14 Nov, 11:59 PM IST. Replaces other offers; excludes Trial Pack credit.</> : <>Use <b>EON20</b> for 20% OFF launch offer.</>}
                         </div>
                       )}
 
