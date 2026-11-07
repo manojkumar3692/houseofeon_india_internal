@@ -226,7 +226,7 @@ ${product.description}
 
 Price: ${formatINR(product.price)}
 
-${diwaliActive ? "Diwali exclusive: ₹699 per 50ML bottle with DIWALI, shipping included. Ends Saturday 7 Nov, 11:59 PM IST." : "Use EON20 for 20% OFF."}
+${diwaliActive ? "Diwali sale extended by popular demand: ₹699 per 50ML bottle with DIWALI, shipping included. Ends Saturday 14 Nov, 11:59 PM IST." : "Use EON20 for 20% OFF."}
 
 Buy here:
 ${productUrl}`;

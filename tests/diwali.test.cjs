@@ -1,7 +1,7 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {loader}=require('./negotiation-loader.cjs');
-const activeTime=Date.parse('2026-11-05T12:00:00+05:30');
+const activeTime=Date.parse('2026-11-12T12:00:00+05:30');
 class SaleDate extends Date {static now(){return activeTime;}}
 const load=loader({}, {}, {Date:SaleDate});
 const {diwaliDiscount,isDiwaliActive,DIWALI_END,DIWALI_START}=load('lib/diwali.ts');
@@ -15,6 +15,12 @@ test('mixed and same-product bundles end at 699 per bottle, never stack discount
  for(const items of [[{productId:products[0].id,quantity:2}],[{productId:products[0].id,quantity:1},{productId:products[1].id,quantity:2}]]){
  const order=calculateOrder(items);const result=calculateCouponDiscount({code:'DIWALI',subtotal:order.total,hasBundleLine:true,items});assert.equal(result.valid,true);assert.equal(order.total-result.discount,699*items.reduce((s,i)=>s+i.quantity,0));
  }
+});
+test('extension adds exactly seven days and accepts the previous expiry',()=>{
+ const previousEnd=Date.parse('2026-11-08T00:00:00+05:30');
+ assert.equal(DIWALI_END-previousEnd,7*86400000);
+ assert.equal(diwaliDiscount([{productId:products[0].id,quantity:1}],previousEnd).valid,true);
+ assert.equal(DIWALI_END,Date.parse('2026-11-15T00:00:00+05:30'));
 });
 test('campaign expires exactly at midnight Sunday IST and never recurs',()=>{
  assert.equal(isDiwaliActive(DIWALI_START-1),false);assert.equal(isDiwaliActive(DIWALI_START),true);assert.equal(isDiwaliActive(DIWALI_END-1),true);assert.equal(isDiwaliActive(DIWALI_END),false);assert.equal(isDiwaliActive(DIWALI_END+365*86400000),false);

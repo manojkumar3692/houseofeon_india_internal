@@ -3,7 +3,7 @@ import { calculateOrder } from "./order";
 
 // A single campaign window, never a rolling or annually recurring countdown.
 export const DIWALI_START = Date.parse("2026-11-02T00:00:00+05:30");
-export const DIWALI_END = Date.parse("2026-11-08T00:00:00+05:30");
+export const DIWALI_END = Date.parse("2026-11-15T00:00:00+05:30");
 export const DIWALI_PRICE = 699;
 export function isDiwaliActive(now = Date.now()) {
   return now >= DIWALI_START && now < DIWALI_END;
