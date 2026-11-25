@@ -68,6 +68,9 @@ export default function Footer() {
             Best perfume for women
           </Link>
           <Link href="/scent-fix">Find your scent</Link>
+          <Link href="/christmas-perfume-gifts">Christmas perfume gifts</Link>
+          <Link href="/secret-santa-perfume-gifts">Secret Santa gifts</Link>
+          <Link href="/winter-perfumes-for-men">Winter perfumes for men</Link>
           <Link href="/pages/diwali-perfume">Diwali perfume gifts</Link>
           <Link href="/corporate-gifting">Corporate gifting</Link>
           <Link href="/scent-swipe">Play &amp; win 20%</Link>

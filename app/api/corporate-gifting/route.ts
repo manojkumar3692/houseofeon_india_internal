@@ -9,7 +9,7 @@ const schema = z.object({
   phone: z.string().trim().regex(/^[+\d\s()-]{7,24}$/).refine(v => v.replace(/\D/g, "").length >= 7),
   quantity: z.coerce.number().int().min(1).max(100000),
   budget: z.enum(["Not decided", "Under ₹500", "₹500–₹1,000", "₹1,000–₹1,500", "Above ₹1,500"]),
-  occasion: z.enum(["Employee appreciation", "Diwali & festive gifting", "Client gifting", "Welcome kits", "Events & other"]),
+  occasion: z.enum(["Year-end employee & client gifts", "Christmas & New Year gifting", "Employee appreciation", "Diwali & festive gifting", "Client gifting", "Welcome kits", "Events & other"]),
   delivery: line(200), date: z.iso.date().or(z.literal("")),
   branding: z.enum(["Explore the options", "Company message card", "Branded sleeve / packaging", "Standard Discovery Set"]),
   giftMessage: z.string().trim().max(140).optional(),

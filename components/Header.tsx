@@ -87,11 +87,11 @@ export default function Header() {
           <Link href="/long-lasting-perfume-for-men-india">Men</Link>
           <Link href="/best-perfume-for-women-in-india">Women</Link>
           <Link
-            href="/pages/diwali-perfume"
+            href="/christmas-perfume-gifts"
             className="nav-diwali-link"
-            aria-current={pathname === "/pages/diwali-perfume" ? "page" : undefined}
+            aria-current={pathname === "/christmas-perfume-gifts" ? "page" : undefined}
           >
-            Diwali
+            Christmas gifts
           </Link>
           <Link href="/corporate-gifting" aria-current={pathname === "/corporate-gifting" ? "page" : undefined}>Corporate gifts</Link>
           <Link
@@ -139,7 +139,7 @@ export default function Header() {
           <Link href="/perfume-for" onClick={() => setMenuOpen(false)}>Shop by situation <span>02</span></Link>
           <Link href="/long-lasting-perfume-for-men-india" onClick={() => setMenuOpen(false)}>Men <span>03</span></Link>
           <Link href="/best-perfume-for-women-in-india" onClick={() => setMenuOpen(false)}>Women <span>04</span></Link>
-          <Link href="/pages/diwali-perfume" onClick={() => setMenuOpen(false)}>Diwali Gifts <span>05</span></Link>
+          <Link href="/christmas-perfume-gifts" onClick={() => setMenuOpen(false)}>Christmas Gifts <span>05</span></Link>
           <Link href="/corporate-gifting" onClick={() => setMenuOpen(false)}>Corporate Gifting <span>06</span></Link>
           <Link href="/track-order" onClick={() => setMenuOpen(false)}>Track Order <span>07</span></Link>
         </div>
