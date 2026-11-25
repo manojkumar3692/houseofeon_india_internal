@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { products } from "@/lib/products";
 import { guides } from "@/lib/guides";
 import { situations } from "@/lib/situations";
+import { seasonalPages } from "@/lib/seasonalPages";
 import { SITE_URL } from "@/lib/seo";
 
 const siteUrl = SITE_URL;
@@ -77,10 +78,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const entries: MetadataRoute.Sitemap = [
     ...["/perfumes-under-1000", "/fragrances-india", "/about", "/contact", "/shipping", "/pages/return-refund-policy"].map((path) => ({ url: `${siteUrl}${path}` })),
-    ...staticPages, ...productPages, ...guidePages, ...situationPages];
+    ...staticPages, ...productPages, ...guidePages, ...situationPages,
+    ...seasonalPages.map(page => ({ url: `${siteUrl}/${page.slug}`, lastModified: "2026-11-25", changeFrequency: "monthly" as const, priority: 0.85 }))];
   return entries.map((entry) => ({
       ...entry,
       ...(entry.url === siteUrl || /\/(trial-pack|products\/|perfume-for\/|guides\/|pages\/diwali-perfume)/.test(entry.url)
         ? { lastModified: "2026-10-07" } : {}),
-    }));
+    })).map(entry => [siteUrl, `${siteUrl}/corporate-gifting`, `${siteUrl}/perfume-for/indian-wedding-men`, `${siteUrl}/guides/perfume-gift-for-girlfriend-boyfriend`].includes(entry.url) ? { ...entry, lastModified: "2026-11-25" } : entry);
 }

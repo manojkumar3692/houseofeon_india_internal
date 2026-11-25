@@ -52,7 +52,7 @@ export function EnquiryForm() {
       <label>Phone number *<input name="phone" type="tel" required minLength={7} maxLength={24} autoComplete="tel" placeholder="+91" /></label>
       <label>Number of gift sets *<input name="quantity" type="number" min={1} max={100000} required placeholder="e.g. 50" /></label>
       <label>Budget per gift<select name="budget" defaultValue="Not decided">{["Not decided", "Under ₹500", "₹500–₹1,000", "₹1,000–₹1,500", "Above ₹1,500"].map(v => <option key={v}>{v}</option>)}</select></label>
-      <label>What’s the occasion?<select name="occasion">{["Employee appreciation", "Diwali & festive gifting", "Client gifting", "Welcome kits", "Events & other"].map(v => <option key={v}>{v}</option>)}</select></label>
+      <label>What’s the occasion?<select name="occasion">{["Year-end employee & client gifts", "Christmas & New Year gifting", "Employee appreciation", "Diwali & festive gifting", "Client gifting", "Welcome kits", "Events & other"].map(v => <option key={v}>{v}</option>)}</select></label>
       <label>Preferred delivery date<input name="date" type="date" /></label>
       <label className={s.full}>Delivery location(s) *<input name="delivery" required maxLength={200} placeholder="City / PIN code, or multiple locations" /></label>
       <label className={s.full}>Make it yours<select name="branding">{["Explore the options", "Company message card", "Branded sleeve / packaging", "Standard Discovery Set"].map(v => <option key={v}>{v}</option>)}</select></label>

@@ -319,11 +319,11 @@ export const guides: Guide[] = [
   },
   {
     slug: "perfume-gift-for-girlfriend-boyfriend",
-    title: "How to Choose a Perfume Gift for Your Girlfriend or Boyfriend",
+    title: "Valentine’s Perfume Gifts for Your Girlfriend or Boyfriend",
     seoTitle:
-      "Perfume Gift for Girlfriend or Boyfriend: How to Choose | House of Eon",
+      "Valentine’s Perfume Gifts for Girlfriend or Boyfriend | House of Eon",
     seoDescription:
-      "Choosing a perfume for your partner is more personal than picking any gift under a budget. Here's how to actually match a scent to their personality, not just their gender.",
+      "Choose a 50ml Valentine’s perfume gift by your partner’s favourite notes. Compare floral, fresh and warm House of Eon fragrances and plan delivery.",
     seoKeywords: [
       "perfume gift for girlfriend",
       "perfume gift for boyfriend",
@@ -332,11 +332,13 @@ export const guides: Guide[] = [
     ],
     excerpt:
       "Choosing a perfume for your partner is more personal than picking any gift under a budget. Here's how to actually match a scent to who they are.",
-    eyebrow: "Gifting Guide",
+    eyebrow: "Valentine’s & Anniversary Gifting",
     heroTitle: "Choosing a perfume gift for someone you actually know well.",
     heroSubtitle:
       "A partner gift is different from a colleague gift — you already know their personality, so the goal is matching that, not just picking a safe, universally-liked option.",
     sections: [
+      { heading: "Plan your Valentine’s gift around their favourite notes", body: ["For 14 February, choose a scent they will enjoy beyond the occasion. Look at the fragrance family they already wear, then compare the 50ml bottles below. A floral preference can lead you to SYRA; warm tonka and amber can lead you to Desert Tonka. Keep the existing product and cart prices as your reference, rather than assuming a seasonal discount."] },
+      { heading: "Leave time for delivery and presentation", body: ["Check shipping information and confirm delivery feasibility for your PIN code before a time-sensitive purchase. No guaranteed Valentine’s cutoff is published here. Gift wrapping, message cards and special boxes must be confirmed separately. Read the return policy before buying for someone else."] },
       {
         heading: "For a girlfriend who's confident and understated",
         body: [

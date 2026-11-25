@@ -190,18 +190,20 @@ export default function HomePage() {
 
       <RivaPreview />
 
-      <section className="home-diwali-banner" aria-label="Diwali perfume gifting">
+      <section className="home-diwali-banner" aria-label="Christmas and Secret Santa perfume gifts">
         <div className="container home-diwali-banner-inner">
           <div>
-            <span>Diwali 2026 · A gift without the guesswork</span>
-            <h2>Don&apos;t guess their perfume.</h2>
-            <p>Let them try three premium fragrances for ₹299, then unlock 50ML for ₹749.</p>
+            <span>Christmas & Secret Santa · Thoughtfully chosen</span>
+            <h2>A full-size gift. A personal choice.</h2>
+            <p>Find a 50ml fragrance for their favourite notes, your budget and the occasion.</p>
           </div>
-          <Link href="/pages/diwali-perfume" className="home-diwali-cta">
-            Explore Diwali gifts →
+          <Link href="/christmas-perfume-gifts" className="home-diwali-cta">
+            Explore Christmas gifts
           </Link>
         </div>
       </section>
+
+      <section className="section"><div className="container situation-next-links"><Link href="/secret-santa-perfume-gifts">Secret Santa gifts under ₹1,000</Link><Link href="/winter-perfumes-for-men">Winter fragrances for men</Link><Link href="/perfume-for/indian-wedding-men">Wedding fragrance guide</Link></div></section>
 
       <section className="quiz-cta-banner">
         <div className="quiz-cta-banner-inner">
